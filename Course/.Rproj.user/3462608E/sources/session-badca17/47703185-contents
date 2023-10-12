@@ -1,0 +1,458 @@
+library(tidyverse)
+library(ggpubr)
+set.seed(123)
+
+
+n <- 100
+
+# Sexe
+Homme <- rep(1, n)
+Femme <- rep(0, n)
+Sexe <- c(Homme, Femme)
+
+# Taille
+tailleH <- rnorm(n, mean = 178, sd = 8)
+tailleF <- rnorm(n, mean = 164, sd = 6)
+Taille <- c(tailleH, tailleF)
+
+# Age
+AgeH <- runif(n, min = 0, max = 78)
+AgeF <- runif(n, min = 0, max = 84)
+Age <- c(AgeH, AgeF)
+
+# Bruit
+E <- rnorm(2*n, mean = 0, sd = 7)
+
+
+Poids <- 0.4*Taille + 1.5*Sexe + 0.05*Taille*Sexe + 0.05*Age + E
+
+
+data <- data.frame(Poids, Taille, Sexe, Age)
+data %>% 
+  ggplot(aes(Poids))+
+  geom_histogram()
+
+model <- lm(Poids ~ Taille * Sexe + Age, data = data)
+summary(model)
+
+model <- lm(Poids ~ Taille, data = data)
+summary(model)
+
+data <- data %>%
+  dplyr::mutate(Sexe = Sexe %>% factor)
+
+# Corrélation entre la variable
+data %>%
+  dplyr::mutate(Sexe = Sexe %>% factor) %>% 
+  ggplot(aes(x = Taille, y = Poids, color = Sexe))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  theme_bw()
+
+# Nuage de points
+plot <- data %>% 
+  ggplot(aes(x = Taille, y = Poids))+
+  geom_point(alpha = 0.4, size = 3)+
+  theme_classic()+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent")) 
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/Correlation1.png",
+       plot = plot, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+# Nuage de points plus corrélation
+plot <- data %>% 
+  ggplot(aes(x = Taille, y = Poids))+
+  geom_point(alpha = 0.4, size = 3)+
+  stat_cor(method = "pearson", label.x = 177, label.y = 50, size = 5, color = "darkred")+
+  geom_smooth(method = "lm", color = "darkred", se = FALSE, size = 2)+
+  theme_classic()+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent")) 
+plot
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/Correlation2.png",
+       plot = plot, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+# Corrélation explication
+plot <- data %>% 
+  ggplot(aes(x = Taille, y = Poids))+
+  geom_smooth(method = "lm", color = "darkred", se = FALSE, size = 2)+
+  geom_segment(aes(x = 160, y = 67.5, xend = 180, yend = 67.5), color = "darkblue", linetype="dashed", size = 2)+
+  geom_segment(aes(x = 180, y = 67.5, xend = 180, yend = 76), color = "darkblue", linetype="dashed", size = 2)+
+  
+  theme_classic()+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent")) 
+plot
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/regression.png",
+       plot = plot, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+
+# Adjustement dans le cas discret
+model <- lm(Poids ~ Taille + Sexe, data = data)
+summary(model)
+
+plot <- data %>% 
+  dplyr::mutate(Sexe = Sexe %>% factor %>% forcats::fct_recode("Homme" = "1", "Femme" = "0")) %>% 
+  ggplot(aes(x = Taille, y = Poids, color = Sexe))+
+  geom_point(size = 2.5, alpha = 0.1)+
+  geom_abline(intercept = 17.1, slope = 0.3, color = "darkblue", size = 1.5)+
+  geom_abline(intercept = 20.6, slope = 0.3, color = "darkred", size = 1.5)+
+  theme_classic()+
+  scale_color_manual(values = c("darkblue", "darkred"))+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent")) 
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/ajustement.png",
+       plot = plot, width = 6, height = 4, dpi = 300, bg = "transparent")
+  
+
+# Ajustement dans le cas continue
+model <- lm(Poids ~ Taille + Age, data = data)
+summary(model)
+data <- cbind(data,predict(model))
+names(data)[5] <- "predict"
+plot <- data %>% 
+  dplyr::mutate(cat_Age = cut_interval(Age, n = 50)) %>% 
+  ggplot(aes(x = Taille, y = Poids, group = cat_Age))+
+  geom_point(alpha = 0.2, size = 2.5)+
+  geom_line(aes(y = predict))+
+  theme_classic()+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent")) 
+
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/ajustement_continue.png",
+       plot = plot, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+# Interaction
+model <- lm(Poids ~ Taille * Sexe, data = data)
+summary(model)
+
+plot <- data %>% 
+  dplyr::mutate(Sexe = Sexe %>% factor %>% forcats::fct_recode("Homme" = "1", "Femme" = "0")) %>% 
+  ggplot(aes(x = Taille, y = Poids, color = Sexe))+
+  geom_point(size = 2.5, alpha = 0.1)+
+  geom_abline(intercept = 26, slope = 0.26, color = "darkblue", size = 1.5)+
+  geom_abline(intercept = 10, slope = 0.42, color = "darkred", size = 1.5)+
+  theme_classic()+
+  scale_color_manual(values = c("darkblue", "darkred"))+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent")) 
+plot
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/interaction.png",
+       plot = plot, width = 6, height = 4, dpi = 300, bg = "transparent")
+  
+
+# Erreur écologique
+n <- 8
+tailleF1 <- rnorm(n, mean = 185, sd = 2)
+tailleF2 <- rnorm(n, mean = 180, sd = 2)
+tailleF3 <- rnorm(n, mean = 175, sd = 2)
+tailleF4 <- rnorm(n, mean = 170, sd = 2)
+tailleF5 <- rnorm(n, mean = 165, sd = 2)
+tailleF6 <- rnorm(n, mean = 160, sd = 2)
+
+E <- rnorm(n, mean = 0, sd = 1)
+
+taille <- c(tailleF1, tailleF2, tailleF3, tailleF4, tailleF5, tailleF6)
+famille <- c(rep(3.5, n), rep(3, n), rep(2.5, n), rep(2, n), rep(1.5, n), rep(1, n)) 
+poids <- 0.3*taille + 0.1*taille*famille + E
+ecolo <- data.frame(poids, taille, famille)  
+ecolo <- ecolo %>% 
+  dplyr::mutate(famille = famille %>% factor)
+
+model <- lm(poids ~ taille, data = data)
+summary(model)
+
+
+plot <- ecolo %>% 
+  ggplot(aes(x = taille, y = poids))+
+  geom_point(aes(color = famille), alpha = 0.3)+
+  geom_smooth(method = "lm", se = FALSE, aes(group = famille, color = famille), linetype = "dashed")+
+  geom_smooth(method = "lm", se = FALSE, color = "darkred", size = 2)+
+  scale_colour_brewer(palette = "Dark2")+
+  theme_classic()+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent"),
+        legend.position = "none") 
+
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/erreur_ecologique.png",
+       plot = plot, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+# Illustration modèle mixte
+x <- runif(10, 0, 10)
+y <- runif(10, 0, 10)
+xy <- data.frame(x, y)
+coefs <- data.frame(a = seq(2, 4.5, by = 0.5), b = rep(1.5, 6), c = as.factor(1:6))
+p <- ggplot(xy, aes(x = x, y=y))
+p <- p + geom_blank() + geom_abline(data=coefs, aes(intercept=a, slope=b, color = c), size = 2) +
+  theme_classic()+
+  xlim(c(0,2.5))+
+  ylim(c(0,7))+
+  theme(panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        axis.line = element_line(colour = "black", size = 1.5),
+        axis.title=element_text(size=14,face="bold"),
+        rect = element_rect(fill = "transparent"),
+        legend.position = "none",
+        axis.text = element_blank(),
+        axis.ticks = element_blank()) 
+p
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/fig1.png",
+       plot = p, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+x <- data.frame(x = rnorm(10000000, mean = 0, sd = 1))  
+x %>% 
+  ggplot(aes(x = x)) +
+  geom_density()
+
+
+p <- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), size = 2) + 
+  ylab("") +
+  xlab("") +
+  geom_hline(yintercept = 0, size = 2) +
+  geom_vline(xintercept = 0, size = 2) +
+  scale_y_continuous(breaks = NULL) +
+  scale_x_continuous(breaks = NULL) +
+  theme_minimal()+
+  theme(legend.position = "none",
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        rect = element_rect(fill = "transparent"))
+p
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/fig2.png",
+       plot = p, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+# Illustration modèle mixte partie 2
+x <- runif(10, 0, 10)
+y <- runif(10, 0, 10)
+xy <- data.frame(x, y)
+coefs <- data.frame(a = rep(3,6), b = seq(0,1.25,0.25), c = as.factor(1:6))
+p <- ggplot(xy, aes(x = x, y=y))
+  p <- p + geom_blank() + geom_abline(data=coefs, aes(intercept=a, slope=b, color = c), size = 2) +
+  theme_classic()+
+  xlim(c(0,2.5))+
+  ylim(c(0,7))+
+  stheme(panel.background = element_rect(fill = "transparent",
+                                          colour = NA_character_), # necessary to avoid drawing panel outline
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          plot.background = element_rect(fill = "transparent",
+                                         colour = NA_character_), # necessary to avoid drawing plot outline
+          legend.background = element_rect(fill = "transparent"),
+          legend.box.background = element_rect(fill = "transparent"),
+          legend.key = element_rect(fill = "transparent"),
+          strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                            size = 100, linetype = "solid"),
+          axis.line = element_line(colour = "black", size = 1.5),
+          axis.title=element_text(size=14,face="bold"),
+          rect = element_rect(fill = "transparent"),
+          legend.position = "none",
+          axis.text = element_blank(),
+          axis.ticks = element_blank()) +
+  scale_x_continuous(limits = c(0.2, 3))
+p
+
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/fig3.png",
+       plot = p, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+# ICC proche de zéro
+Groupe <- factor(sort(rep(1:6, 10)))
+Alpha <- rnorm(60, 5, 0.5)
+X_cord <- seq(0.01,1,0.01)[1:60]
+data <- data.frame(Alpha, Groupe, X_cord)
+
+p <- data %>% 
+  ggplot(aes(x = X_cord, y = Alpha, color = Groupe))+
+  geom_point(size = 3)+
+  theme_classic()+
+  geom_hline(yintercept = 5, size = 1.5)+
+  ylim(0,10)+
+  annotate("text", x = -0.05, y = 4.2, label = "B0", size = 6)+
+  theme(legend.position = "none",
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title.x = element_blank(),
+        panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        rect = element_rect(fill = "transparent"))+
+  labs(y = "y")
+p
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/ICC1.png",
+       plot = p, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+# ICC proche de 1
+Groupe <- factor(sort(rep(1:6, 10)))
+Alpha <- c(rep(2.5, 10), rep(6, 10), rep(3.5, 10), rep(8, 10), rep(4, 10), rep(7.5, 10))
+X_cord <- seq(0.01,1,0.01)[1:60]
+data <- data.frame(Alpha, Groupe, X_cord)
+
+
+p <- data %>% 
+  ggplot(aes(x = X_cord, y = Alpha, color = Groupe))+
+  geom_point(size = 3)+
+  theme_classic()+
+  geom_smooth(method = "lm", se = FALSE)+
+  geom_hline(yintercept = 5, size = 1.5)+
+  ylim(0,10)+
+  annotate("text", x = -0.05, y = 4.2, label = "B0", size = 6)+
+  theme(legend.position = "none",
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title.x = element_blank(),
+        panel.background = element_rect(fill = "transparent",
+                                        colour = NA_character_), # necessary to avoid drawing panel outline
+        panel.grid.major = element_blank(), # get rid of major grid
+        panel.grid.minor = element_blank(), # get rid of minor grid
+        plot.background = element_rect(fill = "transparent",
+                                       colour = NA_character_), # necessary to avoid drawing plot outline
+        legend.background = element_rect(fill = "transparent"),
+        legend.box.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        strip.background.x = element_rect(colour = "black", fill = "transparent", 
+                                          size = 100, linetype = "solid"),
+        rect = element_rect(fill = "transparent"))+
+  labs(y = "y")
+
+p
+ggsave("/home/baptiste.criniere/Documents/Mixed Model Training/Code/Figure présentation/ICC2.png",
+       plot = p, width = 6, height = 4, dpi = 300, bg = "transparent")
+
+
+
+
+
+
+
+
+
+
+
+
+

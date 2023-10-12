@@ -1,0 +1,13 @@
+data <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_SLA_ribon/Data/table_Multiplex_2023_pour_Baptiste.xlsx")
+str(data)
+
+table(data$group)
+table(data$cond)
+nrow(data) - length(unique(data$X1))
+
+
+# Data management
+
+data <- data %>%
+  dplyr::rename(ID = X1) %>% 
+  dplyr::mutate(X1 = X1)

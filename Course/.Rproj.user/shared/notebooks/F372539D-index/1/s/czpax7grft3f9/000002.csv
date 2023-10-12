@@ -1,0 +1,40 @@
+"0","title: ""Régression linéaire""
+author: ""Baptiste CRINIERE-BOIZET""
+date: ""`r Sys.Date()`""
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  Linear regression
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+
+# Théorie
+
+## Variables dépendantes et variables indépendantes 
+*En construction*
+En modélisation linéaire, il existe une distinction importante entre les variables : les variables dépendantes et indépendantes. La dépendance d'une variable n'est pas vraiment une propriété d'une variable, mais le résultat du choix de l'analyste de données. \
+\
+Lorsque nous examinons la relation entre deux variables, décider si l'une est indépendante de l'autre repose sur la logique ou la théorie. Par exemple, en étudiant la taille d'une mère et de son enfant, il est logique de considérer la taille de l'enfant comme dépendante de celle de la mère, car les gènes sont transmis de la mère à l'enfant. Ainsi, la taille de l'enfant dépend en partie de celle de la mère, avec la taille de l'enfant comme variable dépendante et la taille de la mère comme variable indépendante. \
+\
+La variable dépendante est aussi nommée variable réponse ou à expliquer. Une variable indépendante est appelée prédicteur ou explicative. Par exemple, la taille d'un enfant peut être expliquée par les gènes hérités de sa mère, faisant de la taille de l'enfant la variable réponse et celle de la mère la variable explicative. On peut aussi prédire la taille adulte d'un enfant à partir de la taille de sa mère. \
+\
+Dans une modélisation linéaire visant à explorer la relation entre plusieurs variables, il ne peux exister qu'une unique variable dépendante (celle que l'on cherche à expliquer) et plusieurs variables indépendantes utilisées pour expliquer cette variable dépendante. \
+\
+On nomme la variable dépendante $Y$ et les variables explicatives $X_{1}$, $X_{2}$, etc.
+
+## Régression linéaire : une approche intuitive
+*En construction*
+
+L'objectif d'une modélisation statistique est de résumé l'information contenue dans nos données et aussi de simplifier notre problème. \
+\
+La régression linéaire est une modélisation statistique qui consiste à résumer le lien qui existe entre nos deux variables par une droite, donc par deux paramètres (l'ordonné à l'origne et la pente de la droite). \
+\
+Dans un premier temps on peut représenter nos données par un nuage de points. \
+\
+On peut observer à travers cette exemple, le lien entre la taille d'une fille et celle de sa mère par exemple. Par cet exemple, on observe une tendance, plus la taille de la mère en abscisse augment plus la taille de sa fille en ordonné augmente elle aussi."
+"2","/bin/sh: 1: ---: not found
+"

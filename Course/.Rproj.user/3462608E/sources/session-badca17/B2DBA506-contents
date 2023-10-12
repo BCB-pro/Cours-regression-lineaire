@@ -1,0 +1,365 @@
+---
+title: "Analyse"
+author: "Baptiste Crinière-Boizet"
+output:
+  html_document:
+    theme: united
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(fig.align = "center")
+knitr::opts_chunk$set(out.width="90%")
+```
+
+```{r}
+library(tidyverse)
+library(openxlsx)
+library(ggsci)
+library(ggpubr)
+library(interactions)
+library(emmeans)
+library(effects)
+library(performance)
+library(lme4)
+library(lmerTest)
+```
+
+```{r}
+data <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_SLA_LB/data.xlsx", sheet = 2)
+names(data)[c(2,4)] <- c("Concentration", "Concentration_DMI")
+data <- data %>% 
+  dplyr::mutate(Concentration_DMI_factor = Concentration_DMI %>% factor) %>% 
+  dplyr::mutate(Activation = Activation %>% factor) %>% 
+  dplyr::filter(!Donneur %in% "HD055 décongelé")
+
+data_bis <- data %>% 
+  dplyr::filter(!Activation %in% "IFNg+LPS")
+```
+
+# Statistiques descriptives
+Pour commencer, la base de données est analysée à l'aide de statistiques descriptives, et les données sont présentées sous forme de graphiques pour obtenir une première vision des divers résultats, différences ou problèmes qui pourraient être présents. \ 
+Dans la section suivante, on effectuera des analyses statistiques inférentielles et des modélisations afin de savoir si on peut généraliser les résultats que l'on observe en descriptif et aussi de pouvoir contrôler sur d'autres facteurs (effet d'interaction, effet donneur).
+
+### Table 1
+Ici, la moyenne et l‘écart type de la variable concentration pour chaque type d’activation.
+```{r}
+data %>% 
+  dplyr::select(-Donneur) %>% 
+  furniture::table1(Concentration,
+                    splitby =~ Activation,
+                    output = "markdown")
+```
+
+### Effet de l'activation {.tabset}
+#### Représentation échelle logarithmique
+```{r}
+data %>% 
+  ggplot(aes(x = Activation, y = log(Concentration), color = Activation))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(shape = 1)+
+  theme_classic()+
+  scale_color_jama()+
+  labs(x = "")+
+  theme(legend.position = "none")
+```
+
+#### Représentation échelle réelle
+Il semble y avoir une différences entre les distributions moyennes des trois types activations.
+```{r}
+data %>% 
+  ggplot(aes(x = Activation, y = Concentration, color = Activation))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(shape = 1)+
+  theme_classic()+
+  scale_color_jama()+
+  labs(x = "")+
+  theme(legend.position = "none")
+```
+
+### Transformation
+*Pour la suite de l'analyser des données, j'ai dû convertir les concentrations en échelle logarithmique, car l'activation IFNg+LPS présentait une moyenne nettement supérieure aux autres, de l'ordre d'un facteur 100.*
+
+
+### Effet de la concentration DMI (en catégoriel) sur la concentration selon l'activation
+Ici, on présente le logarithme de la concentration en fonction de la concentration DMI traitée en tant que variable catégorielle selon l'activation. On remarque que plus la concentration de DMI semble augmenter, plus la concentration semble diminuer. Cette diminution semble suivre une tendance linéaire et est plus marquée pour l'activation IFNg+LPS. \
+Cependant, cette représentation ne prend pas en compte l'effet du donneur.
+```{r}
+data %>% 
+  ggplot(aes(x = Concentration_DMI_factor, y = log(Concentration), color = Concentration_DMI_factor))+
+  facet_wrap(~Activation, scales = "free")+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5, size = 0.85, shape = 1)+
+  scale_color_jama()+
+  theme_classic()+
+  labs(x = "Concentration DMI")+
+  theme(legend.position = "none")
+```
+
+### Effet de la concentration DMI (en continue) sur la concentration selon l'activation
+Ici, on présente le logarithme de la concentration en fonction de la concentration DMI, traitée comme une variable continue en fonction de l'activation. Nous évaluons la relation et la corrélation entre ces deux variables. Nous observons qu'il semble y avoir une corrélation linéaire négative entre elles. Le coefficient de corrélation est beaucoup plus élevé pour l'activation IFNg+LPS (r=-0,87) que pour les deux autres activations (r=-0,25). \
+Cependant, il est important de noter qu'encore une fois, nous ne prenons pas en compte l'effet sujet dans cette analyse.
+```{r}
+data %>% 
+  ggplot(aes(x = Concentration_DMI, y = log(Concentration), color = Activation))+
+  geom_point(alpha = 0.5, size = 0.85)+
+  facet_wrap(~Activation, scales = "free_y")+
+  geom_smooth(method = "lm", se = FALSE)+
+  stat_cor(aes(label = ..r.label..))+
+  scale_color_jama()+
+  theme_classic()+
+  theme(legend.position = "none")
+```
+
+### Représentation de l'effet donneur {.tabset}
+#### Boxplot par condition
+Afin d'étudier l'effet du donneur, j'ai utilisé des couleurs pour représenter les trois points appartenant au même donneur et ayant les mêmes conditions (activation et concentration DMI) accompagné d'un boxplot. \
+On remarque qu'au sein d'une même activation, les boxplots de la même couleur se positionnent ou se distribuent de manière différente. De plus, les boxplots de différentes couleurs, appartenant au même donneur, tendent à être plus proches les uns des autres. Ce qui illustre ainsi la variabilité interindividuelle. \
+Enfin, on observe une conséquente variabilité entre les points du même donneur ayant les mêmes conditions, ce phénomène étant désigné sous le nom de variabilité intra-individuelle.
+```{r}
+data %>% 
+  ggplot(aes(x = Donneur, y = log(Concentration), color = Concentration_DMI_factor))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(group = Concentration_DMI_factor), shape = 1, position = position_jitterdodge())+
+  facet_wrap(~Activation, scales = "free")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        legend.position = "bottom")+
+  scale_color_jama()+
+  labs(x = "",
+       color = "Concentration DMI")
+```
+
+#### Trajectoires individuelles
+```{r}
+data %>% 
+  group_by(Donneur, Activation, Concentration_DMI) %>% 
+  dplyr::summarise(Concent = mean(Concentration, na.rm = TRUE)) %>% 
+  ggplot(aes(x = Concentration_DMI, y = Concent, color = Donneur, group = Donneur))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~Activation, scale = "free")+
+  theme_classic()+
+  scale_color_jama()+
+  theme(legend.position = "bottom")
+```
+
+
+# Modélisations
+Dans cette section, on cherche à déterminer, à l'aide de modélisations et de tests statistiques, si les résultats observés dans la partie descriptive peuvent être généralisés.
+
+## Modélisation 1
+Dans un premier temps, on traite la variable 'concentration DMI' en tant que catégorie et on modélise notre problème selon l'équation suivante : \
+Concentration ~ Activation * Concentration_DMI + (1|Donneur)
+\
+Ce modèle nous permet d'évaluer l'impact de l'activation sur la concentration, l'effet de la concentration DMI sur celle-ci, et également de déterminer si l'influence de la concentration DMI diffère selon l'activation. De plus, avec ce modèle on prend en compte l'effet du donneur, dont on a constaté l'importance précédemment.
+
+### Résultats {.tabset}
+#### Résultats globaux
+Les résultats suivants présentent les effets globaux de chaque variable et de l'interaction de ces variables sur la concentration. On constate que chaque variable a un effet significatif sur la concentration (p<0,05). Les p-valeurs de ces tests sont indiquées dans la colonne (Pr(>Chisq)).
+```{r message=F}
+fit1 <- lmerTest::lmer(log(Concentration) ~ Concentration_DMI_factor*Activation + (1|Donneur), data)
+# ggResidpanel::resid_panel(fit1)
+car::Anova(fit1)
+```
+
+#### post hoc Activation
+Ici, nous comparons l'effet de la variable 'Activation' sur la concentration en ajustant pour la concentration DMI. \
+Nous observons une différence significative globale ainsi qu'à chaque niveau de concentration DMI entre l'activation IFNg+LPS et NS/IL-4. La concentration pour l'activation IFNg+LPS est nettement plus élevée que pour les deux autres activations. De plus, nous remarquons des différences significatives plus légères pour les activations IL-4 et NS aux concentrations DMI 0 et 200 (p = 0,01 et 0,037), et pas pour la concentration DMI 100 (p=0,09).
+```{r}
+comparaison <- emmeans(fit1, pairwise ~ Activation|Concentration_DMI_factor)
+comparaison$contrasts
+```
+
+#### post hoc Concentration_DMI
+Ensuite, on compare l'effet de la variable 'Concentration DMI' sur la concentration pour chaque activation. On observe un effet global et significatif important entre chaque niveau de concentration DMI pour l'activation IFNg+LPS, où la concentration diminue à mesure que la concentration DMI augmente.
+\
+Cependant, cet effet se manifeste différemment pour les deux autres activations. Nous constatons seulement un effet significatif entre les niveaux 0 et 200 de la concentration DMI (p = 0,015 et 0,022), mais pas avec le niveau intermédiaire 100.
+```{r}
+emm2 <- emmeans(fit1, pairwise ~ Concentration_DMI_factor|Activation)
+contrasts <- list("0 vs 100" = c(1, -1, 0),
+                  "100 vs 200" = c(0, 1, -1),
+                  "0 vs 200" = c(1, 0, -1))
+contrast(emm2, contrasts)
+```
+
+#### Vérification des hypothèses
+Le QQ plot des résidus valide les hypothèses lorsque les points sont approximativement alignés le long d'une ligne droite, ce qui indique que les résidus suivent une distribution normale. Cela confirme que le modèle linéaire est approprié pour les données. \
+L'histogramme des résidus confirme l'hypothèse de normalité lorsque la distribution des résidus est centrée autour de zéro et symétrique, ce qui suggère qu'ils suivent une distribution normale. \
+L'hypothèse d'hétéroscédasticité est confirmée par le "residual plot", les résidus standardisés semblent uniformément distribués autour de zéro et compris entre -2 et 2.
+```{r}
+ggResidpanel::resid_panel(fit1, plots = c("resid", "qq", "hist"), nrow = 1)
+```
+
+
+### Figure finale
+Pour conclure, voici la figure résumant le premier modèle. Elle présente, pour chaque concentration DMI et chaque activation, la valeur moyenne marginale estimée du logarithme de la concentration, ainsi que les barres d'intervalle de confiance à 95 % qui l'accompagnent.
+```{r}
+interactions::cat_plot(fit1,
+                       pred = "Concentration_DMI_factor",
+                       modx = "Activation", colors = c("black", "gray40", "gray70"),
+                       interval = TRUE,
+                       y.label = "Estimated Marginal Mean log(Concentration)",
+                       x.label = "Concentration DMI",
+                       legend.main = "Activation:",
+                       point.shape = TRUE,
+                       pred.point.size = 5,
+                       dodge.width = .3,
+                       errorbar.width = .25,
+                       geom = "line") +
+  theme_classic()+
+  theme(legend.key.width = unit(2, "cm"),
+        legend.background = element_rect(color = "Black"),
+        legend.position = c(1, 0.69),
+        legend.justification = c(1.1, -0.1)) +
+  scale_y_continuous(breaks = seq(from = 0, to = 10, by = 1))
+```
+
+
+
+## Modélisation 2
+On modélise la relation entre l'activation et la concentration DMI (traitée en continu) sur la variable 'concentration'. L'équation du modèle reste la même que précédemment :
+Concentration ~ Activation * Concentration_DMI + (1|Donneur)
+
+### Résultats {.tabset}
+#### Résultats globaux
+Même conclusions que dans la section précédente.
+```{r message=F}
+fit2 <- lmerTest::lmer(log(Concentration) ~ Concentration_DMI*Activation + (1|Donneur), data)
+# ggResidpanel::resid_panel(fit2)
+car::Anova(fit2)
+```
+
+#### post hoc Concentration DMI
+Dans un premier temps, on a testé l'existence d'un lien entre la concentration DMI et la concentration, ce qui revient à vérifier si la pente de la droite reliant les deux variables est différente de zéro. Pour chaque activation, la pente s'est avérée différente de zéro, avec une p-value associée au test inférieure à 0,05 %. Les valeurs de pente pour chaque activation sont les suivantes :
+
+- IFNg+LPS : -0.00927
+- IL-4 : -0.00194
+- NS : -0.00164
+
+Ensuite, on a testé s'il existait une différence entre les pentes, c'est-à-dire si la diminution de la concentration est plus prononcée pour une des activations par rapport aux autres. On a constaté que c'était le cas pour l'activation IFNg+LPS par rapport aux deux autres activations, IL-4 et NS. Cependant, il n'y a pas de différence significative entre les activations IL-4 et NS en termes de diminution de concentration.
+
+```{r}
+m <- emtrends(fit2, pairwise ~ Activation, var = "Concentration_DMI")
+test(m)
+```
+
+#### Vérification des hypothèses
+```{r}
+ggResidpanel::resid_panel(fit1, plots = c("resid", "qq", "hist"), nrow = 1)
+```
+
+### Figure finale {.tabset}
+Voici la figure qui résume cette section.
+
+#### Avec transformation inverse
+Dans cette première figure, j'ai utilisé les valeurs prédites de la concentration fournies par le modèle, et j'ai appliqué la fonction exponentielle pour obtenir des valeurs de concentration cohérentes avec les valeurs d'origine.
+```{r}
+effects::Effect(focal.predictors = c("Concentration_DMI","Activation"),  # variables involved in interactions
+                mod = fit2,
+                xlevels = list(Concentration_DMI = seq(from = 0, to = 200, by = 10))) %>% 
+  data.frame() %>% 
+  dplyr::mutate(fit = exp(fit)) %>% 
+  ggplot(aes(x = Concentration_DMI, y = fit, color = Activation))+
+  geom_line(aes(linetype = Activation, color = Activation))+
+  facet_wrap(~Activation, scale = "free")+
+  theme_classic()+
+  scale_color_jama()+
+  labs(x = "Concentration DMI",
+       y = "Valeurs prédites de la concentration après transformation")+
+  theme(legend.position = "bottom")
+
+```
+
+#### Sans transformation inverse
+```{r}
+interactions::interact_plot(fit2,
+              pred = Concentration_DMI,
+              modx = Activation)+
+  theme_classic()+
+  scale_color_jama()+
+  labs(x = "Concentration DMI")
+```
+
+# Etude de la variance
+
+### Méthode 
+L'ICC est un indicateur de la fiabilité ou de la concordance des mesures répétées dans le contexte d'un modèle mixte. Il est couramment utilisé pour évaluer la proportion de variance totale attribuée aux différences entre les sujets par rapport aux différences au sein du même sujet. L'ICC varie de 0 à 1, où :
+
+- ICC = 0 : Aucune concordance entre les mesures répétées. Toute la variation est attribuable aux différences au sein du même sujet (intra-sujet).
+- ICC = 1 : Parfaite concordance entre les mesures répétées. Toute la variation est attribuable aux différences entre les sujets (inter-sujet).
+
+### Résultat
+Dans notre cas :
+
+- "Unadjusted ICC: 0.032": C'est la valeur de l'ICC avant ajustement (unadjusted). Cette valeur nous indique la proportion de variance totale attribuée aux différences entre les sujets (inter-sujet) sans tenir compte d'autres facteurs. Une valeur de 0.032 signifie que seulement environ 3.2 % de la variance totale est due aux différences entre les sujets.
+- "Adjusted ICC: 0.541": C'est la valeur de l'ICC après ajustement (adjusted). L'ajustement ici fait référence à l'inclusion d'autres facteurs dans le modèle mixte qui pourraient expliquer la variance. La valeur ajustée de 0.541 indique que maintenant environ 54.1 % de la variance totale est attribuée aux différences entre les sujets, en tenant compte des autres facteurs présents dans votre modèle.
+
+\
+L'augmentation significative de l'ICC après ajustement suggère que les autres facteurs inclus dans le modèle mixte (comme la variable "condition" dans votre cas) expliquent une partie importante de la variation entre les sujets. Cela signifie que ces autres facteurs contribuent à expliquer pourquoi certaines personnes ont des mesures différentes par rapport à d'autres.
+\
+En résumé, l'ICC ajusté (0.541) indique que plus de la moitié de la variance totale de votre outcome est attribuée aux différences entre les sujets, une fois que vous avez pris en compte les autres facteurs présents dans le modèle. Cela suggère que les différences entre les sujets ont un impact significatif sur votre variable continue d'intérêt.
+
+```{r}
+performance::icc(fit2)
+```
+
+### Figure
+```{r}
+vc <- lme4::VarCorr(fit2) %>% 
+  data.frame() 
+
+pie(x = vc$vcov,
+    labels = vc$grp)
+```
+
+
+
+# Figure Finale
+```{r}
+data1 <- data %>% 
+  dplyr::group_by(Donneur, Concentration_DMI_factor, Activation) %>% 
+  dplyr::summarise(Concentration = log(mean(Concentration, na.rm = TRUE))) %>%
+  dplyr::mutate(Condition = paste0(Activation, sep = "_", Concentration_DMI_factor) %>% 
+                  factor)
+data1$Condition <- factor(data1$Condition, levels = c("IFNg+LPS_0", "IFNg+LPS_100", "IFNg+LPS_200", "NS_0", "NS_100", "NS_200", "IL-4_0", "IL-4_100", "IL-4_200"))
+data1$Activation <- factor(data1$Activation, levels = c("IFNg+LPS", "NS", "IL-4"))
+```
+
+```{r}
+std <- function(x) sd(x)/sqrt(length(x))
+
+data1 %>%
+  dplyr::group_by(Activation, Concentration_DMI_factor, Condition) %>%
+  dplyr::summarise(Mean = mean(Concentration, na.rm = TRUE), 
+                   se = std(Concentration)) %>%
+  dplyr::mutate(Concentration_DMI = as.numeric(as.character(Concentration_DMI_factor))) %>% 
+  dplyr::mutate(Concentration_DMI = ifelse(Activation %in% "IFNg+LPS", Concentration_DMI + 10, Concentration_DMI)) %>% 
+  dplyr::mutate(Concentration_DMI = ifelse(Activation %in% "NS", Concentration_DMI + 360, Concentration_DMI)) %>% 
+  dplyr::mutate(Concentration_DMI = ifelse(Activation %in% "IL-4", Concentration_DMI + 710, Concentration_DMI)) %>% 
+  ggplot(aes(x = Concentration_DMI, y = Mean, fill = Activation))+
+  geom_bar(stat = "identity", position = "dodge", width = 85)+
+  geom_errorbar(aes(ymin=Mean-se, ymax=Mean+se), width=1, size=0.5)+
+  theme_classic()+
+  scale_y_continuous(expand = c(0,0), limits = c(0,12.6))+
+  scale_x_discrete(expand = c(0.01,0), limits = c(10, 110, 210, 360, 460, 560, 710, 810, 910), labels = c("0", "100", "200", "0", "100", "200", "0", "100", "200"))+
+  scale_fill_manual(values = c("darkorange1", "gray40", "forestgreen"))+
+  geom_signif(
+    y_position = c(11, 12, 10), xmin = c(110, 110, 460), xmax = c(460, 810, 810),
+    annotation = c("***", "***", "*"), tip_length = 0, size = 0.7)+
+  geom_signif(
+    y_position = c(8, 7.5, 9), xmin = c(10, 110, 10), xmax = c(110, 210, 210),
+    annotation = c("***", "***", "***"), tip_length = 0.01)+
+  geom_signif(
+    y_position = c(3.5, 3.5), xmin = c(360, 710), xmax = c(560, 910),
+    annotation = c("*", "*"), tip_length = 0.01)+
+  theme(legend.position = "bottom")+
+  labs(x = "Concentration DMI (µM)",
+       y = "log(Concentration) IL-6 (pg/mL)")
+```
+

@@ -1,0 +1,21 @@
+# Installer et charger la bibliothèque corrplot si ce n'est pas déjà fait
+# install.packages("corrplot")
+library(corrplot)
+
+# Créer une matrice de corrélation exemple
+matrice_correlation <- cor(mtcars)
+
+# Personnaliser les couleurs pour refléter votre préférence (rouge positif, bleu négatif)
+mes_couleurs <- colorRampPalette(c("blue", "white", "red"))(200)
+
+# Créer le graphique corrplot en inversant les couleurs de la légende
+corrplot(matrice_correlation, method = "color", col = mes_couleurs, order = "hclust",
+         addCoef.col = "black", # Couleur du texte des coefficients
+         tl.col = "black", # Couleur des étiquettes de lignes/colonnes
+         tl.srt = 45, # Angle d'inclinaison des étiquettes
+         diag = FALSE, # N'affiche pas la diagonale
+         mar = c(0, 0, 1, 0), # Ajustement des marges
+         title = "Matrice de Corrélation de mtcars") # Titre du graphique
+
+# Créer une légende inversée (rouge positif, bleu négatif)
+legend("bottomright", legend = c("Corr. Pos", "Corr. Neg"), fill = c("red", "blue"), title = "Correlation")

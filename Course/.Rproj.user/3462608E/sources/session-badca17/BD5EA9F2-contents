@@ -1,0 +1,65 @@
+library(tidyverse)
+library(openxlsx)
+library(ggsci)
+library(ggpubr)
+library(interactions)
+library(emmeans)
+library(effects)
+library(performance)
+library(lme4)
+library(lmerTest)
+library(corrplot)
+library(RColorBrewer)
+
+df <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_MS_OP/Data/data_immuno.xlsx", na.strings = c("NA"))
+df <- df %>% 
+  dplyr::mutate(Time.to.cross = rowMeans(select(., starts_with("Time")), na.rm = T)) %>% 
+  dplyr::mutate(Nb_error = rowMeans(select(., starts_with("Nb")), na.rm = T)) %>% 
+  dplyr::mutate(Front = rowMeans(select(., starts_with("Front")), na.rm = T)) %>% 
+  dplyr::mutate(All = rowMeans(select(., starts_with("All")), na.rm = T)) %>% 
+  dplyr::select(GROUP, Donnor, Mouse, Latency, Speed, olig2, olig_cc1, MIG_MOG, MIG_FTI, Time.to.cross, Nb_error, Front, All, Size) %>% 
+  dplyr::mutate(Time.to.cross = Time.to.cross %>% as.numeric()) %>% 
+  dplyr::mutate(Nb_error = Nb_error %>% as.numeric()) %>% 
+  dplyr::mutate(Front = Front %>% as.numeric()) %>% 
+  dplyr::mutate(All = All %>% as.numeric())
+
+
+M <- df %>% 
+  dplyr::select(Speed, olig_cc1, olig2, Size, MIG_FTI, MIG_MOG, Nb_error, Front) %>% 
+  cor(method = "pearson",
+      use = "pairwise.complete.obs")
+
+colnames(M) <- c("Speed of conduction m/s", "% Olig2+CC1+/Olig2+ cells",  "nb of Olig2+ cells/mm2",
+                 "size mm3", "%MIG+FTL+/MIG+ cells", "%MIG+MOG+/MIG+ cells", "Nb error", "Front limb strength")
+rownames(M) <- colnames(M)
+
+testRes <- df %>% 
+  dplyr::select(Speed, olig_cc1, olig2, Size, MIG_FTI, MIG_MOG, Nb_error, Front) %>% 
+  corrplot::cor.mtest(conf.level = 0.95)
+
+diag(testRes$p) <- 1
+mes_couleurs <- colorRampPalette(c("blue", "white", "red"))(100)
+
+corrplot(M, number.cex = 0.75, method = 'color', col = mes_couleurs, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig',
+         diag = TRUE, tl.col="black", pch.cex = 1.5)
+
+
+# Jpeg
+jpeg("/home/baptiste.criniere/Documents/PB_MS_OP/Correlation/Correlation.jpeg", width = 800, height = 600, bg = "transparent")
+
+# Créer votre plot
+corrplot(M, number.cex = 0.75, method = 'color', col = mes_couleurs, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig',
+         diag = TRUE, tl.col="black", pch.cex = 1.5)
+
+# Fermer le fichier JPEG
+dev.off()
+
+# Ouvrir un fichier TIFF avec un fond transparent
+tiff("/home/baptiste.criniere/Documents/PB_MS_OP/Correlation/Correlation.tiff", width = 800, height = 600, bg = "transparent")
+
+# Recréer votre plot (si nécessaire)
+corrplot(M, number.cex = 0.75, method = 'color', col = mes_couleurs, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig',
+         diag = TRUE, tl.col="black", pch.cex = 2, tl.cex = 2, addgrid = TRUE)
+
+# Fermer le fichier TIFF
+dev.off()

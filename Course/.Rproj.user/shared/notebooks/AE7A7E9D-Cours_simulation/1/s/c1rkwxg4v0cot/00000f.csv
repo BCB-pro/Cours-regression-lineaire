@@ -1,0 +1,10 @@
+"0","data %>% 
+  ggplot(aes(x = X, y = Y))+
+  geom_smooth(method = ""lm"", se = FALSE, color = ""black"", size = 2)+
+  theme_classic()+
+  scale_x_continuous(limits = c(145,205), n.breaks = 10)+
+  scale_y_continuous(limits = c(145,205), n.breaks = 10)
+"
+"2","Avis : Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+Please use `linewidth` instead."
+"0",""

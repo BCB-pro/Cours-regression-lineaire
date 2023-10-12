@@ -1,0 +1,167 @@
+# libraries
+library(ggsci)
+library(rstatix)
+
+# Simulation des données
+## Seed
+set.seed(123456)
+## Variables indépendantes
+Mutation <- rep(factor(c("m/m", "m/f", "f/f", "m/s", "f/s", "s/s"), levels = c("m/m", "m/f", "f/f", "m/s", "f/s", "s/s")), each = 100)
+Age_at_onset <- round(unlist(lapply(c(36, 34, 33, 30, 29, 27), function(x) rnorm(100, mean = x, sd = 5))))
+# Disease_duration <- round(runif(n = 600, min = 0, max = 40))
+Disease_duration <- 40 - 1/2 * Age + rnorm(600, 0, sd = 8.5)
+Disease_duration <- round(abs(Disease_duration))
+Sex <- sample(factor(c("Male", "Female")), 600, replace = TRUE)
+Age <- Disease_duration + Age_at_onset
+
+## Coefficient
+intercept <- 10
+coeff_duration_A <- 0.75
+coeff_duration_B <- 0.5
+coeff_Age_at_onset_at_onset <- 0.5
+
+## Calcul de l'UPDRS
+UPDRS <- intercept + 
+  coeff_duration_A  *  Disease_duration * (Mutation %in% c("m/m", "m/f", "f/f")) +
+  coeff_duration_B  *  Disease_duration * (Mutation %in% c("m/s", "f/s", "s/s")) +
+  coeff_Age_at_onset_at_onset * Age +
+  rnorm(n, mean = 0, sd = 5)
+
+## Data
+data <- data.frame(Mutation, Age_at_onset, Sex, Disease_duration, Age, UPDRS)
+
+
+
+# Figure 1 : table 1
+data %>% 
+  dplyr::select(-UPDRS) %>% 
+  furniture::table1(Mutation, 
+                    "Age_at_onset at onset" = Age_at_onset,
+                     "Disease duration" = Disease_duration,
+                    Age,
+                    splitby =~ Sex,
+                    test = TRUE)
+
+
+# Lien entre la mutation et l'âge at onset
+## Figure sur les données brutes
+aov <- data %>% anova_test(Age_at_onset ~ Mutation)
+pwc <- df %>% tukey_hsd(Age_at_onset ~ Mutation)
+data %>% 
+  ggplot(aes(x = Mutation, y = Age_at_onset, color = Mutation))+
+  stat_boxplot(geom ='errorbar', width = 0.4, lwd = 0.85)+
+  geom_boxplot(outlier.shape = NA, lwd = 0.85)+
+  geom_jitter(alpha = 0.45, shape = 1, size = 1)+
+  stat_summary(aes(fill = Mutation), fun = mean, geom = "point", shape = 23, size = 3, position = position_dodge(width=0.75)) +
+  theme_classic()+
+  scale_color_aaas()+
+  scale_fill_aaas()+
+  labs(subtitle = get_test_label(aov, detailed = TRUE),
+       x = "",
+       y = "Age_at_onset at onset (in years)")+
+  theme(legend.position = "none",
+        axis.line = element_line(size = 1, color = "black"),
+        axis.text = element_text(face = "bold", size = 11),
+        axis.title = element_text(face = "bold", size = 13))
+
+## Modélisation
+model1 <- lm(Age_at_onset ~ Mutation, data = data)
+car::Anova(model1)
+
+
+
+# Lien entre mutation et disease duration
+aov <- data %>% anova_test(Disease_duration ~ Mutation)
+data %>% 
+  ggplot(aes(x = Mutation, y = Disease_duration, color = Mutation))+
+  stat_boxplot(geom ='errorbar', width = 0.4, lwd = 0.85)+
+  geom_boxplot(outlier.shape = NA, lwd = 0.85)+
+  geom_jitter(alpha = 0.45, shape = 1, size = 1)+
+  stat_summary(aes(fill = Mutation), fun = mean, geom = "point", shape = 23, size = 3, position = position_dodge(width=0.75))+
+  scale_color_aaas()+
+  labs(subtitle = get_test_label(aov, detailed = TRUE),
+       x = "",
+       y = "Disease duration (in years)")+
+  theme_classic()+
+  theme(legend.position = "none",
+        axis.line = element_line(size = 1, color = "black"),
+        axis.text = element_text(face = "bold", size = 11),
+        axis.title = element_text(face = "bold", size = 13))
+
+# Age et mutation
+aov <- data %>% anova_test(Age ~ Mutation)
+data %>% 
+  ggplot(aes(x = Mutation, y = Age, color = Mutation))+
+  stat_boxplot(geom ='errorbar', width = 0.4, lwd = 0.85)+
+  geom_boxplot(outlier.shape = NA, lwd = 0.85)+
+  geom_jitter(alpha = 0.45, shape = 1, size = 1)+
+  stat_summary(aes(fill = Mutation), fun = mean, geom = "point", shape = 23, size = 3, position = position_dodge(width=0.75))+
+  scale_color_aaas()+
+  labs(subtitle = get_test_label(aov, detailed = TRUE),
+       x = "",
+       y = "Age (in years)")+
+  theme_classic()+
+  theme(legend.position = "none",
+        axis.line = element_line(size = 1, color = "black"),
+        axis.text = element_text(face = "bold", size = 11),
+        axis.title = element_text(face = "bold", size = 13))
+
+# Lien entre Age_at_onset et disease duration
+data %>% 
+  ggplot(aes(x = Age_at_onset, y = Disease_duration))+
+  geom_jitter(alpha = 0.5, size = 2)+
+  geom_smooth(method = "lm", se = FALSE, color = "darkred", size = 2)+
+  theme_classic()+
+  labs(x = "Age_at_onset at onset (in years)",
+       y = "Disease duration (in years)")+
+  theme(legend.position = "none",
+        axis.line = element_line(size = 1, color = "black"),
+        axis.text = element_text(face = "bold", size = 11),
+        axis.title = element_text(face = "bold", size = 13))
+
+
+# Figure finale
+data %>% 
+  dplyr::mutate(Age_at_onset_discrete = cut(Age, breaks = c(0, 40, 43, 46, 62))) %>% 
+  dplyr::mutate(Mutation_bis = ifelse(Mutation %in% c("m/s", "f/s", "s/s"), "senescence", "non-senescence")) %>% 
+  ggplot(aes(x = Disease_duration, y = UPDRS, color = Mutation_bis))+
+  geom_point(alpha = 0.45)+
+  geom_smooth(aes(group = Mutation_bis), method = "lm", se = FALSE, size = 1.5)+
+  facet_wrap(~ Age_at_onset_discrete, nrow = 1)+
+  theme_classic()+
+  scale_color_aaas()+
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.line = element_line(color = "black"),
+        axis.text = element_text(face = "bold", size = 11),
+        axis.title = element_text(face = "bold", size = 13))+
+  labs(x = "Disease duration (in years)",
+       y = "UPDRS on")
+
+# Modélisation
+model2 <- lm(UPDRS ~ Disease_duration*Mutation + Age, data = data)
+Anova(model2)  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,2 @@
+"0","data <- read.table(""/home/baptiste.criniere/Documents/Trainings/Linear regression/Simulation/Data/Exercice1.txt"")"
+"0","head(data)"

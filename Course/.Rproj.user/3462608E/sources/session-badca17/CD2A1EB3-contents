@@ -1,0 +1,100 @@
+library(tidyverse)
+library(ggh4x)
+library(ggsci)
+library(ggsignif)
+# Répartition données de l'INSEE
+data <- read.csv2("/home/baptiste.criniere/Documents/Question/Naissance/valeurs_mensuelles.csv", sep = ",")
+data[c("Year", "Month")] <- stringr::str_split_fixed(data$Periode, '-', 2)
+
+data <- data %>% 
+  dplyr::select(-Periode, Year, Month, Naissances) %>% 
+  dplyr::mutate(Year = Year %>% factor) %>% 
+  dplyr::mutate(Month = Month %>% factor %>% 
+                  forcats::fct_recode("January" = "01", "February" = "02", "March" = "03", "April" = "04",
+                                      "May" = "05", "June" = "06", "July" = "07", "August" = "08", 
+                                      "September" = "09", "October" = "10", "November" = "11", "December" = "12"))
+
+data <- data %>% 
+  dplyr::group_by(Year) %>% 
+  dplyr::mutate(Freq = sum(Naissances)) %>% 
+  dplyr::mutate(Freq = Naissances/Freq) %>% 
+  dplyr::mutate(Year = Year %>% as.character %>% as.numeric)
+
+color <- c("darkorange3", "skyblue", "darkorange3", "skyblue", "darkorange3", "skyblue", "darkorange3",
+           "darkorange3", "skyblue", "darkorange3","skyblue", "darkorange3")
+strip <- strip_themed(background_x = elem_list_rect(fill = color))
+
+data %>% 
+  ggplot(aes(x = Year, y = Freq))+
+  geom_point(alpha = 0.75, size = 0.75)+
+  geom_line(color = "darkblue")+
+  geom_smooth(se = FALSE)+
+  geom_hline(yintercept = mean(data$Freq), color = "darkred")+
+  facet_wrap2(Month~., nrow = 3, strip = strip)+
+  theme_bw()
+
+
+# Base de données des patients
+# On supprime la naissance de 2023
+data_born <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/Question/Naissance/DOB for stat.xlsx", sheet = 1, detectDates = TRUE) %>% 
+  dplyr::mutate(Year = year(DOB) %>% factor) %>% 
+  dplyr::mutate(Month = month(DOB) %>% factor %>% 
+                  forcats::fct_recode("January" = "1", "February" = "2", "March" = "3", "April" = "4",
+                                      "May" = "5", "June" = "6", "July" = "7", "August" = "8", 
+                                      "September" = "9", "October" = "10", "November" = "11", "December" = "12")) %>% 
+  dplyr::select(Year, Month) %>% 
+  dplyr::filter(Year != "2023")
+
+data_summary <- data_born %>% 
+  dplyr::group_by(Month) %>% 
+  dplyr::summarise(N = n()) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(Freq = N/sum(N)) 
+  
+# Calcul des proportions ajustées
+Proportion <- data.frame(Month = factor(levels(data_born$Month), levels = levels(data_born$Month)), Proportion = as.numeric(rep(0,12)))
+
+Prop_function <- function(Mois){
+  data_bis <- data_born %>% 
+    dplyr::filter(Month == Mois) %>% 
+    dplyr::group_by(Year, Month) %>% 
+    dplyr::summarise(N = n()) %>% 
+    dplyr::ungroup() %>% 
+    dplyr::mutate(S = N/sum(N)) %>% 
+    dplyr::mutate(Year = Year %>% as.character %>% as.numeric) %>% 
+    dplyr::left_join(data, by = c("Year", "Month")) %>% 
+    dplyr::select(-Naissances) %>% 
+    dplyr::summarise(P = sum(S*Freq))
+  return(data_bis[1,1])
+}
+
+Proportion[,2] <-  unlist(lapply(levels(data_born$Month), function(x) Prop_function(x)))
+  
+# Fusion des deux bases
+data_summary <- data_summary %>% 
+  dplyr::left_join(Proportion)
+
+prop.test(19,327,data_summary$Proportion[3])
+
+data_summary$Pvalue <- unlist(lapply(1:12, function(i) prop.test(data_summary$N[i], 327, data_summary$Proportion[i])$p.value))
+
+
+# Figure
+data_summary %>% 
+  tidyr::pivot_longer(cols = c("Freq", "Proportion"), names_to = "M", values_to = "Prop") %>% 
+  select(Month, M, Prop) %>% 
+  dplyr::mutate(M = M %>% factor %>% 
+                  forcats::fct_recode("Cohort" = "Freq", "Population" = "Proportion")) %>% 
+  ggplot(aes(x = Month, y = Prop, fill = M))+
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.85)+
+  geom_signif(y_position = 0.112, xmin = 1.75, xmax = 2.25, annotation = "*")+
+  theme_classic()+
+  scale_y_continuous(expand = c(0,0), limits = c(0,0.125))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom",
+        axis.title.x = element_blank())+
+  labs(y = "Frequency",
+       fill = "",
+       subtitle = "Comparison of birth frequency by month between the cohort and the general population")+
+  scale_fill_jama()
+

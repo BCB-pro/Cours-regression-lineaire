@@ -1,0 +1,132 @@
+---
+title: "Corrélation"
+author: "Baptiste Crinière-Boizet"
+output:
+  html_document:
+    theme: united
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(fig.align = "center")
+knitr::opts_chunk$set(out.width="1000%")
+```
+
+```{r}
+library(tidyverse)
+library(openxlsx)
+library(ggsci)
+library(ggpubr)
+library(interactions)
+library(emmeans)
+library(effects)
+library(performance)
+library(lme4)
+library(lmerTest)
+library(corrplot)
+library(RColorBrewer)
+```
+
+```{r data management}
+df <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_MS_OP/Data/data_immuno.xlsx", na.strings = c("NA"))
+df <- df %>% 
+  dplyr::mutate(Time.to.cross = rowMeans(select(., starts_with("Time")), na.rm = T)) %>% 
+  dplyr::mutate(Nb_error = rowMeans(select(., starts_with("Nb")), na.rm = T)) %>% 
+  dplyr::mutate(Front = rowMeans(select(., starts_with("Front")), na.rm = T)) %>% 
+  dplyr::mutate(All = rowMeans(select(., starts_with("All")), na.rm = T)) %>% 
+  dplyr::select(GROUP, Donnor, Mouse, Latency, Speed, olig2, olig_cc1, MIG_MOG, MIG_FTI, Time.to.cross, Nb_error, Front, All) %>% 
+  dplyr::mutate(Time.to.cross = Time.to.cross %>% as.numeric()) %>% 
+  dplyr::mutate(Nb_error = Nb_error %>% as.numeric()) %>% 
+  dplyr::mutate(Front = Front %>% as.numeric()) %>% 
+  dplyr::mutate(All = All %>% as.numeric())
+
+
+M <- df %>% 
+  dplyr::select(olig2, olig_cc1, MIG_MOG, MIG_FTI, Time.to.cross, Nb_error, Front, All, Speed, Latency) %>% 
+  cor(method = "pearson",
+      use = "pairwise.complete.obs")
+
+colnames(M) <- c("Nb olig2/mm²", "%Olig2+CC1+/Olig2+", "%MIG+MOG+/MIG+", "%MIG+FTL+/MIG+",
+                 "Time to cross", "Number of errors", "Front limb", "All limb", "Speed", "Latency")
+rownames(M) <- c("Nb olig2/mm²", "%Olig2+CC1+/Olig2+", "%MIG+MOG+/MIG+", "%MIG+FTL+/MIG+",
+                 "Time to cross", "Number of errors", "Front limb", "All limb", "Speed", "Latency")
+
+testRes <- df %>% 
+  dplyr::select(olig2, olig_cc1, MIG_MOG, MIG_FTI, Time.to.cross, Nb_error, Front, All, Speed, Latency) %>% 
+  corrplot::cor.mtest(conf.level = 0.95)
+```
+
+# Figure 1
+```{r}
+M %>% corrplot::corrplot(number.cex = 0.75, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', tl.col="black", pch.cex = 1.5)
+```
+
+# Figure 2 : sans la diagonale
+```{r}
+# Version 3
+M %>% corrplot::corrplot(number.cex = 0.75, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', diag = FALSE, tl.col="black",
+                         pch.cex = 1.5)
+```
+
+# Figure 3 : sans la diagonale et sans le bas
+```{r}
+# Version 3
+M %>% corrplot::corrplot(number.cex = 0.75, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', diag = FALSE,
+                         type = 'upper', tl.col="black",
+                         pch.cex = 1.5)
+```
+
+
+# Figure 4
+```{r}
+corrplot(M, method = 'color', p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', tl.col="black",
+         pch.cex = 1.5)
+```
+
+# Figure 5 sans la diagonale
+```{r}
+corrplot(M, number.cex = 0.75, method = 'color', p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig',
+         diag = FALSE, tl.col="black",
+         pch.cex = 1.5)
+```
+
+
+# Figure 6 sans la diagonale et sans le bas
+```{r}
+corrplot(M, number.cex = 0.75, method = 'color', p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig',
+         diag = FALSE, type = 'upper', tl.col="black",
+         pch.cex = 1.5)
+```
+
+
+# Figure 7 en inversant les couleurs
+```{r}
+mes_couleurs <- colorRampPalette(c("blue", "white", "red"))(200)
+corrplot(M, number.cex = 0.75, method = 'color', col = mes_couleurs, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig',
+         diag = FALSE, tl.col="black", 
+         pch.cex = 1.5)
+```
+
+
+
+
+
+
+
+
+# Last figure
+
+```{r}
+mes_couleurs <- colorRampPalette(c("blue", "white", "red"))(200)
+corrplot(M, number.cex = 0.75, method = 'color', col = mes_couleurs, p.mat = testRes$p, sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig',
+         diag = FALSE, tl.col="black", 
+         pch.cex = 1.5)
+```
+
+
+

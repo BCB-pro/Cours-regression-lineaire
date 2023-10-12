@@ -1,0 +1,17 @@
+"0","interactions::interact_plot(model2,
+                            pred = ""Disease_duration"",
+                            modx = ""Mutation_bis"",
+                            mod2 = Age)+
+  theme_classic()+
+  scale_color_aaas()+
+  theme(legend.position = ""bottom"",
+        legend.title = element_blank(),
+        axis.line = element_line(color = ""black""),
+        axis.text = element_text(face = ""bold"", size = 8),
+        axis.title = element_text(face = ""bold"", size = 10))+
+  labs(x = ""Disease Duration"",
+       y = ""UPDRS on"")
+"
+"2","Avis : Disease_duration and Mutation_bis and Age are not included in an interaction with one another in the model."
+"2","[38;5;232mScale for [32mcolour[38;5;232m is already present.
+Adding another scale for [32mcolour[38;5;232m, which will replace the existing scale.[39m"

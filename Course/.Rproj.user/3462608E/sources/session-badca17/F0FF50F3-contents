@@ -1,0 +1,44 @@
+library(ggpubr)
+df <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_MS_OP/Data/data_immuno.xlsx")
+
+
+df <- df %>% 
+  dplyr::mutate(Time.to.cross = rowMeans(select(., starts_with("Time")), na.rm = T)) %>% 
+  dplyr::mutate(Nb_error = rowMeans(select(., starts_with("Nb")), na.rm = T)) %>% 
+  dplyr::mutate(Front = rowMeans(select(., starts_with("Front")), na.rm = T)) %>% 
+  dplyr::mutate(All = rowMeans(select(., starts_with("All")), na.rm = T)) %>% 
+  dplyr::select(GROUP, Donnor, Mouse, Latency, Speed, olig2, olig_cc1, MIG_MOG, MIG_FTI, Time.to.cross, Nb_error, Front, All)
+
+
+df %>% 
+  dplyr::select(olig2, olig_cc1, MIG_MOG, MIG_FTI) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot(number.cex = 1.5, addCoef.col = 1)
+
+df %>% 
+  dplyr::select(Time.to.cross, Nb_error, Front, All) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot(number.cex = 1.5, addCoef.col = 1)
+
+
+df %>% 
+  dplyr::select(Latency, Speed) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot(number.cex = 1.5, addCoef.col = 1)
+
+
+df %>% 
+  dplyr::select(olig2, olig_cc1, MIG_MOG, MIG_FTI, Time.to.cross, Nb_error, Front, All) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot(number.cex = 1.5, addCoef.col = 1)
+
+
+df %>% 
+  dplyr::select(Latency, Speed, olig2, olig_cc1, MIG_MOG, MIG_FTI, Time.to.cross, Nb_error, Front, All) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot(number.cex = 1.5, addCoef.col = 1)

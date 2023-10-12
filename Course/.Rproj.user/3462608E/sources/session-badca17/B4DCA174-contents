@@ -1,0 +1,464 @@
+---
+title: "Analyse EEG micro"
+author: "Baptiste Crinière-Boizet"
+output:
+  html_document:
+    theme: united
+    toc: true
+    toc_float: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+library(tidyverse)
+library(furniture)
+library(openxlsx)
+library(lmerTest)
+library(lme4)
+library(performance)
+library(rstatix)
+library(ggsignif)
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+data <- data.frame(Duree_inter = NULL, Numero_crise = NULL, Statut = NULL, Numero_cluster =  NULL,
+                   Duree_crise = NULL, Puissance_pre = NULL, Puissance_post = NULL, Freq = NULL, ID = NULL)
+
+for (i in 1:15){
+  data_bis <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_CC_MLG_2/Data/EEG/EEG_micro2.xlsx", sheet = i, na.strings = c("NA", "ND"))
+  data_bis$ID <- i
+  names(data_bis) <- c("Duree_inter", "Numero_crise", "Statut", "Numero_cluster", "Duree_crise", "Puissance_pre",
+                       "Puissance_post", "Freq", "ID")
+  data <- rbind(data, data_bis)
+}
+
+data <- data %>% 
+  dplyr::mutate(Duree_inter = Duree_inter %>% as.numeric) %>% 
+  dplyr::mutate(Statut = Statut %>% factor) %>% 
+  dplyr::mutate(Duree_crise = Duree_crise %>% as.numeric) %>% 
+  dplyr::mutate(Puissance_pre = Puissance_pre %>% as.numeric) %>% 
+  dplyr::mutate(Puissance_post = Puissance_post %>% as.numeric) %>% 
+  dplyr::mutate(Freq = Freq %>% as.numeric) %>% 
+  dplyr::mutate(ID = ID %>% factor) %>% 
+  dplyr::mutate(Delta = Puissance_pre - Puissance_post) 
+```
+
+# Analyse Micro
+## Table descriptive globale
+```{r echo=FALSE, warning=FALSE, message=FALSE, width = 9}
+resume <- data %>% 
+  dplyr::group_by(Statut) %>% 
+  dplyr::summarise(Duree_Intercrise = mean(Duree_inter, na.rm = TRUE),
+                   DC = mean(Duree_crise, na.rm = TRUE),
+                   Delta_puissance = mean(Delta, na.rm = TRUE),
+                   Frequence = mean(Freq, na.rm = TRUE)) 
+
+resume %>% 
+  mutate_at(2:5, funs(round(., 2))) %>% 
+  DT::datatable(rownames = F,
+                extensions = "Buttons",
+                options = list(pageLength = 15,
+                             dom = "Blfrtip",
+                             buttons = c("copy", "csv", "excel")))
+```
+
+
+## Table descriptive par sujet
+```{r echo=FALSE, warning=FALSE, message=FALSE, width = 9}
+resume <- data %>% 
+  dplyr::filter(!is.na(Statut)) %>% 
+  dplyr::group_by(ID, Statut) %>% 
+  dplyr::summarise(DC = mean(Duree_crise, na.rm = TRUE),
+                   DC_count = sum(!is.na(Duree_crise)),
+                   Delta_puissance = mean(Delta, na.rm = TRUE),
+                   Delta_puissance_count = sum(!is.na(Delta)),
+                   Frequence = mean(Freq, na.rm = TRUE),
+                   Freq_count = sum(!is.na(Freq)))
+
+resume %>% 
+  mutate_at(3:8, funs(round(., 3))) %>% 
+  DT::datatable(rownames = F,
+                extensions = "Buttons",
+                options = list(pageLength = 15,
+                             dom = "Blfrtip",
+                             buttons = c("copy", "csv", "excel")))
+```
+
+## Durée des crises selon le type
+La part de la variance de la durée des crises qui est expliquée (dûe) à des différences entre les patients est de 70%. Ce qui est beaucoup. \
+Il y a un effet du type de crise sur sa durée (pvaleur < 0.001). On observe qu'il existe une différence statistiquement significative entre la durée des crises en cluster, et la durée des crises cyclique et acyclyclique (pvaleur < 0.001). Une crise en cluster est en moyenne plus courte qu'une crise cylique et qu'une crise acyclique, après avoir avoir enlever l'effet individuel. On observe également une légère différence (pvaleur = 0.025) les crises cyclique sont légèrement plus longues en moyenne que les crises acycliques, après avoir enlever l'effet individuel.
+
+```{r echo=FALSE, warning=FALSE, message=TRUE, fig.align='center'}
+resume %>% 
+  ggplot(aes(x = Statut, y = DC, fill = Statut))+
+  geom_boxplot(alpha = 0.7, outlier.shape = NA)+
+  geom_line(aes(group = ID, color = ID), alpha = 0.3, size = 1.1)+
+  geom_point(aes(color = ID), alpha = 0.8)+
+  scale_fill_brewer(palette = "Pastel1")+  
+  geom_signif(aes(y_position = 175, annotations="**"),comparisons = list(c("Acyclique", "Cluster")),
+              map_signif_level = TRUE)+
+  geom_signif(aes(annotations="***"),comparisons = list(c("Cyclique", "Cluster")),
+              map_signif_level = TRUE)+
+  geom_signif(aes(y_position = 195, annotations="*"),comparisons = list(c("Acyclique", "Cyclique")),
+              map_signif_level = TRUE)+
+  theme_bw()+
+  theme(legend.position = "none",
+        axis.title.x = element_blank())+
+  labs(y = "Durée crise")
+```
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='hide', fig.show='hide'}
+model <- lmerTest::lmer(log(Duree_crise) ~ Statut + (1|ID), data = data)
+model0 <- lmerTest::lmer(log(Duree_crise) ~ 1  + (1|ID), data = data)
+
+performance::icc(model0)
+Anova(model)
+summary(model)
+
+ggResidpanel::resid_panel(model)
+emmeans::emmeans(model, pairwise ~ Statut)
+
+p.adjust(c(0.003,0.0255,0.0001), method = "fdr")
+```
+
+## Delta de puissance selon le type de crise
+Il n'y pas de différence entre les delta de puissance des différents types de crise. \
+*Attention les ID numéro 1,2,10 a des valeurs extrêmes en puissance de l'ordre de 30-50, j'imagine qu'il s'agit d'erreur. J'ai construit un modèle sans ces valeurs extrêmes et le résultat est le même on n'observe pas de différences statistiquement significatives selon le statut de la crise.*
+```{r echo=FALSE, warning=FALSE, message=TRUE, fig.align='center'}
+resume %>% 
+  ggplot(aes(x = Statut, y = Delta_puissance, fill = Statut))+
+  geom_boxplot(alpha = 0.7, outlier.shape = NA)+
+  geom_line(aes(group = ID, color = ID), alpha = 0.3, size = 1.1)+
+  geom_point(aes(color = ID), alpha = 0.8)+
+  scale_fill_brewer(palette = "Pastel1")+ 
+  theme_bw()+
+  theme(legend.position = "none",
+        axis.title.x = element_blank())+
+  labs(y = "Delta puissance")
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='hide', fig.show='hide'}
+# Premier model
+model <- lmerTest::lmer(Delta ~ Statut + (1|ID), data = data)
+performance::icc(model)
+Anova(model)
+ggResidpanel::resid_panel(model)
+emmeans::emmeans(model, pairwise ~ Statut)
+
+# Second model sans les valeurs extrêmes
+# On remarque que l'id 10 est le seul a avoir des valeurs supérieur à 10.
+# je les supprime
+
+data1 <- data %>% 
+  dplyr::filter(Puissance_pre > 10 | Puissance_post > 10)
+
+data1 <- data %>% 
+  dplyr::filter(Puissance_pre < 10) %>% 
+  dplyr::filter(Puissance_post < 10)
+
+
+model <- lmerTest::lmer(Delta ~ Statut + (1|ID), data = data1)
+performance::icc(model)
+Anova(model)
+ggResidpanel::resid_panel(model)
+emmeans::emmeans(model, pairwise ~ Statut)
+```
+
+## Pic de fréquence selon le type de crise
+La part de la variance de la durée des crises qui est expliquée (dûe) à des différences entre les patients est de 23%.
+On observe une différence statistiquement significative entre les pics de fréquence des trois types de crises (pvalue < 0.001). On observe que les crises cluster ont un pic en moyenne inférieur à celui des crises acycliques, et que elles mêmes ont un pic inférieur à celui de crises cycliques.
+\
+*J'ai supprimé les crises pour lesquelles la fréquence était supérieure à 40.*
+```{r echo=FALSE, warning=FALSE, message=TRUE, fig.align='center'}
+resume %>% 
+  dplyr::filter(Frequence < 40) %>% 
+  ggplot(aes(x = Statut, y = log(Frequence), fill = Statut))+
+  geom_boxplot(alpha = 0.7)+
+  geom_line(aes(group = ID, color = ID), alpha = 0.3, size = 1.1)+
+  geom_point(aes(color = ID))+
+  geom_signif(aes(y_position = 3.7, annotations="***"),comparisons = list(c("Acyclique", "Cyclique")),
+              map_signif_level = TRUE)+
+  geom_signif(aes(y_position = 3.5, annotations="***"),comparisons = list(c("Acyclique", "Cluster")),
+              map_signif_level = TRUE)+
+  geom_signif(aes(annotations="***"),comparisons = list(c("Cyclique", "Cluster")),
+              map_signif_level = TRUE)+
+  scale_fill_brewer(palette = "Pastel1")+  
+  theme_bw()+
+  theme(legend.position = "none",
+        axis.title.x = element_blank())+
+  labs(y = "Peak frequency")
+```
+
+```{r echo=FALSE, results='hide', fig.show='hide', message=FALSE, warning=FALSE}
+data1 <- data %>% 
+  dplyr::filter(Freq < 40)
+ 
+model <- lmerTest::lmer(Freq ~ Statut + (1|ID), data = data1)
+performance::icc(model)
+Anova(model)
+ggResidpanel::resid_panel(model)
+emmeans::emmeans(model, pairwise ~ Statut)
+```
+
+## Première crise vs dernière crise d'un cluster
+On cherche à comparer pour les différents indicateurs ce qui se passe à la première crise d'un cluster avec ce que se passe avec la dernière crise du même cluster.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+# Data management
+data <- data.frame(Duree_inter = NULL, Numero_crise = NULL, Statut = NULL, Numero_cluster =  NULL,
+                   Duree_crise = NULL, Puissance_pre = NULL, Puissance_post = NULL, Freq = NULL, ID = NULL)
+
+# Associer à chaque crise d'un cluster son numéro
+for (i in 1:15){
+  data_bis <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_CC_MLG_2/Data/EEG/EEG_micro2.xlsx", sheet = i, na.strings = c("NA", "ND"))
+  data_bis$ID <- i
+  names(data_bis) <- c("Duree_inter", "Numero_crise", "Statut", "Numero_cluster", "Duree_crise", "Puissance_pre",
+                       "Puissance_post", "Freq", "ID")
+  id <- which(!is.na(data_bis$Numero_cluster))
+  
+  for (k in id){
+    l <- k + 1
+    while (is.na(data_bis$Numero_cluster[l]) & data_bis$Statut[l] %in% "Cluster"){
+      data_bis$Numero_cluster[l] <- data_bis$Numero_cluster[k]
+      l <-  l + 1 
+    }
+  }
+  data <- rbind(data, data_bis)
+}
+
+# Conserver que la première crise et la dernière crise d'un cluster
+data1 <- data.frame(Duree_inter = NULL, Numero_crise = NULL, Statut = NULL, Numero_cluster =  NULL,
+                   Duree_crise = NULL, Puissance_pre = NULL, Puissance_post = NULL, Freq = NULL, ID = NULL)
+for (i in 1:15){
+  data_bis <- data %>% 
+    dplyr::filter(ID == i) %>% 
+    dplyr::filter(Statut %in% "Cluster")
+  if (nrow(data_bis) > 1 ){
+      data_bis$First <- NA
+      l <- 1
+      for (k in 1:(nrow(data_bis)-2)){
+        if (data_bis$Numero_cluster[k] %in% l){
+          data_bis$First[k] <- "First"
+          l <- l + 1
+        }
+        if (data_bis$Numero_cluster[k + 1] %in% l){
+          data_bis$First[k] <- "Last"
+        }
+      }
+      data_bis$First[nrow(data_bis)] <- "Last"
+  }
+  data1 <- rbind(data1, data_bis)
+}
+
+data1 <- data1 %>% 
+  dplyr::filter(First %in% c("Last", "First"))
+
+# Format long to wide
+data_bis <- data1 %>% 
+  dplyr::mutate(Puissance_pre = Puissance_pre %>% as.numeric) %>% 
+  dplyr::mutate(Puissance_post = Puissance_post %>% as.numeric) %>% 
+  dplyr::mutate(Delta_puissance = Puissance_pre - Puissance_post) %>% 
+  dplyr::mutate(id_crise = paste0(ID, by = "_", Numero_cluster)) %>%
+  dplyr::select(-Puissance_pre, -Puissance_post, -Duree_inter, -Numero_crise, -Statut) %>% 
+  tidyr::pivot_wider(names_from = "First", values_from = c("Duree_crise", "Freq", "Delta_puissance"), values_fn = list) %>% 
+  unnest(cols = everything() )
+```
+
+### Durée de la première crise d'un cluster vs durée de la dernière crise d'un cluster
+La première crise d'un cluster est en moyenne plus courte que la dernière crise du même cluster (p value < 0.001), après avoir corriger l'effet individuel et l'effet d'un même cluster.
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+# Figure
+data_bis %>% 
+  dplyr::select(ID, Numero_cluster, Duree_crise_First, Duree_crise_Last) %>% 
+  tidyr::gather(key = "Time", value = "Duree_crise", 3:4) %>% 
+  dplyr::mutate(Time = Time %>% 
+                  factor %>% 
+                  forcats::fct_recode("First" = "Duree_crise_First", "Last" = "Duree_crise_Last")) %>% 
+  dplyr::mutate(Duree_crise = Duree_crise %>% as.numeric) %>% 
+  dplyr::mutate(id_crise = paste0(ID, by = "_", Numero_cluster)) %>% 
+  dplyr::mutate(ID = ID %>% factor) %>% 
+  ggplot(aes(x = Time, y = Duree_crise))+
+    geom_boxplot(aes(fill = Time), alpha = 0.6)+
+    geom_point(aes(color = ID), alpha = 0.3)+
+    geom_line(aes(color = ID, group = id_crise), alpha = 0.3)+
+    geom_signif(aes(annotations="***"),comparisons = list(c("First", "Last")),
+              map_signif_level = TRUE)+
+    theme_bw()+
+    scale_fill_brewer(palette = "Pastel1")+
+    theme(legend.position = "none")+
+  labs(y = "Durée crise")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.show='hide'}
+# Modélisation
+data_ter <- data_bis %>% 
+  dplyr::mutate(Duree_crise_First = Duree_crise_First %>% as.numeric) %>% 
+  dplyr::mutate(Duree_crise_Last = Duree_crise_Last %>% as.numeric) %>% 
+  dplyr::mutate(Delta_duree = Duree_crise_Last - Duree_crise_First)
+  
+model <- lmerTest::lmer(Delta_duree ~ 1 + (1 | ID), data = data_ter)
+summary(model)
+ggResidpanel::resid_panel(model)
+
+
+
+# Autre modélisation
+data_ter <- data_bis %>% 
+  dplyr::select(ID, Numero_cluster, Duree_crise_First, Duree_crise_Last) %>% 
+  tidyr::gather(key = "Time", value = "Duree_crise", 3:4) %>% 
+  dplyr::mutate(Time = Time %>% 
+                  factor %>% 
+                  forcats::fct_recode("First" = "Duree_crise_First", "Last" = "Duree_crise_Last")) %>% 
+  dplyr::mutate(Duree_crise = Duree_crise %>% as.numeric) %>% 
+  dplyr::mutate(id_crise = paste0(ID, by = "_", Numero_cluster)) %>% 
+  dplyr::mutate(ID = ID %>% factor) 
+
+
+model <- lmerTest::lmer(Duree_crise ~ Time + (1| ID/Numero_cluster), data = data_ter)
+summary(model)
+ggResidpanel::resid_panel(model)
+performance::icc(model)
+```
+
+
+### Pic de fréquence de la première crise d'un cluster vs pic de fréquence de la dernière crise
+Il y a des valeurs extrêmes de pic de Fréquence supérieur à 40, je les ai supprimées dans la modélisation. \
+On n'observe pas de différence statistiquement significative entre le pic de fréquence de la première crise et celui de la dernière crise du même cluster.
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+# Figure
+data_bis %>% 
+  dplyr::select(ID, Numero_cluster, Freq_First, Freq_Last) %>% 
+  tidyr::gather(key = "Time", value = "Freq", 3:4) %>% 
+  dplyr::mutate(Time = Time %>% 
+                  factor %>% 
+                  forcats::fct_recode("First" = "Freq_First", "Last" = "Freq_Last")) %>% 
+  dplyr::mutate(Freq = Freq %>% as.numeric) %>% 
+  dplyr::mutate(id_crise = paste0(ID, by = "_", Numero_cluster)) %>% 
+  dplyr::mutate(ID = ID %>% factor) %>% 
+  dplyr::filter(Freq < 40) %>% 
+  ggplot(aes(x = Time, y = Freq))+
+    geom_boxplot(aes(fill = Time), alpha = 0.6)+
+    geom_point(aes(color = ID), alpha = 0.3)+
+    geom_line(aes(color = ID, group = id_crise), alpha = 0.3)+
+    theme_bw()+
+    scale_fill_brewer(palette = "Pastel1")+
+    theme(legend.position = "none")+
+  labs(y = "Durée crise")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.show='hide'}
+# Modélisation
+data_ter <- data_bis %>% 
+  dplyr::mutate(Freq_First = Freq_First %>% as.numeric) %>% 
+  dplyr::mutate(Freq_Last = Freq_Last %>% as.numeric) %>% 
+  dplyr::filter(Freq_First < 40) %>% 
+  dplyr::filter(Freq_Last < 40) %>%
+  dplyr::mutate(Delta_freq = Freq_Last - Freq_First)
+  
+model <- lmerTest::lmer(Delta_freq ~ 1 + (1 | ID), data = data_ter)
+summary(model)
+ggResidpanel::resid_panel(model)
+
+# Autre modélisation
+data_ter <- data_bis %>% 
+  dplyr::select(ID, Numero_cluster, Freq_First, Freq_Last) %>% 
+  tidyr::gather(key = "Time", value = "Freq", 3:4) %>% 
+  dplyr::mutate(Time = Time %>% 
+                  factor %>% 
+                  forcats::fct_recode("First" = "Freq_First", "Last" = "Freq_Last")) %>% 
+  dplyr::mutate(Freq = Freq %>% as.numeric) %>% 
+  dplyr::mutate(id_crise = paste0(ID, by = "_", Numero_cluster)) %>% 
+  dplyr::mutate(ID = ID %>% factor) %>% 
+  dplyr::mutate(Freq < 40)
+
+
+model <- lmerTest::lmer(log(Freq) ~ Time + (1| ID/Numero_cluster), data = data_ter)
+summary(model)
+ggResidpanel::resid_panel(model)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Delta de puissance entre la première et la dernière crise d'un cluster
+On n'observe pas de différence statistiquement significative entre le delta de puissance entre la première et celui de la dernière crise d'un cluster.
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+# Figure
+data_bis %>% 
+  dplyr::select(ID, Numero_cluster, Delta_puissance_First, Delta_puissance_Last) %>% 
+  tidyr::gather(key = "Time", value = "Delta_puissance", 3:4) %>% 
+  dplyr::mutate(Time = Time %>% 
+                  factor %>% 
+                  forcats::fct_recode("First" = "Delta_puissance_First", "Last" = "Delta_puissance_Last")) %>% 
+  dplyr::mutate(Delta_puissance = Delta_puissance %>% as.numeric) %>% 
+  dplyr::mutate(id_crise = paste0(ID, by = "_", Numero_cluster)) %>% 
+  dplyr::mutate(ID = ID %>% factor) %>% 
+  dplyr::filter(Delta_puissance < 10) %>% 
+  ggplot(aes(x = Time, y = Delta_puissance))+
+    geom_boxplot(aes(fill = Time), alpha = 0.6)+
+    geom_point(aes(color = ID), alpha = 0.3)+
+    geom_line(aes(color = ID, group = id_crise), alpha = 0.3)+
+    theme_bw()+
+    scale_fill_brewer(palette = "Pastel1")+
+    theme(legend.position = "none")+
+  labs(y = "Durée crise")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.show='hide'}
+# Modélisation
+data_ter <- data_bis %>% 
+  dplyr::filter(Delta_puissance_Last < 10) %>% 
+  dplyr::filter(Delta_puissance_First < 10) %>% 
+  dplyr::mutate(Delta_puissance_First = Delta_puissance_First %>% as.numeric) %>% 
+  dplyr::mutate(Delta_puissance_Last = Delta_puissance_Last %>% as.numeric) %>% 
+  dplyr::mutate(Delta_puissance = Delta_puissance_Last - Delta_puissance_First)
+  
+model <- lmerTest::lmer(Delta_puissance ~ 1 + (1 | ID), data = data_ter)
+summary(model)
+ggResidpanel::resid_panel(model)
+```

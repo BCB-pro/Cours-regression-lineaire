@@ -1,0 +1,1694 @@
+---
+title: "Plan d’analyse résultats"
+output:
+  html_document:
+    theme: united
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+library(RColorBrewer)
+library(lme4)
+library(car)
+library(emmeans)
+library(pheatmap)
+library(naniar)
+library(factoextra)
+library(htmltools)
+library(reshape2)
+library(plotly)
+library(dplyr)
+library(ggpubr)
+library(furniture)
+library(kableExtra)
+library("FactoMineR")
+library("corrplot")
+library(wesanderson)
+library(forcats)
+# Ouverture des bases de données
+setwd("/home/baptiste.criniere/Documents/PB_ECOS/Camille_ECOS/")
+data.path <- "Data/data_ecos_fmt.xlsx"
+
+dat1 <- openxlsx::read.xlsx(data.path, sheet = "Notes")
+dat2 <- openxlsx::read.xlsx(data.path, sheet = "T1")
+dat3 <- openxlsx::read.xlsx(data.path, sheet = "T2")
+dat3 <- dat3 %>% 
+  dplyr::mutate_at(vars(starts_with("PERF")), as.numeric)
+dat4 <- openxlsx::read.xlsx(data.path, sheet = "T2_Peda") %>% 
+  dplyr::mutate_at(vars(starts_with("V")), as.factor) %>% 
+  dplyr::mutate(Genre = Genre %>% factor %>% forcats::fct_recode("Femme" = "1", "Homme" = "2"))
+
+dat5 <- openxlsx::read.xlsx(data.path, sheet = "T2_Int") %>% 
+  dplyr::mutate_at(vars(starts_with("Stress")), as.numeric)
+
+ordre <- read.csv2("/home/baptiste.criniere/Documents/PB_ECOS/Data/Ordre.csv")
+notes <- read.csv2("/home/baptiste.criniere/Documents/PB_ECOS/Data/Notes.csv")
+# Data management
+## Transformation des datasets en "long format" ----
+### dat1
+df1 <- dat1 %>% 
+  dplyr::select(ID, Genre, ends_with("norm"))
+ldf1 <- df1 %>% 
+  tidyr::gather(Station, Note, -c("ID", "Genre")) %>% 
+  dplyr::mutate(Station = factor(Station))
+levels(ldf1$Station) <- paste0("V", 1:5)
+
+### dat2
+df2a <- dat2 %>% 
+  dplyr::select(ID, Genre, starts_with("PERF"))
+ldf2a <- df2a %>% 
+  tidyr::gather(Station, PERF, -c("ID", "Genre")) %>% 
+  dplyr::mutate(Station = factor(Station))
+levels(ldf2a$Station) <- paste0("V", 1:5)
+
+df2b <- dat2 %>% 
+  dplyr::select(ID, Genre, starts_with("ANX"))
+ldf2b <- df2b %>% 
+  tidyr::gather(Station, ANX, -c("ID", "Genre")) %>% 
+  dplyr::mutate(Station = factor(Station))
+levels(ldf2b$Station) <- paste0("V", 1:5)
+
+# dat3
+df3 <- dat3 %>% 
+  dplyr::select(-TEMPS)
+ldf3 <- df3 %>% 
+  tidyr::gather(Station, PERF_T2, -c("ID", "Genre")) %>% 
+  dplyr::mutate(Station = factor(Station))
+levels(ldf3$Station) <- paste0("V", 1:5)
+
+## Merge des bases de données ----
+ldf0 <- data.frame(ldf1, Perf = ldf2a$PERF , Anx = ldf2b$ANX, Perf.T2 = ldf3$PERF_T2) %>% 
+  dplyr::mutate(Genre = Genre %>% factor %>% forcats::fct_recode("Femme" = "1", "Homme" = "2")) %>% 
+  dplyr::mutate(Note = ifelse(Note > 15, 15, Note))
+
+data1 <- dat1 %>% 
+  dplyr::left_join(dat2, by = "ID") %>% 
+  dplyr::left_join(dat3, by = "ID") %>% 
+  dplyr::left_join(dat4, by = "ID") %>% 
+  dplyr::select(-Genre.y, -TEMPS, -Genre.y.y) %>% 
+  dplyr::mutate(Genre = Genre.x %>% factor %>% forcats::fct_recode("Femme" = "1", "Homme" = "2")) %>% 
+  dplyr::select(-Genre.x)
+
+# Problème de codage individu 14 et V2.1
+dat4[dat4$ID == 14, "V2.1"] <- "1"
+```
+
+## Résumé des principaux résultats
+Les deux vignettes pour lesquelles les étudiants ont obtenu les meilleures notes sont Anamnèse (V1) et Procédure (V5). Les femmes sont en moyennes plus anxieuses que les hommes et ce pour chaque vignette. Il y a un groupe d'étudiants qui est anxieux pour toutes les vignettes. Les vignettes pour lesquelles les étudiants jugent leurs performances la meilleure sont celles qu'ils ont le mieux réussies en pratique (V1 et V5). Il y a peu de différence en moyenne entre le jugement à T1 et à T2, sauf pour la vignette 5 où les étudiants revoient leurs jugements à la hausse. \
+Il y a 9,2% de données manquantes à T1 et 16,1% de données manquantes à T2. \
+\
+Les étudiants ont une bonne appréciation de leur performance réelle. L'anxiété a un effet négatif sur les notes des femmes, ce n'est pas le cas chez les hommes. Seuls les stages qui concernent les vignettes : Examen clinique (V3) et Procédure (V5) apportent de meilleurs notes. \
+Plus un étudiant a été anxieux plus il juge sa performance mauvaise. \
+Il y a un lien entre l'anxiété pour chaque vignette et le fait de "Je sens que mes intestins se contractent" (INT1) et "Je remarque que mon cœur s'emballe" (INT3). Les étudiants ayant effectué un stage en examen clinique (V3) sont moins anxieux lors de l'évaluation sur cette même matière. On remarque que globalement les étudiants sont plus anxieux pour la première vignette qu'ils réalisent que celles qui succèdent. \
+\
+Les variables dédiées aux stress sont très corrélées les une aux autres, avec les deux variables intéroceptives (1 & 3) et aussi aux variables d'anxiétés liées aux épreuves, cependant elles sont négativement corrélées aux deux variables qui mesurent la qualité du sommeil.
+\
+Les meilleurs étudiants (non ECOS) ont de meilleurs notes en général aux examens ECOS. \
+
+Les étudiants anxieux ont tendance à sous estimer leurs notes, cet effet de l'anxiété est différent selon le genre pour les vignettes 2, 3, 4. Après avoir corrigé sur l'anxiété, les hommes ont tendance à légèrement sur estimer leur performance. \
+
+## Description générale par vignette
+
+### Performance globale {.tabset .tabset-dropdown}
+Les notes des étudiants semblent normalement distribuées par vignette avec une légère queue de distribution à gauche pour chaque vignette. \
+**La vignette 1 (Relation de soins) et 5 (Procédure) sont les deux mieux réussies** avec réciproquement 10,7 et 11,7 de moyenne. Les étudiants ont obtenu des notes plus faibles dans les vignettes 2 (Anamnèse), 3 (Examen clinique) et 4 (Interprétation d’examen clinique) avec 10,1 et 9,9, et 9,6 de moyenne. L'écart-type des notes de chaque vignette varie entre 2,2 pour la vignette 5 (Procédure) et 2,6 pour la vignette 4 (Interprétation d’examen clinique) ; c'est-à-dire qu'il existe légèrement plus de variabilité pour les notes de la vignette 4 que la vignette 5, mais globalement la variabilité des notes entre les vignettes est équivalente.
+\
+Dans l'ensemble, il n'y a pas d'effet du genre sur les notes aux vignettes, à l'exception de la vignette 1 où les femmes réussissent légèrement mieux que les hommes (+0,5 points et pvaleur = 0,016) et la vignette 2 où les femmes ont en moyenne 0,9 point de plus que les hommes (pvaleur < 0,001).
+\
+Les notes de chaque vignette sont toutes corrélées les unes aux autres, mais ces corrélations restent faibles, elles varient entre 0,06 et 0,24.
+
+#### Distribution
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+# On récupère les statistiques descriptives
+compare_mean <- as.data.frame(aggregate(ldf0$Note, list(ldf0$Station, ldf0$Genre), mean, na.rm = TRUE))
+compare_q2 <- as.data.frame(aggregate(ldf0$Note, list(ldf0$Station, ldf0$Genre), median, na.rm = TRUE))
+compare_q1 <- as.data.frame(aggregate(ldf0$Note, list(ldf0$Station, ldf0$Genre), quantile, probs = .25, na.rm = TRUE))
+compare_q3 <- as.data.frame(aggregate(ldf0$Note, list(ldf0$Station, ldf0$Genre), quantile, probs = .75, na.rm = TRUE))
+colnames(compare_mean) <- c("Station", "Genre", "mean")
+colnames(compare_q2) <- c("Station", "Genre", "median")
+colnames(compare_q1) <- c("Station", "Genre", "q1")
+colnames(compare_q3) <- c("Station", "Genre", "q3")
+
+
+ldf0 %>% ggplot(aes(x = Note)) +
+  geom_density(aes(fill = Genre), alpha=0.5, show.legend = FALSE)+
+  geom_vline(data = compare_mean, aes(xintercept = mean),
+             linetype = "solid", size = 1, color = "red3") +
+  geom_vline(data = compare_q2, aes(xintercept = median),
+             linetype = "solid", size = 0.5) +
+  geom_vline(data = compare_q1, aes(xintercept = q1),
+             linetype = "dashed", size = .5) +
+  geom_vline(data = compare_q3, aes(xintercept = q3),
+             linetype = "dashed", size = .5)+
+  facet_grid(Genre~Station, scales = "free")+
+  scale_fill_manual(values=c("orange4","dodgerblue3"))+
+  ggtitle("Distribution des notes par genre pour chaque vignette")+
+  theme_classic()
+```
+
+
+
+#### Table descriptive 
+
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+a <- data1 %>% dplyr::select(-ID) %>% 
+  furniture::table1("Note vignette 1" = V1.norm,
+                    "Note vignette 2" = V2.norm,
+                    "Note vignette 3" = V3.norm,
+                    "Note vignette 4" = V4.norm,
+                    "Note vignette 5" = V5.norm,
+                    splitby = ~ Genre,
+                    total      = TRUE,
+                    na.rm = FALSE,
+                    output = "text")
+a <- data.frame(a)
+a$Pvalue <- c("", "0.016", "", "<0.001", "", "0.97", "", "0.92", "", "0.39", "")
+knitr::kable(a, caption = "Moyenne et écart-type des notes à chaque vignette par genre") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# t-test
+# t.test(V5.norm ~ Genre, data = data1)
+```
+
+
+
+#### Corrélation entre les notes des vignettes
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+dat1 %>% 
+  dplyr::select(V1.norm, V2.norm, V3.norm, V4.norm, V5.norm,) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot.mixed(number.cex = 1.5)
+```
+
+
+<!-- #### Lien entre stages et notes -->
+<!-- ```{r echo = FALSE,warning=FALSE, message=FALSE} -->
+<!-- # Stage réalisé pour la matière en question ---- -->
+<!-- v.norm <- c("V1.norm", "V2.norm", "V3.norm", "V4.norm", "V5.norm") -->
+<!-- stage <- c("V1.2", "V2.2", "V3.2", "V4.2", "V5.2") -->
+<!-- a <- data.frame() -->
+<!-- for (i in 1:5){ -->
+<!--   e <- v.norm[i] -->
+<!--   f <- stage[i] -->
+<!--   b <- data1 %>%  furniture::table1("  " = get(e), -->
+<!--                     splitby = ~ get(f), -->
+<!--                     total = TRUE, -->
+<!--                     na.rm = FALSE, -->
+<!--                     test = TRUE, -->
+<!--                     output = "text") -->
+<!--   b <- data.frame(b) -->
+<!--   b[2,1] <- paste("Note Vignette ",i) -->
+<!--   a <- rbind(a, b) -->
+<!-- } -->
+<!-- a[nrow(a)+1,] <- a[1,] -->
+<!-- a <- a[-1,] -->
+<!-- names(a)[c(3,4)] <- c("Oui", "Non") -->
+<!-- rownames(a) <- NULL -->
+<!-- knitr::kable(a, caption = "Stage réalisé pour la matière en question") %>% kable_styling(bootstrap_options = c("striped", "hover")) -->
+
+<!-- # Situation déjà rencontrée en stage ---- -->
+<!-- v.norm <- c("V1.norm", "V2.norm", "V3.norm", "V4.norm", "V5.norm") -->
+<!-- stage <- c("V1.3", "V2.3", "V3.3", "V4.3", "V5.3") -->
+<!-- a <- data.frame() -->
+<!-- for (i in 1:5){ -->
+<!--   e <- v.norm[i] -->
+<!--   f <- stage[i] -->
+<!--   b <- data1 %>%  furniture::table1("  " = get(e), -->
+<!--                     splitby = ~ get(f), -->
+<!--                     total = TRUE, -->
+<!--                     na.rm = FALSE, -->
+<!--                     test = TRUE, -->
+<!--                     output = "text") -->
+<!--   b <- data.frame(b) -->
+<!--   b[2,1] <- paste("Note Vignette ",i) -->
+<!--   a <- rbind(a, b) -->
+<!-- } -->
+<!-- a[nrow(a)+1,] <- a[1,] -->
+<!-- a <- a[-1,] -->
+<!-- names(a)[c(3,4)] <- c("Oui", "Non") -->
+<!-- rownames(a) <- NULL -->
+<!-- knitr::kable(a, caption = "Situation déjà rencontrée en stage") %>% kable_styling(bootstrap_options = c("striped", "hover")) -->
+
+<!-- a <- data1 %>% mutate(V5.4 = factor(V5.4) %>% fct_recode("Oui" = "1", "Non" = "2")) %>%  -->
+<!--   furniture::table1("Note Vignette 5" = V5.norm, -->
+<!--                     splitby = ~ V5.4, -->
+<!--                     total = TRUE, -->
+<!--                     na.rm = FALSE, -->
+<!--                     test = TRUE, -->
+<!--                     output = "text") -->
+
+<!-- knitr::kable(a, caption = "Geste antérieurement réalisé en atelier de simulation pour V5") %>% kable_styling(bootstrap_options = c("striped", "hover")) -->
+<!-- ``` -->
+
+
+
+
+
+### Echelle d’anxiété à T1  {.tabset .tabset-dropdown}
+La distribution des anxiétés des étudiants pour chaque vignette est bimodale (distribution qui présente deux "pics") asymétrique. \
+La valeur 5 semble être le seuil de séparation des anxiétés des étudiants, en dessous de ce seuil se placent les étudiants peu anxieux, au dessus ce qui le sont. Le pics le plus important se situe à droite, **il y a donc plus d'étudiants anxieux**. \
+La vignette où les étudiants sont le plus **anxieux est la 4** (Interprétation d’examen clinique) avec une moyenne de 6 et celle où ils sont **le moins anxieux est la 5** avec une moyenne de 5,4. \
+Il existe un effet du genre pour chaque vignette, **en moyenne les femmes sont toujours plus anxieuses que les hommes** (pvaleur < 0.001). \
+Les anxiétés de chaque vignette sont toutes positivement corrélés, et de manière importante entre 0,54 et 0,74. On peut observer sur la heatmap un **groupe d'"anxieux" pour chaque épreuves**, et au contraire un groupe de "pas anxieux".
+
+#### Distribution de l'anxiété à chaque station par genre
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 10}
+ldf0 <- ldf0 %>% 
+  dplyr::mutate(Genre = Genre %>% factor %>% forcats::fct_recode("Femme" = "1", "Homme" = "2"))
+
+compare_mean <- as.data.frame(aggregate(ldf0$Anx, list(ldf0$Station, ldf0$Genre), mean, na.rm = TRUE))
+compare_q2 <- as.data.frame(aggregate(ldf0$Anx, list(ldf0$Station, ldf0$Genre), median, na.rm = TRUE))
+compare_q1 <- as.data.frame(aggregate(ldf0$Anx, list(ldf0$Station, ldf0$Genre), quantile, probs = .25, na.rm = TRUE))
+compare_q3 <- as.data.frame(aggregate(ldf0$Anx, list(ldf0$Station, ldf0$Genre), quantile, probs = .75, na.rm = TRUE))
+colnames(compare_mean) <- c("Station","Genre", "mean")
+colnames(compare_q2) <- c("Station","Genre", "median")
+colnames(compare_q1) <- c("Station","Genre", "q1")
+colnames(compare_q3) <- c("Station","Genre", "q3")
+
+
+ldf0 %>% 
+  na.omit(ldf0$Anx) %>% 
+  ggplot(aes(x = Anx)) +
+  geom_density(aes(fill=Genre), alpha = 0.5, show.legend = FALSE)+
+  geom_vline(data = compare_mean, aes(xintercept = mean),
+             linetype = "solid", size = 1, color = "red3") +
+  geom_vline(data = compare_q2, aes(xintercept = median),
+             linetype = "solid", size = 0.5) +
+  geom_vline(data = compare_q1, aes(xintercept = q1),
+             linetype = "dashed", size = .5) +
+  geom_vline(data = compare_q3, aes(xintercept = q3),
+             linetype = "dashed", size = .5)+
+  facet_grid(Genre~Station, scales = "free")+
+  xlab("Anxiété")+
+  scale_fill_manual(values=c("orange4","dodgerblue3"))+
+  theme_classic()
+
+```
+
+#### Table descriptive
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+a <- data1 %>%
+  furniture::table1("Anxiété station 1" = ANX1,
+                    "Anxiété station 2" = ANX2,
+                    "Anxiété station 3" = ANX3,
+                    "Anxiété station 4" = ANX4,
+                    "Anxiété station 5" = ANX5,
+                    splitby = ~ Genre,
+                    total      = TRUE,
+                    na.rm = FALSE,
+                    output = "text")  
+a <- data.frame(a)
+a$Pvalue <- c("", "0.004", "", "0.008", "", "<0.001", "", "<0.001", "", "<0.001", "")
+knitr::kable(a, caption = "Moyenne et écart-type des anxiétés à chaque vignette par genre") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# t-test
+# wilcox.test(ANX5 ~ Genre, data = data1)
+
+```
+
+
+
+#### Corrélation entre les anxiétés des vignettes
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+dat2 %>% 
+  dplyr::select(ANX1, ANX2, ANX3, ANX4, ANX5,) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot.mixed(number.cex = 1.5)
+```
+
+#### Heatmap
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+test2 <- dat2 %>% 
+  dplyr::select(ANX1, ANX2, ANX3, ANX4, ANX5,)
+test2 <- as.matrix(test2)
+test2 <- na.omit(test2)
+p <- pheatmap(test2, show_rownames = F)
+
+```
+
+
+
+### Echelle de jugement de performance T1  {.tabset .tabset-dropdown}
+La distribution des jugements à T1 des étudiants pour chaque vignette est bimodale asymétrique. \
+La vignette pour laquelle ils ont la meilleure opinion de leur performance est la vignette 1 (moyenne de 22.8) et celle où ils jugent leur performance la moins bonne est la vignette 4 (moyenne -6,5). On remarque que les deux vignettes (V1 & V5) pour lesquelles **ils jugent leur performance la meilleure sont celles qu'ils ont le mieux réussies**. \
+**Les hommes ont une meilleure opinion de leurs notes pour toutes les vignettes**, et cet effet est significatif pour trois d'entre elles (1, 3, 4). \
+L'ensemble des jugements à T1 pour chaque vignette est corrélés positivement entre 0,21 et 0,45. 
+
+#### Distribution des jugements T1 par genre
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+compare_mean <- as.data.frame(aggregate(ldf0$Perf, list(ldf0$Station, ldf0$Genre), mean, na.rm = TRUE))
+compare_sd <- as.data.frame(aggregate(ldf0$Perf, list(ldf0$Station, ldf0$Genre), sd, na.rm = TRUE))
+compare_q2 <- as.data.frame(aggregate(ldf0$Perf, list(ldf0$Station, ldf0$Genre), median, na.rm = TRUE))
+compare_q1 <- as.data.frame(aggregate(ldf0$Perf, list(ldf0$Station, ldf0$Genre), quantile, probs = .25, na.rm = TRUE))
+compare_q3 <- as.data.frame(aggregate(ldf0$Perf, list(ldf0$Station, ldf0$Genre), quantile, probs = .75, na.rm = TRUE))
+colnames(compare_mean) <- c("Station", "Genre", "mean")
+colnames(compare_q2) <- c("Station", "Genre", "median")
+colnames(compare_q1) <- c("Station", "Genre", "q1")
+colnames(compare_q3) <- c("Station", "Genre", "q3")
+
+ldf0 %>% ggplot(aes(x = Perf)) +
+  geom_density(aes(fill = Genre), alpha=0.5, show.legend = FALSE)+
+  geom_vline(data = compare_mean, aes(xintercept = mean),
+             linetype = "solid", size = 1, color = "red3") +
+  geom_vline(data = compare_q2, aes(xintercept = median),
+             linetype = "solid", size = .5) +
+  geom_vline(data = compare_q1, aes(xintercept = q1),
+             linetype = "dashed", size = .5) +
+  geom_vline(data = compare_q3, aes(xintercept = q3),
+             linetype = "dashed", size = .5)+
+  facet_grid(Genre~Station, scales = "free")+
+  scale_fill_manual(values=c("orange4","dodgerblue3"))+
+  theme_classic()
+
+```
+
+#### Table descriptive
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+a <- data1 %>% dplyr::select(-ID) %>% 
+  furniture::table1("Jugement 1 T1" = PERF1.x,
+                    "Jugement 2 T1" = PERF2.x,
+                    "Jugement 3 T1" = PERF3.x,
+                    "Jugement 4 T1" = PERF4.x,
+                    "Jugement 5 T1" = PERF5.x,
+                    splitby = ~ Genre,
+                    total      = TRUE,
+                    na.rm = FALSE,
+                    output = "text")  
+
+
+a <- data.frame(a)
+a$Pvalue <- c("", "0.025", "", "0.84", "", "0.027", "", "0.001", "", "0.22", "")
+knitr::kable(a, caption = "Moyenne et écart-type des jugements à T1 à chaque vignette par genre") %>% 
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
+
+# wilcoxon
+# wilcoxon.test(PERF3.x ~ Genre, data = data1)
+
+```
+
+
+
+#### Corrélation entre les jugements des vignettes
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+dat2 %>% 
+  dplyr::select(PERF1, PERF2, PERF3, PERF4, PERF5) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot.mixed(number.cex = 1.5)
+```
+
+
+### Echelle de jugement de performance T2  {.tabset .tabset-dropdown}
+La distribution des jugements à T2 des étudiants pour chaque vignette est bimodale asymétrique. \
+La vignette pour laquelle ils ont la meilleure opinion de leur performance est la vignette 5 (moyenne de 31.1) et celle où ils jugent leur performance la moins bonne est la vignette 4 (moyenne -2,3). \
+Les hommes ont une meilleure opinion de leurs notes pour toutes les vignettes, et cet effet est significatif seulement pour la vignette 3. \
+L'ensemble des jugements à T2 pour chaque vignette est corrélés positivement entre 0,10 et 0,38. 
+
+#### Distribution des jugements T2 à chaque vignette par genre
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+compare_mean <- as.data.frame(aggregate(ldf0$Perf.T2, list(ldf0$Station, ldf0$Genre), mean, na.rm = TRUE))
+compare_sd <- as.data.frame(aggregate(ldf0$Perf.T2, list(ldf0$Station, ldf0$Genre), sd, na.rm = TRUE))
+compare_q2 <- as.data.frame(aggregate(ldf0$Perf.T2, list(ldf0$Station, ldf0$Genre), median, na.rm = TRUE))
+compare_q1 <- as.data.frame(aggregate(ldf0$Perf.T2, list(ldf0$Station, ldf0$Genre), quantile, probs = .25, na.rm = TRUE))
+compare_q3 <- as.data.frame(aggregate(ldf0$Perf.T2, list(ldf0$Station, ldf0$Genre), quantile, probs = .75, na.rm = TRUE))
+colnames(compare_mean) <- c("Station", "Genre", "mean")
+colnames(compare_q2) <- c("Station", "Genre", "median")
+colnames(compare_q1) <- c("Station", "Genre", "q1")
+colnames(compare_q3) <- c("Station", "Genre", "q3")
+
+ldf0 %>% ggplot(aes(x = Perf.T2)) +
+  geom_density(aes(fill = Genre), alpha=0.5,  show.legend = FALSE)+
+  geom_vline(data = compare_mean, aes(xintercept = mean),
+             linetype = "solid", size = 1, color = "red3") +
+  geom_vline(data = compare_q2, aes(xintercept = median),
+             linetype = "solid", size = .5) +
+  geom_vline(data = compare_q1, aes(xintercept = q1),
+             linetype = "dashed", size = .5) +
+  geom_vline(data = compare_q3, aes(xintercept = q3),
+             linetype = "dashed", size = .5)+
+  facet_grid(Genre~Station, scales = "free")+
+  scale_fill_manual(values=c("orange4","dodgerblue3"))+
+  theme_classic()
+```
+
+#### Table descriptive
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+a <- data1 %>% dplyr::select(-ID) %>% 
+  furniture::table1("Jugement 1 T2" = PERF1.y,
+                    "Jugement 2 T2" = PERF2.y,
+                    "Jugement 3 T2" = PERF3.y,
+                    "Jugement 4 T2" = PERF4.y,
+                    "Jugement 5 T2" = PERF5.y,
+                    splitby = ~ Genre,
+                    total = TRUE,
+                    na.rm = FALSE,
+                    output = "text")  
+
+
+a <- data.frame(a)
+a$Pvalue <- c("", "0.13", "", "0.244", "", "0.033", "", "0.11", "", "0.056", "")
+knitr::kable(a) %>% 
+      kable_styling(bootstrap_options = c("striped", "hover"))
+# wilcoxon
+# wilcox.test(PERF5.y ~ Genre, data = data1)
+
+```
+
+
+
+
+#### Corrélation entre les jugements des vignettes
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+dat3 %>% 
+  dplyr::select(PERF1, PERF2, PERF3, PERF4, PERF5) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot.mixed(number.cex = 1.5)
+```
+
+### Comparaison des jugements  T1 & T2  {.tabset .tabset-dropdown}
+La corrélation entre le jugement de performance à T1 et celui à T2 pour la même vignette varie entre 0,35 et 0,65. \
+On a calculé pour chaque vignette la différence de jugement à T2 et à T1. \
+Les distributions des différences sont normalement distribuées, avec des moyennes supérieures à 0 avec des écarts-types élevés 40-50. Toutes les vignettes présentent **une évaluation de la performance revue à la hausse**, cet effet est seulement statistiquement significatif pour la vignette 5 (pvaleur < 0,001).
+\
+Il n'y a pas de différence de variation de jugement entre les femmes et les hommes.
+
+#### Distribution
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+# On récupère les statistiques descriptives
+ldf0_bis <- ldf0
+ldf0$Diff <- ldf0$Perf.T2 - ldf0$Perf
+compare_mean <- as.data.frame(aggregate(ldf0$Diff, list(ldf0$Station, ldf0$Genre), mean, na.rm = TRUE))
+compare_q2 <- as.data.frame(aggregate(ldf0$Diff, list(ldf0$Station, ldf0$Genre), median, na.rm = TRUE))
+compare_q1 <- as.data.frame(aggregate(ldf0$Diff, list(ldf0$Station, ldf0$Genre), quantile, probs = .25, na.rm = TRUE))
+compare_q3 <- as.data.frame(aggregate(ldf0$Diff, list(ldf0$Station, ldf0$Genre), quantile, probs = .75, na.rm = TRUE))
+colnames(compare_mean) <- c("Station", "Genre", "mean")
+colnames(compare_q2) <- c("Station", "Genre", "median")
+colnames(compare_q1) <- c("Station", "Genre", "q1")
+colnames(compare_q3) <- c("Station", "Genre", "q3")
+
+
+ldf0 %>% ggplot(aes(x = Diff)) +
+  geom_density(aes(fill = Genre), alpha=0.5, show.legend = FALSE)+
+  geom_vline(data = compare_mean, aes(xintercept = mean),
+             linetype = "solid", size = 1, color = "red3") +
+  geom_vline(data = compare_q2, aes(xintercept = median),
+             linetype = "solid", size = 0.5) +
+  geom_vline(data = compare_q1, aes(xintercept = q1),
+             linetype = "dashed", size = .5) +
+  geom_vline(data = compare_q3, aes(xintercept = q3),
+             linetype = "dashed", size = .5)+
+  facet_grid(Genre~Station, scales = "free")+
+  scale_fill_manual(values=c("orange4","dodgerblue3"))+
+  ggtitle("Distribution des différence de jugement pour chaque vignette")+
+  theme_classic()
+```
+
+
+
+#### Corrélation entre les jugements à T1 et les jugements à T2
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+mcor <- cor(mtcars)
+
+dat6 <- dat2 %>% 
+  dplyr::left_join(dat3, by = "ID")
+dat6 <- dat6 %>% 
+  dplyr::select(starts_with("PERF"))
+mcor <- cor(dat6, use = "complete.obs")
+
+
+correlation <- c(0.40, 0.35, 0.53, 0.49, 0.65)
+correlation <- data.frame(correlation)
+correlation$label <- "T2"
+names(correlation) <- c("T2", "label")
+rownames(correlation) <- paste0("V", 1:5)
+correlation$Vignette <- rownames(correlation)
+ggplot(data = correlation, aes(x= label,y = Vignette, fill = T2))+
+ geom_tile(color = "white" , width = 0.4)+
+ scale_fill_gradient2(low = "white", high = "deepskyblue2", limit = c(0,1), space = "Lab",
+   name="Pearson\nCorrelation")+
+  geom_text(aes(1, Vignette, label = T2), color = "black", size = 10)+
+    ggtitle("Corrélation entre les jugments à T1 et T2")+
+  theme(title = element_text(size=25),
+        axis.text.x=element_text(size=20),
+        axis.text.y=element_text(size=20),
+        axis.ticks.x=element_blank(),
+        panel.background = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank()
+        )
+```
+
+
+
+#### Table descriptive
+```{r echo = FALSE,warning=FALSE, message=FALSE, fig.align='center', fig.width=11}
+test2 <- dat3[,-c(1,2,3)] - dat2[,c("PERF1", "PERF2", "PERF3", "PERF4", "PERF5")]
+test2$Genre <- dat3$Genre
+test2 <- test2 %>% 
+  dplyr::mutate(Genre = factor(Genre) %>% fct_recode("Femme" = "1", "Homme" = "2"))
+a <- test2 %>%
+  furniture::table1("Différence de jugement V1" = PERF1,
+                    "Différence de jugement V2" = PERF2,
+                    "Différence de jugement V3" = PERF3,
+                    "Différence de jugement V4" = PERF4,
+                    "Différence de jugement V5" = PERF5,
+                    splitby = ~ Genre,
+                    test = TRUE,
+                    total = TRUE,
+                    na.rm = FALSE,
+                    output = "text")  
+
+
+ a <- data.frame(a)
+
+knitr::kable(a, caption = "") %>% 
+      kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+
+#### Test de Wilcoxon
+On réalise un test de Wilcoxon apparié, afin de vérifier si le jugement change de manière tendancielle dans un sens ou dans un autre. \
+Sur la figure suivante on a représenter en bleu les étudiants qui revoient leurs jugements à la baisse de manière importante (au moins 50) ; et en rouge ceux qui revoient leurs jugements à la hausse (plus de 50).\
+On observe qu'il n'y a que la vignette 5 pour laquelle il y a un changement significatif.
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+cate <- function(x, na.rm = FALSE){
+  cut(x, breaks = c(-Inf, -50, 50, Inf), 
+        labels = c("low", "medium", "high"))
+}
+test2 <- dat3[,-c(1,2,3)] - dat2[,c("PERF1", "PERF2", "PERF3", "PERF4", "PERF5")]
+
+test2 <- data.frame(sapply(test2, function(x) cate(x)))
+test2$ID <- dat2$ID
+
+
+test2 <- test2 %>%
+  tidyr::gather(Station, "Diff_jugement", -c("ID")) %>% 
+  dplyr::mutate(Station = factor(Station))
+levels(test2$Station) <- paste0("V", 1:5)
+
+test <- ldf0_bis %>%
+  tidyr::gather(Time, "Jugement", -c("ID", "Genre", "Station", "Note", "Anx"))
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Station")) %>% 
+  dplyr::mutate(Time = Time %>% factor %>% 
+                  forcats::fct_recode("T1" = "Perf", "T2" = "Perf.T2")) %>% 
+  dplyr::mutate(Anx_bin = ifelse(Anx > 5, "Anx", "Pas Anx"))
+
+
+test[!is.na(test$Diff_jugement),] %>% ggplot(aes(x = Time, y = Jugement))+
+  geom_line(aes(group = ID, color = Diff_jugement), size = 0.1)+
+  geom_boxplot(fill = "gray90", jitter = TRUE, width = 0.25)+
+  facet_grid(~Station)+
+  stat_compare_means()+
+  scale_colour_manual(values = c("red", "blue", "gray85"))+
+  xlab("")+
+  theme_classic()
+
+
+
+
+```
+
+#### Heatmap
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width=11}
+test2 <- dat3[,-c(1,2,3)] - dat2[,c("PERF1", "PERF2", "PERF3", "PERF4", "PERF5")]
+test2 <- as.matrix(test2)
+test2 <- na.omit(test2)
+p <- pheatmap(test2, show_rownames = F, color = colorRampPalette(c("blue", "white", "red"))(50))
+
+```
+
+## Données manquantes {.tabset .tabset-dropdown}
+Il y a 9,2% de données manquantes à T1 en ce qui concerne les variables d'anxiété et de jugement ; et 16,1% de données manquantes à T2.
+
+### T1
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center'}
+# https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html
+
+dd2 <- dat2 %>% 
+  dplyr::select(-ID, -Genre, -TEMPS)
+
+plot1 <- naniar::vis_miss(dd2)
+
+plot2 <- naniar::gg_miss_var(dd2) + theme_bw() 
+
+
+ggarrange(plot1, plot2)
+```
+
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center'}
+naniar::gg_miss_upset(dd2)
+```
+
+
+### T2
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center'}
+dd3 <- dat3 %>% 
+  dplyr::select(-ID, -Genre, -TEMPS)
+
+naniar::vis_miss(dd3)
+# 
+# naniar::gg_miss_var(dd3) + theme_bw() 
+# 
+# naniar::gg_miss_upset(dd3)
+```
+
+
+
+
+## Objectif 1
+
+### Analyses des notes {.tabset .tabset-dropdown}
+Il y a une corrélation positive entre les jugements à T1, T2 et la performance réelle pour chaque vignette. Autrement dit, plus un étudiant a une bonne opinion de sa note, meilleure sa note est (ou l'inverse). On remarque également qu'il n'y a pas de différence de genre dans cette corrélation. \
+J'ai aussi regarder si c'était le jugement à T1 ou celui à T2 qui prédisait le mieux la note des étudiants, et la conclusion est qu'il n'y a pas un jugement à un temps qui prédit mieux qu'un autre. \
+\
+Il existe une différence entre l'effet de la variable anxiété sur la note des femmes et celle des hommes. \
+Globalement, plus les femmes sont anxieuses plus leur note est basse contrairement aux hommes pour lesquels il ne semble pas y avoir d'effet de l'anxiété sur leur note.
+\
+\
+En ce qui concerne les variables intéroceptives, elles ne semblent pas être liées avec les notes des étudiants.
+\
+\
+On remarque qu'il n'y a que les vignettes 3 et 5 pour lesquelles il existe une différence significative entre les notes des candidats et les variables pédagogiques (stage, procédure, etc.). On observe que les étudiants qui effectués un stage dans ces vignettes là obtiennent de meilleures notes que ceux qui n'en ont pas fait.
+\
+
+
+#### Analyse du caractère prédictif jugement à T1 et à T2
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11}
+ldf0 <- ldf0_bis
+ldf0$Anx2 <- factor(ifelse(ldf0$Anx > 5 , "Neg", "Pos"))
+# ggplot(data = ldf0[ !(is.na(ldf0$Anx2)), ], aes(x = Note, y = Perf, group = Anx2, color = Anx2)) +
+
+ldf0 %>% ggplot(aes(x = Perf, y = Note, group = Genre, color = Genre))+
+  geom_jitter(alpha = 0.3)+
+  geom_smooth(method = "lm", se = FALSE)+
+  facet_grid(~Station)+
+  stat_cor(method = "pearson", label.y.npc = "bottom",
+           geom = "text", size = 3.6, show.legend = FALSE)+
+  scale_colour_manual(values = c("dodgerblue3", "orange4"))+
+  theme_bw() +
+  xlab("Jugement de performance à T1")+
+  ggtitle("Notes en fonction du jugement à T1 par genre")
+```
+
+---
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11}
+ldf0$Anx2 <- factor(ifelse(ldf0$Anx > 5 , "Neg", "Pos"))
+# ggplot(data = ldf0[ !(is.na(ldf0$Anx2)), ], aes(x = Note, y = Perf, group = Anx2, color = Anx2)) +
+
+ldf0 %>% ggplot(aes(x = Perf.T2, y = Note, group = Genre, color = Genre))+
+  geom_jitter(alpha = 0.3)+
+  geom_smooth(method = "lm", se = FALSE)+
+  facet_grid(~Station)+
+  stat_cor(method = "pearson", label.y.npc = "bottom",
+           geom = "text", size = 3.6, show.legend = FALSE)+
+  scale_colour_manual(values = c("dodgerblue3", "orange4"))+
+  theme_bw()+
+  xlab("Jugement de performance à T2")+
+  ggtitle("Notes en fonction du jugement à T2 par genre")
+
+```
+
+<!-- #### A quel moment les étudiants prédisent mieux leurs notes ? -->
+<!-- ```{r} -->
+<!-- test <- ldf0 %>%  -->
+<!--   dplyr::filter(Station == "V5") -->
+<!-- test$scale_T1 <- scale(test$Perf) -->
+<!-- model1 <- lm(Note ~ Perf, data = test) -->
+<!-- model2 <- lm(Note ~ Perf.T2, data = test) -->
+<!-- summary(model1) -->
+<!-- summary(model2) -->
+<!-- plot(model1) -->
+<!-- hist(residuals(model1)) -->
+<!-- ``` -->
+
+
+
+
+#### Analyse du caractère prédictif Anxiété
+Il existe une différence entre l'effet de la variable anxiété sur la note des femmes et celle des hommes. En effet, pour 4 vignettes sur 5 il existe un effet de l'anxiété sur la note des femmes contre une seule vignette pour les hommes. \
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11}
+ldf0$Anx2 <- factor(ifelse(ldf0$Anx > 5 , "Neg", "Pos"))
+# ggplot(data = ldf0[ !(is.na(ldf0$Anx2)), ], aes(x = Note, y = Perf, group = Anx2, color = Anx2)) +
+
+ldf0 %>% ggplot(aes(x = Anx, y = Note, group = Genre, color = Genre))+
+  geom_jitter(alpha = 0.3)+
+  geom_smooth(method = "lm", se = FALSE)+
+  facet_grid(~Station)+
+  stat_cor(method = "pearson", label.y.npc = "bottom",
+           geom = "text", size = 3.6, show.legend = FALSE)+
+  scale_colour_manual(values = c("dodgerblue3", "orange4"))+
+  theme_bw()
+```
+
+#### Intéroception
+Sur la figure vous pouvez cliquer pour voir les statistiques descriptives du boxplot, zoomer et sauvegarder. En haut de la figure est affichée la pvaleur du test qui cherche a déterminer s'il existe un effet des variables intéroceptives ainsi que GEN1 sur la note des étudiants pour chaque vignette. Si la pvaleur est inférieure à 0,05 cela signifie qu'il y a un effet statistiquement significatif.
+\
+
+Pour rappel :
+
+- INT1	Je sens quand mes intestins se contractent
+- INT2	Lorsque je suis détendu(e), je remarque que mon rythme cardiaque est lent
+- INT3	Je remarque que mon cœur s'emballe
+- GEN1	Avez-vous fait des ECOS d’entraînement entre étudiants ?
+
+```{r echo = FALSE, message=FALSE,  warning=FALSE, fig.height = 20}
+test <- dat5 %>% 
+  dplyr::select(ID, INT1, INT2, INT3, GEN1) %>% 
+  tidyr::gather(Type, "INT", -c("ID"))
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = "ID") %>% 
+  dplyr::mutate(INT = factor(INT))
+library(wesanderson)
+p <- test[!is.na(test$INT),] %>% ggplot(aes(x = INT, y = Note, fill = INT))+
+  geom_boxplot()+
+  facet_grid(Station~Type, scales="free")+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 17)+
+  ylim(0,20)+
+  scale_fill_brewer(palette = "Dark2")+
+  theme_bw() +
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+
+# model <- lm(V4.norm ~ as.factor(GEN1), data = test)
+# summary(model)
+# Anova(model)
+```
+
+
+#### Variables pédagogiques
+Sur la figure vous pouvez cliquer pour voir les statistiques descriptives du boxplot.
+Les variables suivantes correspondent à :
+
+- Stage_1 : 	La vignette était-elle adaptée au niveau DFASM1 ?
+- Stage_2 :	Avez-vous déjà fait un stage en rapport avec la matière de cette vignette
+- Stage_3 :	Avez-vous déjà été confronté à ce type de situation en stage (V1,2,3,4)
+- Stage_4 :	Pensez-vous que les stages vous ont préparé à répondre à cette vignette (V1,2,3,4)
+- Stage_5 :	Avez-vous trouvé que  le patient simulé était réaliste (V1,2,3,4)
+- Stage_3 vignette 5 :	Avez-vous déjà réalisé cette procédure sur un patient ?
+- Stage_4 vignette 5 :	Avez-vous déjà réalisé cette procédure en atelier de simulation ?
+- Stage_5 vignette 5 :	Pensez-vous que les stages vous ont préparé à répondre à cette vignette ?
+
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+# Question 1
+test <- dat4 %>% 
+  dplyr::select(ID, ends_with(".1")) %>% 
+  tidyr::gather(Vignette, "Stage_1", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_1 = factor(Stage_1))
+levels(test$Vignette) <- paste0("V", 1:5)
+
+# Question 2
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".2")) %>% 
+  tidyr::gather(Vignette, "Stage_2", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_2 = factor(Stage_2))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 3
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".3")) %>% 
+  tidyr::gather(Vignette, "Stage_3", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_3 = factor(Stage_3))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 4
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".4")) %>% 
+  tidyr::gather(Vignette, "Stage_4", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_4 = factor(Stage_4))
+levels(test2$Vignette) <- paste0("V", 1:5)
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+
+# Question 5
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".5")) %>% 
+  tidyr::gather(Vignette, "Stage_5", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_5 = factor(Stage_5))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette")) %>% 
+  dplyr::mutate(Station = Vignette) %>% 
+  dplyr::select(-Vignette)
+
+
+
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = c("ID", "Station")) %>% 
+  tidyr::gather(Question, "Binaire", -c("ID", "Genre", "Station", "Note", "Perf", "Anx", "Perf.T2", "Anx2")) %>% 
+  dplyr::mutate(Binaire = factor(Binaire))
+
+
+
+p <- test[!is.na(test$Binaire),] %>% ggplot(aes(x = Binaire, y = Note, fill = Question, group = Binaire))+
+  geom_boxplot()+
+  facet_grid(Station~Question)+
+  ylim(0,20)+
+  stat_compare_means(aes(label=..p.adj..),method = "t.test", label.x = 1, label.y = 17)+
+  scale_fill_brewer(palette = "Dark2")+
+  theme_bw() +
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+```
+
+#### Influence du passage sur la vignette
+Le codage est le suivant :
+
+- O1 : Relation de soins/Anamnèse/Examen Clinique/Interprétation d’examens complémentaires/Procédure
+- O2 : Anamnèse/ Examen Clinique/ Interprétation d’examens complémentaires/Procédure Relation de soins
+- O3 : Examen Clinique/Interprétation d’examens complémentaires/Procédure/Relation de soins/Anamnèse/
+- O4 : Interprétation d’examens complémentaires/Procédure/ Relation de soins/Anamnèse/Examen Clinique/
+- O5 : Procédure/ Relation de soins/Anamnèse/Examen Clinique/ Interprétation d’examens complémentaires/
+
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+test <- merge(ldf0, ordre, by.x = "ID", by.y = "ID")
+
+p <- test %>% ggplot(aes(x = ordre, y = Note, fill = ordre))+
+  geom_boxplot()+
+  facet_grid(~Station)+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 17, size = 3)+
+  theme_bw() +  scale_fill_brewer(palette = "Dark2")+
+  theme_bw() +
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+p <- ggplotly(p, width = 750, height = 500)
+htmltools::tagList(p)
+```
+
+
+### Analyse du jugement de performance {.tabset .tabset-dropdown}
+Pour toute cette section, il y a deux onglets un pour T1 l'autre pour T2. \
+Le jugement est négativement corrélé à l'anxiété et ce pour toutes les stations, c'est-à-dire que plus un étudiant est anxieux plus il juge sa performance mauvaise. \
+Il n'y a pas de lien entre les variables intéroceptives et le jugement de performance. \
+On remarque qu'il existe un lien entre les variables pédagogiques et le jugement de performance pour les vignettes 3, 4, 5 au temps 1, et pour toutes les variables au temps 2. \
+Il n'y pas d'influence de l'ordre de passage sur les jugements de performance.
+
+#### Anxiété {.tabset}
+##### T1
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+ldf0$Anx2 <- factor(ifelse(ldf0$Anx > 5 , "Neg", "Pos"))
+# ggplot(data = ldf0[ !(is.na(ldf0$Anx2)), ], aes(x = Note, y = Perf, group = Anx2, color = Anx2)) +
+
+ldf0 %>% ggplot(aes(x = Anx, y = Perf, group = Genre, color = Genre))+
+  geom_count(alpha = 0.3)+
+  geom_smooth(method = "lm", se = FALSE)+
+  facet_grid(~Station)+
+  stat_cor(method = "pearson", #color = "black", 
+           geom = "text", size = 3.6, show.legend = FALSE)+
+  scale_colour_manual(values = c("dodgerblue3", "orange4"))+
+  ylab("Jugement de Performance")+
+  xlab("Anxiété")+
+  theme_bw()
+```
+
+
+##### T2
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+ldf0$Anx2 <- factor(ifelse(ldf0$Anx > 5 , "Neg", "Pos"))
+# ggplot(data = ldf0[ !(is.na(ldf0$Anx2)), ], aes(x = Note, y = Perf, group = Anx2, color = Anx2)) +
+
+ldf0 %>% ggplot(aes(x = Anx, y = Perf.T2, group = Genre, color = Genre))+
+  geom_count(alpha = 0.3)+
+  geom_smooth(method = "lm", se = FALSE)+
+  facet_grid(~Station)+
+  stat_cor(method = "pearson", #color = "black", 
+           geom = "text", size = 3.6, show.legend = FALSE)+
+  scale_colour_manual(values = c("dodgerblue3", "orange4"))+
+  ylab("Jugement de Performance")+
+  xlab("Anxiété")+
+  theme_bw()
+```
+
+
+#### Intéroception {.tabset}
+
+Pour rappel :
+
+- INT1	Je sens quand mes intestins se contractent
+- INT2	Lorsque je suis détendu(e), je remarque que mon rythme cardiaque est lent
+- INT3	Je remarque que mon cœur s'emballe
+- GEN1	Avez-vous fait des ECOS d'entrainement entre étudiants ?
+
+##### T1
+```{r echo = FALSE, message=FALSE,  warning=FALSE, fig.height = 20}
+test <- dat5 %>% 
+  dplyr::select(ID, INT1, INT2, INT3, GEN1) %>% 
+  tidyr::gather(Type, "INT", -c("ID"))
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = "ID") %>% 
+  dplyr::mutate(INT = factor(INT))
+library(wesanderson)
+p <- test[!is.na(test$INT),] %>% ggplot(aes(x = INT, y = Perf, fill = INT))+
+  geom_boxplot()+
+  facet_grid(Station~Type, scales="free")+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 105)+
+  ylim(-110,110)+
+  scale_fill_brewer(palette = "Dark2")+
+  ylab("Jugement de Performance")+
+  theme_bw()+
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+
+# model <- lm(V4.norm ~ as.factor(GEN1), data = test)
+# summary(model)
+# Anova(model)
+```
+
+
+##### T2
+```{r echo = FALSE, message=FALSE,  warning=FALSE, fig.height = 20}
+test <- dat5 %>% 
+  dplyr::select(ID, INT1, INT2, INT3, GEN1) %>% 
+  tidyr::gather(Type, "INT", -c("ID"))
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = "ID") %>% 
+  dplyr::mutate(INT = factor(INT))
+library(wesanderson)
+p <- test[!is.na(test$INT),] %>% ggplot(aes(x = INT, y = Perf.T2, fill = INT))+
+  geom_boxplot()+
+  facet_grid(Station~Type, scales="free")+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 105)+
+  ylim(-110,110)+
+  scale_fill_brewer(palette = "Dark2")+
+  ylab("Jugement de Performance")+
+  theme_bw() +
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+
+# model <- lm(V4.norm ~ as.factor(GEN1), data = test)
+# summary(model)
+# Anova(model)
+```
+
+
+
+#### Variables pédagogiques {.tabset}
+Sur la figure vous pouvez cliquer pour voir les statistiques descriptives du boxplot.
+Les variables suivantes correspondent à :
+
+- Stage_1 : 	La vignette était-elle adaptée au niveau DFASM1 ?
+- Stage_2 :	Avez-vous déjà fait un stage en rapport avec la matière de cette vignette
+- Stage_3 :	Avez-vous déjà été confronté à ce type de situation en stage (V1,2,3,4)
+- Stage_4 :	Pensez-vous que les stages vous ont préparé à répondre à cette vignette (V1,2,3,4)
+- Stage_5 :	Avez-vous trouvé que  le patient simulé était réaliste (V1,2,3,4)
+- Stage_3 vignette 5 :	Avez-vous déjà réalisé cette procédure sur un patient ?
+- Stage_4 vignette 5 :	Avez-vous déjà réalisé cette procédure en atelier de simulation ?
+- Stage_5 vignette 5 :	Pensez-vous que les stages vous ont préparé à répondre à cette vignette ?
+
+##### T1
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+# Question 1
+test <- dat4 %>% 
+  dplyr::select(ID, ends_with(".1")) %>% 
+  tidyr::gather(Vignette, "Stage_1", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_1 = factor(Stage_1))
+levels(test$Vignette) <- paste0("V", 1:5)
+
+# Question 2
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".2")) %>% 
+  tidyr::gather(Vignette, "Stage_2", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_2 = factor(Stage_2))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 3
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".3")) %>% 
+  tidyr::gather(Vignette, "Stage_3", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_3 = factor(Stage_3))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 4
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".4")) %>% 
+  tidyr::gather(Vignette, "Stage_4", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_4 = factor(Stage_4))
+levels(test2$Vignette) <- paste0("V", 1:5)
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+
+# Question 5
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".5")) %>% 
+  tidyr::gather(Vignette, "Stage_5", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_5 = factor(Stage_5))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette")) %>% 
+  dplyr::mutate(Station = Vignette) %>% 
+  dplyr::select(-Vignette)
+
+
+
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = c("ID", "Station")) %>% 
+  tidyr::gather(Question, "Binaire", -c("ID", "Genre", "Station", "Note", "Perf", "Anx", "Perf.T2", "Anx2")) %>% 
+  dplyr::mutate(Binaire = factor(Binaire))
+
+
+
+p <- test[!is.na(test$Binaire),] %>% ggplot(aes(x = Binaire, y = Perf, fill = Question, group = Binaire))+
+  geom_boxplot()+
+  facet_grid(Station~Question)+
+  ylim(-120,120)+
+  stat_compare_means(aes(label=..p.adj..),method = "t.test", label.x = 1, label.y = 110)+
+  scale_fill_brewer(palette = "Dark2")+
+  theme_bw() +
+  ylab("Jugement de Performance")+
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+```
+
+
+##### T2
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+# Question 1
+test <- dat4 %>% 
+  dplyr::select(ID, ends_with(".1")) %>% 
+  tidyr::gather(Vignette, "Stage_1", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_1 = factor(Stage_1))
+levels(test$Vignette) <- paste0("V", 1:5)
+
+# Question 2
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".2")) %>% 
+  tidyr::gather(Vignette, "Stage_2", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_2 = factor(Stage_2))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 3
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".3")) %>% 
+  tidyr::gather(Vignette, "Stage_3", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_3 = factor(Stage_3))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 4
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".4")) %>% 
+  tidyr::gather(Vignette, "Stage_4", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_4 = factor(Stage_4))
+levels(test2$Vignette) <- paste0("V", 1:5)
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+
+# Question 5
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".5")) %>% 
+  tidyr::gather(Vignette, "Stage_5", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_5 = factor(Stage_5))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette")) %>% 
+  dplyr::mutate(Station = Vignette) %>% 
+  dplyr::select(-Vignette)
+
+
+
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = c("ID", "Station")) %>% 
+  tidyr::gather(Question, "Binaire", -c("ID", "Genre", "Station", "Note", "Perf", "Anx", "Perf.T2", "Anx2")) %>% 
+  dplyr::mutate(Binaire = factor(Binaire))
+
+
+
+p <- test[!is.na(test$Binaire),] %>% ggplot(aes(x = Binaire, y = Perf.T2, fill = Question, group = Binaire))+
+  geom_boxplot()+
+  facet_grid(Station~Question)+
+  ylim(-120,120)+
+  stat_compare_means(aes(label=..p.adj..),method = "t.test", label.x = 1, label.y = 110)+
+  scale_fill_brewer(palette = "Dark2")+
+  theme_bw() +
+  ylab("Jugement de Performance")+
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+```
+
+
+
+#### Influence du passage sur la vignette  {.tabset}
+Le codage est le suivant :
+
+- O1 : Relation de soins/Anamnèse/Examen Clinique/Interprétation d’examens complémentaires/Procédure
+- O2 : Anamnèse/ Examen Clinique/ Interprétation d’examens complémentaires/Procédure Relation de soins
+- O3 : Examen Clinique/Interprétation d’examens complémentaires/Procédure/Relation de soins/Anamnèse
+- O4 : Interprétation d’examens complémentaires/Procédure/ Relation de soins/Anamnèse/Examen Clinique
+- O5 : Procédure/ Relation de soins/Anamnèse/Examen Clinique/ Interprétation d’examens complémentaires
+
+##### T1
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+test <- merge(ldf0, ordre, by.x = "ID", by.y = "ID")
+
+p <- test %>% ggplot(aes(x = ordre, y = Perf, fill = ordre))+
+  geom_boxplot()+
+  facet_grid(~Station)+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 105, size = 3)+
+  theme_bw() +  scale_fill_brewer(palette = "Dark2")+
+  ylab("Jugement de Performance")+
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+p <- ggplotly(p, width = 750, height = 500)
+htmltools::tagList(p)
+```
+
+##### T2
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+test <- merge(ldf0, ordre, by.x = "ID", by.y = "ID")
+
+p <- test %>% ggplot(aes(x = ordre, y = Perf.T2, fill = ordre))+
+  geom_boxplot()+
+  facet_grid(~Station)+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 105, size = 3)+
+  theme_bw() +  scale_fill_brewer(palette = "Dark2")+
+  ylab("Jugement de Performance")+
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+p <- ggplotly(p, width = 750, height = 500)
+htmltools::tagList(p)
+```
+
+### Analyse de l'anxiété {.tabset .tabset-dropdown}
+Il y a un lien antre l'anxiété à chaque vignette et les deux variable intéroceptives : "Je sens quand mes intestins se contractent" et "Je remarque que mon cœur s’emballe". \
+Il n'y a que la vignette 3 pour laquelle les variables pédagogiques sont en lien avec l'anxiété. \
+On remarque que globalement les étudiants sont plus anxieux pour la première vignette qu'ils réalisent que celles qui succèdent.
+
+#### Intéroception
+
+Pour rappel :
+
+- INT1	Je sens quand mes intestins se contractent
+- INT2	Lorsque je suis détendu(e), je remarque que mon rythme cardiaque est lent
+- INT3	Je remarque que mon cœur s'emballe
+- GEN1	Avez-vous fait des ECOS d'entrainement entre étudiants ?
+
+```{r echo = FALSE, message=FALSE,  warning=FALSE, fig.height = 20}
+test <- dat5 %>% 
+  dplyr::select(ID, INT1, INT2, INT3, GEN1) %>% 
+  tidyr::gather(Type, "INT", -c("ID"))
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = "ID") %>% 
+  dplyr::mutate(INT = factor(INT))
+library(wesanderson)
+p <- test[!is.na(test$INT),] %>% ggplot(aes(x = INT, y = Anx, fill = INT))+
+  geom_boxplot()+
+  facet_grid(Station~Type, scales="free")+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 11)+
+  scale_fill_brewer(palette = "Dark2")+
+  ylim(0,12.5)+
+  theme_bw() +
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+
+# model <- lm(V4.norm ~ as.factor(GEN1), data = test)
+# summary(model)
+# Anova(model)
+```
+
+#### Variables pédagogiques
+Sur la figure vous pouvez cliquer pour voir les statistiques descriptives du boxplot.
+Les variables suivantes correspondent à :
+
+- Stage_1 : 	La vignette était-elle adaptée au niveau DFASM1 ?
+- Stage_2 :	Avez-vous déjà fait un stage en rapport avec la matière de cette vignette
+- Stage_3 :	Avez-vous déjà été confronté à ce type de situation en stage (V1,2,3,4)
+- Stage_4 :	Pensez-vous que les stages vous ont préparé à répondre à cette vignette (V1,2,3,4)
+- Stage_5 :	Avez-vous trouvé que  le patient simulé était réaliste (V1,2,3,4)
+- Stage_3 vignette 5 :	Avez-vous déjà réalisé cette procédure sur un patient ?
+- Stage_4 vignette 5 :	Avez-vous déjà réalisé cette procédure en atelier de simulation ?
+- Stage_5 vignette 5 :	Pensez-vous que les stages vous ont préparé à répondre à cette vignette ?
+
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+# Question 1
+test <- dat4 %>% 
+  dplyr::select(ID, ends_with(".1")) %>% 
+  tidyr::gather(Vignette, "Stage_1", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_1 = factor(Stage_1))
+levels(test$Vignette) <- paste0("V", 1:5)
+
+# Question 2
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".2")) %>% 
+  tidyr::gather(Vignette, "Stage_2", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_2 = factor(Stage_2))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 3
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".3")) %>% 
+  tidyr::gather(Vignette, "Stage_3", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_3 = factor(Stage_3))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+# Question 4
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".4")) %>% 
+  tidyr::gather(Vignette, "Stage_4", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_4 = factor(Stage_4))
+levels(test2$Vignette) <- paste0("V", 1:5)
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette"))
+
+
+# Question 5
+test2 <- dat4 %>% 
+  dplyr::select(ID, ends_with(".5")) %>% 
+  tidyr::gather(Vignette, "Stage_5", -c("ID")) %>% 
+  dplyr::mutate(Vignette = factor(Vignette)) %>% 
+  dplyr::mutate(Stage_5 = factor(Stage_5))
+levels(test2$Vignette) <- paste0("V", 1:5)
+
+
+
+test <- test %>% 
+  dplyr::left_join(test2, by = c("ID", "Vignette")) %>% 
+  dplyr::mutate(Station = Vignette) %>% 
+  dplyr::select(-Vignette)
+
+
+
+test <- ldf0 %>% 
+  dplyr::left_join(test, by = c("ID", "Station")) %>% 
+  tidyr::gather(Question, "Binaire", -c("ID", "Genre", "Station", "Note", "Perf", "Anx", "Perf.T2", "Anx2")) %>% 
+  dplyr::mutate(Binaire = factor(Binaire))
+
+
+
+p <- test[!is.na(test$Binaire),] %>% ggplot(aes(x = Binaire, y = Anx, fill = Question, group = Binaire))+
+  geom_boxplot()+
+  facet_grid(Station~Question)+
+  ylim(0,12.5)+
+  stat_compare_means(aes(label=..p.adj..),method = "t.test", label.x = 1, label.y = 11)+
+  scale_fill_brewer(palette = "Dark2")+
+  theme_bw() +
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+
+
+p <- ggplotly(p, width = 750, height = 750)
+htmltools::tagList(p)
+```
+
+#### Influence du passage sur la vignette
+Le codage est le suivant :
+
+- O1 : Relation de soins/Anamnèse/Examen Clinique/Interprétation d’examens complémentaires/Procédure
+- O2 : Anamnèse/ Examen Clinique/ Interprétation d’examens complémentaires/Procédure Relation de soins
+- O3 : Examen Clinique/Interprétation d’examens complémentaires/Procédure/Relation de soins/Anamnèse/
+- O4 : Interprétation d’examens complémentaires/Procédure/ Relation de soins/Anamnèse/Examen Clinique/
+- O5 : Procédure/ Relation de soins/Anamnèse/Examen Clinique/ Interprétation d’examens complémentaires/
+
+```{r echo = FALSE,warning=FALSE, message=FALSE}
+test <- merge(ldf0, ordre, by.x = "ID", by.y = "ID")
+
+p <- test %>% ggplot(aes(x = ordre, y = Anx, fill = ordre))+
+  geom_boxplot()+
+  facet_grid(~Station)+
+  stat_compare_means(aes(label=..p.adj..), label.x = 1.5, label.y = 11, size = 3)+
+  theme_bw() +  scale_fill_brewer(palette = "Dark2")+
+  ylim(0,12)+
+  theme(legend.position="none",
+        axis.title.x = element_blank())
+p <- ggplotly(p, width = 750, height = 500)
+htmltools::tagList(p)
+```
+
+## Notes aux examens écrits et ECOS  {.tabset .tabset-dropdown}
+Il y a une corrélation positive entre la note moyenne aux examens et les notes des vignettes ECOS, plus un étudiant est bon meilleure plus sa performance à une vignette ECOS est bonne. \
+Lorsque l'on observe les corrélations des notes de chaque matière avec les notes de chaque vignette, on remarque dans l'ensemble des corrélations positives mais peu importantes (comprise entre 0,03 et 0,25).
+\
+\
+Ensuite on réalise un clustering hierarchique sur les composantes de l'ACP.
+On distingue trois groupes :
+
+- Le groupe 1 "les moins bons" moins bonnes notes aux examens et aux épreuves ECOS.
+- Le groupe 2 "intermédiaire" : notes moyennes aux deux catégories d'examens.
+- Le groupe 3 "très bons" : note au dessus de la moyenne globale dans toutes les matières et aussi pour les épreuves ECOS.
+
+### Note moyenne et note ECOS
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+moyenne_examen <- data.frame(ID=notes[,1], Means=rowMeans(notes[,-1]))
+test <- ldf0 %>% 
+  dplyr::left_join(moyenne_examen, by = "ID")
+test %>% ggplot(aes(x = Means, y = Note))+
+  geom_jitter(alpha = 0.3, color = "darkolivegreen4")+
+  geom_smooth(method = "lm", se = FALSE, color = "darkolivegreen4")+
+  facet_grid(~Station)+
+  stat_cor(method = "pearson", #color = "black", 
+           geom = "text", size = 3.6, show.legend = FALSE)+
+  theme_bw()
+```
+
+
+### Corrélation plot
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 9.5, fig.height=9.5}
+df_acp <- dat1 %>% 
+  dplyr::select(ID, ends_with("norm")) %>% 
+  dplyr::left_join(notes, by = "ID")
+df_acp <- na.omit(df_acp)
+
+df_acp %>% 
+  dplyr::select(-ID) %>% 
+  cor(method = "pearson",
+      use = "complete.obs") %>% 
+  corrplot::corrplot.mixed(number.cex = 1.5)
+```
+
+
+### ACP
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 8, fig.height=8}
+# ACP
+res.pca <- PCA(df_acp[,-1], graph = FALSE)
+fviz_pca_var(res.pca, col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")
+             )
+```
+
+### Dendogramme
+
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+res.hcpc <- HCPC(res.pca, min = 3, graph = FALSE)
+fviz_dend(res.hcpc, 
+          cex = 0.7,
+          palette = "jco",               
+          rect = TRUE, rect_fill = TRUE, 
+          rect_border = "jco",         
+          labels_track_height = 0.8,
+          show_labels = F
+          )
+
+# res.hcpc$desc.var$quanti
+
+# df_acp$group <- res.hcpc$data.clust$clust
+# df_acp %>%
+#   dplyr::mutate(ID = rownames(df_acp)) %>%
+#   dplyr::select(ID, group) %>%
+#   dplyr::filter(group == 3) %>%
+#   write.csv2("/home/baptiste.criniere/Documents/PB_ECOS/Data/Extraction/Etudiant_moins_bons.csv", row.names = F)
+```
+
+### Projection
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+fviz_cluster(res.hcpc,
+             repel = TRUE,            # Evite le chevauchement des textes
+             show.clust.cent = TRUE, # Montre le centre des clusters
+             palette = "jco",         # Palette de couleurs, voir ?ggpubr::ggpar
+             ggtheme = theme_minimal(),
+             main = "Factor map",
+             show_labels = F
+             )
+```
+
+
+
+## Analyses multivariées 
+
+### Anxiété, Note, Jugement  
+Dans cette section les variables sont codées comme suit :
+
+- ANX1,2,3,4,5 : anxiété pour les vignettes 1, 2, 3, 4, et 5
+- JUG_1,2,3,4,5 : jugement de performance à T1 pour les vignettes 1, 2, 3, 4, et 5
+- V1.norm, 2, 3, 4, 5 : note normalisée pour les vignettes 1, 2, 3, 4, et 5
+
+On réalise une ACP afin d'étudier les corrélations entre un grand nombre de variables. Dans cette première ACP, on a placé l'ensemble des variables d'anxiété, ainsi que les jugements à T1 et les notes. \
+Sur cette figure, on observe que toutes les variables d'anxiétés se regroupent entre elles, elles sont donc fortement corrélées les unes aux autres. On remarque également le groupe des variables de jugement qui se mêle aux notes. Le nuage de points des femmes se projette à gauche, du côté "anxieux" ; tandis que le nuage de points des hommes se place du côté moins anxieux.
+
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+# Data manamegement
+df0 <- data.frame(dat1[, c("Genre", "V1.norm", "V2.norm", "V3.norm", "V4.norm", "V5.norm")], 
+                 dat2[, c("PERF1", "ANX1", "PERF2", "ANX2", "PERF3", "ANX3", "PERF4", "ANX4", "PERF5", "ANX5")]
+                 )
+df0 <- df0 %>% 
+  dplyr::rename(JUG_1 = PERF1, JUG_2 = PERF2, JUG_3 = PERF3, JUG_4 = PERF4, JUG_5 = PERF5)
+df0 <- na.omit(df0)
+df0 <- df0 %>% 
+  dplyr::mutate(Genre = Genre %>% factor %>% forcats::fct_recode("Femme" = "1", "Homme" = "2"))
+# ACP
+res.pca <- PCA(df0[,-1], graph = FALSE)
+fviz_pca_biplot(res.pca, 
+                col.ind = df0$Genre, 
+                repel = TRUE,
+                addEllipses = TRUE, 
+                geom = "point",
+                col.var = c("black"),
+                palette = c("dodgerblue3", "orange4"))
+```
+
+### Anxiété, Intéroception, Stress {.tabset .tabset-dropdown}
+Dans cette section les variables sont codées comme suit :
+
+- ANX1,2,3,4,5 : anxiété pour les vignettes 1, 2, 3, 4, et 5
+- Stress1 : Évaluation du stress le mois avant l’épreuve 
+- Stress2 : Évaluation du stress la semaine avant l’épreuve 
+- Stress3 : Évaluation du stress le soir avant l’épreuve 
+- Stress4 : Sommeil la nuit avant l’épreuve
+- Stress5 : Évaluation du stress juste avant l’épreuve 
+- Stress 6 : Évaluation du stress à la fin de l’épreuve 
+- Stress 7 : Évaluation du stress le lendemain de l’épreuve 
+- Stress 8 : Sommeil la nuit le lendemain de l’épreuve
+- Int 1 : Je sens que mes intestins se contractent 
+- Int 2 : Lorsque je suis détendu, je remarque que mon rythme cardiaque est lent 
+- Int 3 : Je remarque que mon cœur s'emballe 
+
+On réalise une ACP afin d'étudier les corrélations entre un grand nombre de variables. Dans cette seconde ACP, on a placé l'ensemble des variables d'anxiété, de stress et intéroceptives. \
+Dans cette ACP on se rend compte que les variables de stress se regroupent entre elles (donc positivement corrélées les unes aux autres) à l'exception des variables stress 4 et 8 (concernant le sommeil) qui s'opposent (donc corrélation négative entre stress 4,8 et stress 1,2,3,5,6,7).
+Les variables d'anxiétés se projettent du même côtés que les variables de stress (1,2,3,5,6,7) (elles sont donc corrélées), cependant l'axe 2 de l'ACP sépare ces deux groupes de variables, ce qui semble indiquer une corrélation faible.
+\
+\
+\
+On réalise ensuite un clustering hierarchique des étudiants à partir de l'ACP précédente. \
+Trois groupes se distinguent dans cette classification :
+
+- le groupe 1, groupe des **"pas stressés et pas"** : pour les variables d'anxiété ils ont une valeur moyenne comprise entre 3,5 et 2,5 (donc très faible). De même pour les variables de stress 1,2,3,5,6,7 pour lesquelles ils ont une valeur moyenne inférieure à la valeur moyenne totale. Il y a seulement stress 4 pour laquelle ils ont une valeur supérieure à la moyenne totale. Il s'agit du groupe dans lequel se place le plus d'hommes 40%.
+- le groupe 2 **"anxieux lors des examens et problème de sommeil (avant/après)"** : ils ont pour les variables d'anxiété élevées avec des moyennes comprise entre 6 et 7. De même pour les variables stress 4/8 (7,5 et 9 de moyenne), cependant les autres variables de stress sont inférieures à la moyenne globale. Ce groupe se compose essentiellement de femmes 77%.
+- le groupe 3 **"anxieux stressés"** : ils ont pour les variables d'anxiété élevées avec des moyennes comprises entre 6 et 7. Toutes les variables de stress à l'exception de celles liées au sommeil sont supérieures aux moyennes de celles des autres groupes. Ce groupe se compose essentiellement de femmes 79%.
+
+#### ACP 
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+# Data manamegement
+df0 <- data.frame(dat2[, c("Genre", "ANX1", "ANX2", "ANX3", "ANX4", "ANX5")],
+                 dat5[, c("Stress1", "Stress2", "Stress3", "Stress4",  "Stress5", "Stress6", "Stress7", "Stress8", "Stress9",
+                          "INT1", "INT2", "INT3")])
+df0 <- na.omit(df0)
+df0 <- df0 %>% 
+  dplyr::mutate(Genre = Genre %>% factor %>% forcats::fct_recode("Femme" = "1", "Homme" = "2"))
+# ACP
+res.pca <- PCA(df0[,-1], graph = FALSE)
+fviz_pca_biplot(res.pca, 
+                col.ind = df0$Genre, 
+                repel = TRUE,
+                addEllipses = TRUE, 
+                geom = "point",
+                col.var = c("black"),
+                palette = c("dodgerblue3", "orange4"))
+```
+
+
+
+#### Dendogramme 
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+res.hcpc <- HCPC(res.pca, min = 3, graph = FALSE)
+fviz_dend(res.hcpc, 
+          cex = 0.7,
+          palette = "jco",               
+          rect = TRUE, rect_fill = TRUE, 
+          rect_border = "jco",         
+          labels_track_height = 0.8,
+          show_labels = F
+          )
+
+# res.hcpc$desc.var$quanti
+```
+
+#### Projection
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11, fig.height = 5}
+fviz_cluster(res.hcpc,
+             repel = TRUE,            # Evite le chevauchement des textes
+             show.clust.cent = TRUE, # Montre le centre des clusters
+             palette = "jco",         # Palette de couleurs, voir ?ggpubr::ggpar
+             ggtheme = theme_minimal(),
+             main = "Factor map",
+             show_labels = F
+             )
+
+# Group h/f
+# df0$group <- res.hcpc$data.clust$clust
+# prop.table(table(df0$group, df0$Genre), 1)
+# df0 %>% 
+#   dplyr::mutate(ID = rownames(df0)) %>% 
+#   dplyr::select(ID, group) %>%
+#   dplyr::filter(group == 3) %>% 
+#   write.csv2("/home/baptiste.criniere/Documents/PB_ECOS/Data/Extraction/Etudiant_anxieux.csv", row.names = F)
+```
+
+## Différence entre le jugement et la note
+Dans cette section, on cherche à modéliser l'écart entre le jugement et la note. Pour cela, on a normalisé les jugements à T1 pour chaque vignette, et les notes de chaque vignette, on a ensuite calculé la différence pour chaque étudiant entre son jugement (normalisé) et sa note (normalisé). \
+On a construit ensuite un modèle (pour chaque vignette) en essayant d'expliquer cette différence par une interaction entre le genre et l'anxiété.
+\[Delta = Genre + Anx + Genre*Anx\]
+On trouve un effet global de l'anxiété pour chaque vignette (p < 0,001), les personnes les plus anxieuses ont tendance à sous estimer leur niveau (et inversement). Il y a un léger effet du genre (p = 0,056), ce qui signifie que les hommes ont tendance à se surestimer en moyenne en comparaison aux femmes. Il y a également un effet d'interaction entre le genre et l'anxiété selon les vignettes (p = 0,018), ainsi pour certaines vignettes l'anxiété n'a pas le même effet selon le genre (V2, V3, V4), pour ces vignettes il n'y a pas d'effet significatif de l'anxiété pour les hommes contrairement aux femmes.
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11}
+# Data management
+df1_bis <- df1 %>% 
+  dplyr::mutate_at(vars(starts_with("V")), scale)
+df2a_bis <- df2a %>% 
+  dplyr::mutate_at(vars(starts_with("PERF")), scale)
+ldf1_bis <- melt(df1_bis, id.vars = c("ID", "Genre"))
+colnames(ldf1_bis) <- c("ID", "Genre", "Station", "Note")
+levels(ldf1_bis$Station) <- paste0("V", 1:5)
+ldf2a_bis <- melt(df2a_bis, id.vars = c("ID", "Genre"))
+colnames(ldf2a_bis) <- c("ID", "Genre", "Station", "PERF")
+ldf0_bis <- data.frame(ldf1_bis, Perf = ldf2a_bis$PERF , Anx = ldf2b$ANX)
+ldf0_bis <- ldf0_bis %>% 
+  dplyr::mutate(Genre = Genre %>% factor %>% forcats::fct_recode("Femme" = "1", "Homme" = "2"))
+ldf0_bis$delta <- round(ldf0_bis$Perf - ldf0_bis$Note,3)
+ldf0_bis$Obs <- as.numeric(ldf0_bis$Station)
+ldf0_bis$Obs_Ord <- factor(ldf0_bis$Obs, ordered = TRUE)
+
+
+# Modèle mixte
+fit_lmer_1_re <- lmerTest::lmer(delta ~  Station * Anx * Genre  + (1|ID),
+                                data = ldf0_bis,
+                                REML = TRUE)
+anova(fit_lmer_1_re)
+summary(fit_lmer_1_re)
+
+emmeans(fit_lmer_1_re, pairwise ~  Genre | Station)
+
+# interactions::cat_plot(model = fit_lmer_1_re,
+#                             pred = Station,
+#                             modx = Anx,
+#                             interval = TRUE)
+```
+
+```{r echo = FALSE,warning=FALSE, message=FALSE, results='hide', fig.align='center', fig.width = 11}
+ldf0_bis %>% 
+  ggplot(aes(x = Anx, y = delta, group = Genre, color = Genre))+
+  geom_jitter(alpha = 0.3)+
+  geom_smooth(method = "lm", se = FALSE)+
+  facet_grid(~Station)+
+  stat_cor(method = "pearson", label.y.npc = "bottom",
+           geom = "text", size = 3.6, show.legend = FALSE)+
+  scale_colour_manual(values = c("dodgerblue3", "orange4"))+
+  theme_bw() +
+  xlab("Anxiété")+
+  ggtitle("Différence entre le jugement et la note en fonction du genre et de l'anxiété")
+
+```
+
+
+## Remarques
+Dans le rapport d’analyse, il est évoqué une modélisation par les chaînes de Markov. Les chaînes de Markov servent à modéliser un cas particulier de processus stochastique sans mémoire (modèle probabiliste permettant d’étudier un phénomène aléatoire au cours du temps, et de prédire des changements d’état). On utilise surtout les chaînes de Markov en finance, ou en météo. Je ne pense pas que cette méthode soit adaptée aux données et aux problématiques que l’on étudie.
+\
+\
+Les statistiques bayésiennes sont aussi évoquées dans le rapport d’analyse. Là encore, j’ai dû mal à voir leur intérêt. Les statistiques bayésiennes permettent d’étudier les mêmes choses que les statistiques fréquentistes mais sous un angle différent, ce qui change les moyens d’estimer les paramètres, et leur interprétation. En statistique bayésienne on a besoin d’un a priori, qui correspond à une information que l’on ajoute afin de faire nos tests, nos modélisations. Cette information doit venir d’une expérience antécédente et indépendante de nos données.
+Je ne vois pas très bien quel a priori on pourrait utiliser ainsi que l’apport aux questionnements que l’on se pose dans l’analyse. Les avantages des statistiques bayésiennes sont l’utilisation d’une information a priori (si on en a une), leur interprétation, et elles sont aussi très utiles sur de petits échantillons.
+
+
+

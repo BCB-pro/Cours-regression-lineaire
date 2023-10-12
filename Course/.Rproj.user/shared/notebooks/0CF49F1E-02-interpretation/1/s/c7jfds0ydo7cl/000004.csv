@@ -1,0 +1,6 @@
+"0","data %>% "
+"0","  ggplot(aes(x = Taille, y = Poids, color = Sexe, group = Sexe))+"
+"0","  geom_point(alpha = 0.3)+"
+"0","  geom_smooth(method = ""lm"", se = FALSE, alpha = 0.7)+"
+"0","  theme_bw()+"
+"0","  scale_color_manual(values = c(""darkblue"", ""darkred""))"

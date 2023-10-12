@@ -1,0 +1,563 @@
+---
+title: "Analyse"
+author: "Baptiste Crinière-Boizet"
+output:
+  html_document:
+    theme: united
+    toc: true
+    toc_float: true
+    number_sections: true
+    # includes:
+    #   after_body: tabset-dropdown.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(fig.width=10)
+knitr::opts_chunk$set(fig.height=8)
+```
+
+```{r}
+# libraries
+library(tidyverse)
+library(ggsci)
+library(lme4)
+library(plotly)
+library(car)
+library(ggpubr)
+library(DT)
+library(kableExtra)
+```
+
+```{r}
+# Data management
+data <- openxlsx::read.xlsx("/home/baptiste.criniere/Documents/PB_SLA_ribon/Data/table_Multiplex_2023_pour_Baptiste.xlsx")
+
+data <- data %>% 
+  dplyr::rename(ID = X1) %>% 
+  dplyr::mutate(ID = ID %>% factor) %>%
+  dplyr::mutate(group = group %>% factor) %>% 
+  dplyr::mutate(cond = cond %>% factor) %>% 
+  dplyr::mutate(plate = plate %>% factor) %>% 
+  rename_with(~str_sub(., start = 1, end = -6), ends_with(")")) %>% 
+  dplyr::mutate(ID = ID %>% str_sub(start = 1, end = 6))
+
+names(data) <- gsub("-", "_", names(data))
+names(data) <- gsub("\\(", "_", names(data))
+names(data) <- gsub(")", "_", names(data))
+names(data) <- gsub("/", "_", names(data))
+
+
+data_bis <- data %>% 
+  dplyr::select(-BDNF, -GM_CSF, -IL_1_alpha, - IL_10, -MIF)
+```
+
+# Remarques
+Suppression des protéines peu exprimées : On remarque que certaines protéines sont très peu exprimées, les suivantes : BDNF, GM_CSF, IL_1_alpha, IL_10, MIF.
+
+# Table descriptive
+Il y a seulement les "ctrl" pour lesquels on dispose d'observations pour chaque "plate". Pour Ctrl_asympto deux plates, sALS on a aussi deux plates.
+```{r}
+resume <- data_bis %>% 
+  furniture::table1(group,
+                    cond,
+                    splitby =~ plate,
+                    output = "text")
+
+knitr::kable(resume, caption = "Table descriptive") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+# Ctrl vs Ctrl asympto {.tabset}
+Dans cette section, nous cherchons à déterminer si les groupes "ctrl" et "ctrl_asympto" présentent des similitudes, c'est-à-dire s'il n'existe pas de différence notable entre ces deux groupes. C'est pourquoi nous effectuons une comparaison entre les contrôles asymptomatiques et les contrôles de la plaque 4. \
+Nous n'observons aucune différence significative pour chacune des protéines entre le groupe des contrôles asymptomatiques et le groupe des contrôles. \
+Dans la suite de l'analyse, nous étudierons ces deux groupes sans distinction, notamment pour évaluer l'effet de la "plaque".
+
+## LPS
+Ici, j'ai appliqué une transformation logarithmique aux valeurs des expressions des protéines analysées sous la condition LPS. \
+Ensuite, j'ai réalisé un test de Wilcoxon pour déterminer s'il existait une différence statistiquement significative entre les deux groupes de contrôle de la plaque 4
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(group %in% c("Ctrl", "Ctrl_asympto") & plate %in% 4)
+
+fig1 <- data1 %>% 
+  dplyr::filter(cond %in% "LPS") %>% 
+  tidyr::pivot_longer(2:22, names_to = "names", values_to = "values") %>% 
+  ggplot(aes(x = group, y = log(values), color = group))+
+  geom_jitter(alpha = 0.5)+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5)+
+  facet_wrap(~names, scales = "free")+
+  stat_compare_means(size = 3)+
+  scale_color_manual(values = pal_aaas("default")(10)[1:2])+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  labs(x = "", y = "")+
+  theme_classic()+
+  theme(legend.position = "none")
+
+plotly::ggplotly(fig1)
+```
+
+## NS
+Même analyse que dans la section LPS.
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(group %in% c("Ctrl", "Ctrl_asympto") & plate %in% 4)
+
+fig2 <- data1 %>% 
+  dplyr::filter(cond %in% "NS") %>% 
+  tidyr::pivot_longer(2:22, names_to = "names", values_to = "values") %>% 
+  ggplot(aes(x = group, y = values, color = group))+
+  geom_jitter(alpha = 0.5)+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5, size = 0.75)+
+  facet_wrap(~names, scales = "free")+
+  stat_compare_means(size = 3)+
+  scale_color_manual(values = pal_aaas("default")(10)[1:2])+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  labs(x = "", y = "")+
+  theme_classic()+
+  theme(legend.position = "none")
+
+plotly::ggplotly(fig2)
+```
+
+# Effet des plates sur le ctrl {.tabset}
+Ensuite, nous cherchons à évaluer l'effet de la variable "plaque". Dans cette section, nous utilisons uniquement les données des contrôles et des contrôles asymptomatiques (sans distinction), car nous avons montré dans la section précédente qu'a priori, il n'y a pas de différence entre ces deux groupes.
+
+## LPS
+### Figure
+J'ai fait une transformation en log pour cette figure.
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(group %in% c("Ctrl", "Ctrl_asympto"))
+
+fig1 <- data1 %>% 
+  dplyr::filter(cond %in% "LPS") %>% 
+  tidyr::pivot_longer(2:22, names_to = "names", values_to = "values") %>% 
+  ggplot(aes(x = plate, y = log(values), color = cond))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5, size = 0.75)+
+  facet_wrap(~names, scales = "free")+
+  labs(x = "", y = "")+
+  theme_classic()+
+  theme(legend.position = "none")+
+  scale_color_manual(values = pal_aaas("default")(10)[3])
+
+p <- plotly::ggplotly(fig1)
+p$x$data <- lapply(p$x$data, FUN = function(x){
+
+  if (x$type == "box") {
+    x$marker = list(opacity = 0)
+  }
+  return(x)
+})
+p
+```
+
+### Résultats
+Ici, la colonne de droite représente la p-valeur associée au test de significativité de l'effet de la plaque. Si cette p-valeur est inférieure au seuil de 0,0028, on peut conclure qu'il existe un effet de la plaque pour la protéine en question sur le groupe des contrôles (condition LPS).
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(group %in% c("Ctrl", "Ctrl_asympto") & cond %in% "LPS")
+
+plate <- data.frame(Var = names(data_bis)[2:22], 
+                    Pvalue = NA)
+
+
+for (i in 1:nrow(plate)){
+  formule <- paste0(plate$Var[i], " ~ plate + (1|ID)")
+  model <- lme4::lmer(formule, data = data1)
+  a <- car::Anova(model)
+  plate$Pvalue[i] <- a$`Pr(>Chisq)`[1]
+}
+
+plate %>% 
+  mutate(across(2, round, 5)) %>% 
+  DT::datatable(plate) %>% 
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.0028), c("red", "black")))
+```
+
+## NS
+
+### Figure
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(group %in% c("Ctrl", "Ctrl_asympto"))
+
+fig2 <- data1 %>% 
+  dplyr::filter(cond %in% "NS") %>% 
+  tidyr::pivot_longer(2:22, names_to = "names", values_to = "values") %>% 
+  ggplot(aes(x = plate, y = values, color = cond))+
+  geom_boxplot(outlier.shape = NA, outlier.size = NA)+
+  geom_jitter(alpha = 0.5, size = 0.75)+
+  facet_wrap(~names, scales = "free")+
+  theme_classic()+
+  scale_color_manual(values = pal_aaas("default")(10)[4])
+
+p <- plotly::ggplotly(fig1)
+
+p$x$data <- lapply(p$x$data, FUN = function(x){
+
+  if (x$type == "box") {
+    x$marker = list(opacity = 0)
+  }
+  return(x)
+})
+p
+```
+
+### Résultat
+Ici, la colonne de droite représente la p-valeur associée au test de significativité de l'effet de la plaque. Si cette p-valeur est inférieure au seuil de 0,0028, on peut conclure qu'il existe un effet de la plaque pour la protéine en question sur le groupe des contrôles (condition NS).
+
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(group %in% c("Ctrl", "Ctrl_asympto") & cond %in% "NS")
+
+
+plate <- data.frame(Var = names(data_bis)[2:22], 
+                    Pvalue = NA)
+
+
+for (i in 1:nrow(plate)){
+  formule <- paste0(plate$Var[i], " ~ plate + (1|ID)")
+  model <- lme4::lmer(formule, data = data1)
+  a <- car::Anova(model)
+  plate$Pvalue[i] <- a$`Pr(>Chisq)`[1]
+}
+
+plate %>% 
+  mutate(across(2, round, 5)) %>% 
+  DT::datatable() %>% 
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.0028), c("red", "black")))
+
+```
+
+# Mesurer l'effet sujet {.tabset}
+Nous mesurons l'effet du sujet, c'est-à-dire la part de variance expliquée par l'effet du sujet sur l'expression de chaque protéine. Cette part de variance expliquée est un nombre compris entre 0 et 1. Plus ce nombre se rapproche de 1, plus les mesures répétées sur un même individu (dans les mêmes conditions, avec la seule différence de la plaque) auront tendance à être similaires. Par conséquent, l'effet de la plaque sera faible et peut être considéré comme négligeable. \
+\
+Il n'existe pas de seuil objectif à partir duquel on peut affirmer que l'effet du sujet n'explique que peu de variance. Dans le cas de nos données, nous pouvons considérer que lorsque la part de variance expliquée (R2) est inférieure à 0,15, l'effet du sujet est négligeable. Ainsi, pour la protéine en question, la reproductibilité est faible et l'effet plaque est important. \
+\
+Graphiquement, nous pouvons observer que lorsque nous reproduisons la même expérience pour le même sujet, ses expressions en termes de protéines auront tendance à être plus proches les unes des autres que les expressions des autres sujets (pour les protéines avec un faible effet plaque). En revanche, pour les protéines présentant un fort effet de plaque, on observe l'inverse : la répétition de la même expérience sur le même sujet ne conduit pas à des mesures similaires pour ce sujet. \
+\
+*On obtient globalement les mêmes résultats que dans la section précédente.*
+
+```{r}
+modalite_counts <- table(data_bis$ID)
+
+est_unique <- modalite_counts == 2
+repetition <- names(est_unique[!est_unique])
+
+data2 <- data_bis %>% 
+  dplyr::filter(ID %in% repetition)
+```
+
+## LPS
+```{r}
+plot1 <- data2 %>% 
+  tidyr::pivot_longer(2:22, names_to = "names", values_to = "values") %>% 
+  dplyr::filter(ID %in% repetition) %>% 
+  dplyr::filter(cond %in% "LPS") %>% 
+  ggplot(aes(x = ID, y = values))+
+  geom_boxplot(outlier.shape = NA)+
+#  geom_line(aes(group = ID))+
+  geom_jitter(alpha = 0.5)+
+  facet_wrap(~names, scales = "free")+
+  labs(x = "")+
+  theme_classic()+
+  theme(legend.position = "none",
+        axis.text.x = element_blank())
+plot1
+```
+
+## NS
+```{r}
+plot2 <- data2 %>% 
+  tidyr::pivot_longer(2:22, names_to = "names", values_to = "values") %>% 
+  dplyr::filter(ID %in% repetition) %>% 
+  dplyr::filter(cond %in% "NS") %>% 
+  ggplot(aes(x = ID, y = values))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5)+
+  facet_wrap(~names, scales = "free")+
+  labs(y = "")+
+  theme_classic()+
+  theme(legend.position = "none",
+        axis.text.x = element_blank())
+plot2
+```
+
+## Résultats
+```{r}
+id_effect <- data.frame(Var = names(data_bis)[2:22], R2 = NA)
+fig <- data2 %>% 
+  ggplot(aes(x = plate, y = MIP_1_alpha__CCL3_))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_line(aes(group = ID))+
+  geom_point(aes(color = ID), alpha = 0.5)+
+  facet_wrap(~cond, scales = "free")+
+  theme_classic()
+
+for (i in 1:nrow(id_effect)){
+  a <- paste0("log(", paste0(id_effect$Var[i], ")"))
+  formule <- paste0(id_effect$Var[i], " ~ cond + (1|ID)")
+  model <- lme4::lmer(formule, data = data2)
+  id_effect$R2[i] <- unlist(performance::icc(model)[1])
+}
+
+id_effect %>% 
+  mutate(across(2, round, 2)) %>% 
+  DT::datatable()
+```
+
+# Analyse ctrl vs group {.tabset .tabset-dropdown}
+
+## Plaque 1 {.tabset}
+
+### LPS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "1" & cond %in% "LPS")
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = log(value), color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+### NS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "1" & cond %in% "NS")
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = value, color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+## Plaque 2 {.tabset}
+
+### LPS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "2" & cond %in% "LPS")
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = log(value), color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  labs(x = "")+
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+### NS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "2" & cond %in% "NS")
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = value, color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  labs(x = "")
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+## Plaque 3 {.tabset}
+
+### LPS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "3" & cond %in% "LPS")
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = log(value), color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  labs(x = "")+
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+### NS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "3" & cond %in% "NS")
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = value, color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  labs(x = "")
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+## Plaque 4 {.tabset}
+
+### LPS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "4" & cond %in% "LPS") %>% 
+  dplyr::mutate(group = group %>% as.character) %>% 
+  dplyr::mutate(group = ifelse(group %in% "Ctrl_asympto", "Ctrl", group)) %>% 
+  dplyr::mutate(group = group %>% factor)
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = log(value), color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  labs(x = "")+
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+### NS
+```{r}
+data1 <- data_bis %>% 
+  dplyr::filter(plate %in% "4" & cond %in% "LPS") %>% 
+  dplyr::mutate(group = group %>% as.character) %>% 
+  dplyr::mutate(group = ifelse(group %in% "Ctrl_asympto", "Ctrl", group)) %>% 
+  dplyr::mutate(group = group %>% factor)
+
+fig <- data1 %>% 
+  tidyr::pivot_longer(2:22) %>% 
+  ggplot(aes(x = group, y = value, color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(aes(text = ID), size = 0.5, alpha = 0.5)+
+  stat_compare_means(size = 3)+
+  facet_wrap(~name, scales = "free")+
+  scale_y_continuous(expand = c(0.225,0.225))+
+  scale_color_aaas()+
+  labs(x = "")+
+  theme_classic()+
+  theme(legend.position = "none")
+ggplotly(fig)
+```
+
+# Analyse des protéines pour lesquelles l'effet plaque est négligéable {.tabset}
+On a déterminé dans la section précédente des protéines pour lesquelles l'effet plaque était négligeable.
+
+## LPS
+On conserve les protéines suivantes pour les LPS dans cette analyse : CD14, GRO_alpha__CXCL1_, I_TAC__CXCL11_, IL_12p70, IL_1RA, IL_6, IL_8__CXCL8_, IP_10__CXCL10_, MCP_1__CCL2_, MIP_2_alpha__CXCL2_, PAI_1__Serpin_, PTX3, RANTES__CCL5_, S100A8_A9, TNF_alpha,
+TREM_2
+
+```{r}
+keep <- c("CD14", "GRO_alpha__CXCL1_", "I_TAC__CXCL11_", "IL_12p70", "IL_1RA", "IL_6", "IL_8__CXCL8_", "IP_10__CXCL10_", "MCP_1__CCL2_", "PAI_1__Serpin_", "PTX3", "RANTES__CCL5_", "S100A8_A9", "TNF_alpha", "TREM_2")
+
+data3 <- data_bis %>% 
+  dplyr::filter(cond %in% "LPS") %>% 
+  dplyr::select(keep, ID, group)
+
+data3 %>% 
+  tidyr::pivot_longer(1:15) %>% 
+  ggplot(aes(x = group, y = log(value)))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5, size = 1)+
+  facet_wrap(~name, scales = "free")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+result <- data.frame(Var = keep, Pvalue = NA)
+for(i in 1:nrow(result)){
+  a <- result$Var[i]
+  formule <- paste0(a, "~ group + (1|ID)")
+  model <- lme4::lmer(formule, data)
+  a <- car::Anova(model)
+  result$Pvalue[i] <- a$`Pr(>Chisq)`
+}
+
+result %>% 
+  mutate(across(2, round, 5)) %>% 
+  DT::datatable() %>% 
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.05), c("red", "black")))
+```
+
+## NS
+On conserve les protéines suivantes pour les NS dans cette analyse : CD14, GRO_alpha__CXCL1_, I_TAC__CXCL11_, IL_12p70, , IL_8__CXCL8_, IP_10__CXCL10_, MCP_1__CCL2_, Mer__MERTK_, MIP_2_alpha__CXCL2_, PAI_1__Serpin_, PTX3, RANTES__CCL5_, TREM_2
+
+```{r}
+keep <- c("CD14", "GRO_alpha__CXCL1_", "I_TAC__CXCL11_", "IL_12p70", "IL_8__CXCL8_", "IP_10__CXCL10_", "MCP_1__CCL2_", "MIP_2_alpha__CXCL2_", "PAI_1__Serpin_", "PTX3", "RANTES__CCL5_", "TREM_2")
+
+data3 <- data_bis %>% 
+  dplyr::filter(cond %in% "NS") %>% 
+  dplyr::select(keep, ID, group)
+
+data3 %>% 
+  tidyr::pivot_longer(1:12) %>% 
+  ggplot(aes(x = group, y = value))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5, size = 1)+
+  facet_wrap(~name, scales = "free")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+result <- data.frame(Var = keep, Pvalue = NA)
+for(i in 1:nrow(result)){
+  a <- result$Var[i]
+  formule <- paste0(a, "~ group + (1|ID)")
+  model <- lme4::lmer(formule, data)
+  a <- car::Anova(model)
+  result$Pvalue[i] <- a$`Pr(>Chisq)`
+}
+
+result %>% 
+  mutate(across(2, round, 5)) %>% 
+  DT::datatable() %>% 
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.05), c("red", "black")))
+```
