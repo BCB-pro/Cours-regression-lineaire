@@ -23,7 +23,7 @@
 <meta name="author" content="Baptiste CRINIERE-BOIZET" />
 
 
-<meta name="date" content="2023-10-03" />
+<meta name="date" content="2023-10-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -49,6 +49,7 @@
 
 
 
+<link href="libs/codefolding-lua-1.1/codefolding-lua.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -61,6 +62,70 @@
 <script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 <style type="text/css">
   
@@ -135,7 +200,28 @@
 <li class="chapter" data-level="3.2.2" data-path="interprétation.html"><a href="interprétation.html#interaction"><i class="fa fa-check"></i><b>3.2.2</b> Interaction</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="exemple-1-1.html"><a href="exemple-1-1.html"><i class="fa fa-check"></i><b>4</b> Exemple 1</a></li>
+<li class="chapter" data-level="4" data-path="exemple-1-1.html"><a href="exemple-1-1.html"><i class="fa fa-check"></i><b>4</b> Exemple 1</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="exemple-1-1.html"><a href="exemple-1-1.html#importation-et-data-management"><i class="fa fa-check"></i><b>4.1</b> Importation et data management</a></li>
+<li class="chapter" data-level="4.2" data-path="exemple-1-1.html"><a href="exemple-1-1.html#exploration-des-données"><i class="fa fa-check"></i><b>4.2</b> Exploration des données</a></li>
+<li class="chapter" data-level="4.3" data-path="exemple-1-1.html"><a href="exemple-1-1.html#analyse-bi-variée-relation-entre-nos-covariables"><i class="fa fa-check"></i><b>4.3</b> Analyse bi-variée relation entre nos covariables</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="exemple-1-1.html"><a href="exemple-1-1.html#age-at-onset-mutation"><i class="fa fa-check"></i><b>4.3.1</b> Age at onset &amp; Mutation</a></li>
+<li class="chapter" data-level="4.3.2" data-path="exemple-1-1.html"><a href="exemple-1-1.html#lien-entre-disease-duration-mutation"><i class="fa fa-check"></i><b>4.3.2</b> Lien entre Disease duration &amp; Mutation</a></li>
+<li class="chapter" data-level="4.3.3" data-path="exemple-1-1.html"><a href="exemple-1-1.html#age-mutation"><i class="fa fa-check"></i><b>4.3.3</b> Age &amp; Mutation</a></li>
+<li class="chapter" data-level="4.3.4" data-path="exemple-1-1.html"><a href="exemple-1-1.html#age-at-onset-disease-duration"><i class="fa fa-check"></i><b>4.3.4</b> Age at onset &amp; Disease duration</a></li>
+<li class="chapter" data-level="4.3.5" data-path="exemple-1-1.html"><a href="exemple-1-1.html#age-age-at-onset"><i class="fa fa-check"></i><b>4.3.5</b> Age &amp; Age at onset</a></li>
+<li class="chapter" data-level="4.3.6" data-path="exemple-1-1.html"><a href="exemple-1-1.html#age-disease-duration"><i class="fa fa-check"></i><b>4.3.6</b> Age &amp; Disease duration</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale"><i class="fa fa-check"></i><b>4.4</b> Figure finale</a></li>
+<li class="chapter" data-level="4.5" data-path="exemple-1-1.html"><a href="exemple-1-1.html#modélisation"><i class="fa fa-check"></i><b>4.5</b> Modélisation</a></li>
+<li class="chapter" data-level="4.6" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale-1"><i class="fa fa-check"></i><b>4.6</b> Figure finale</a></li>
+<li class="chapter" data-level="4.7" data-path="exemple-1-1.html"><a href="exemple-1-1.html#vérifications-des-hypothèses"><i class="fa fa-check"></i><b>4.7</b> Vérifications des hypothèses</a>
+<ul>
+<li class="chapter" data-level="4.7.1" data-path="exemple-1-1.html"><a href="exemple-1-1.html#résidus-1"><i class="fa fa-check"></i><b>4.7.1</b> Résidus</a></li>
+<li class="chapter" data-level="4.7.2" data-path="exemple-1-1.html"><a href="exemple-1-1.html#colinéarité"><i class="fa fa-check"></i><b>4.7.2</b> Colinéarité</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="5" data-path="exemple-2-1.html"><a href="exemple-2-1.html"><i class="fa fa-check"></i><b>5</b> Exemple 2</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -181,7 +267,7 @@ L’équation du modèle est la suivante : <span class="math inline">\(Poids = \
 Pour interpréter les coefficients du modèle, nous commençons par <span class="math inline">\(\beta_0\)</span>, qui nous indique que lorsque la taille est nulle, le poids serait de -63 kg, une information qui n’est pas très pertinente dans ce contexte.<br />
 En revanche, le coefficient <span class="math inline">\(\beta_1\)</span> apporte plus d’informations : il spécifie qu’une croissance de la taille de <span class="math inline">\(n\)</span> centimètres provoque en moyenne une hausse du poids de <span class="math inline">\(n \times 0.81\)</span> kg. Pour illustrer, une élévation de 10 cm entraîne une augmentation moyenne du poids de 8.1 kg.<br />
 </p>
-<p><img src="Image/coeff.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="../../Trainings/Linear regression/Course/Image/coeff.png" width="55%" style="display: block; margin: auto;" /></p>
 <p>Le graphique ci-dessous présente l’augmentation moyenne du poids associée à une hausse de 10 cm de la taille avec notre modèle linéaire.</p>
 <p><img src="_main_files/figure-html/unnamed-chunk-24-1.png" width="90%" style="display: block; margin: auto;" /></p>
 </div>
@@ -192,12 +278,12 @@ En revanche, le coefficient <span class="math inline">\(\beta_1\)</span> apporte
 Lorsque nous réalisons un test, nous pouvons obtenir une p-valeur associée à ce test et la comparer au seuil de 0.05. Si la p-valeur est inférieure à ce seuil, nous rejetons l’hypothèse nulle.<br />
 <br />
 Dans notre cas, comme la p-valeur est très faible, nous pouvons rejeter l’hypothèse nulle et conclure à une relation statistiquement significative entre nos deux variables.</p>
-<p><img src="Image/pvalue.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="../../Trainings/Linear regression/Course/Image/pvalue.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="r2" class="section level4 hasAnchor" number="3.1.1.4">
 <h4><span class="header-section-number">3.1.1.4</span> <span class="math inline">\(R^{2}\)</span><a href="interprétation.html#r2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Enfin, nous pouvons examiner le <span class="math inline">\(R^{2}\)</span> pour déterminer la proportion de la variance du poids qui est expliquée par la taille. Nous trouvons qu’environ 46% de la variance du poids est expliquée par l’effet de la taille. Globalement, notre modèle linéaire a donc un bon pouvoir explicatif.</p>
-<p><img src="Image/R2.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="../../Trainings/Linear regression/Course/Image/R2.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="prédicteur-catégoriel" class="section level3 hasAnchor" number="3.1.2">
@@ -211,7 +297,7 @@ L’équation du modèle est la suivante : <span class="math inline">\(Poids = \
 <div id="les-coefficients-1" class="section level4 hasAnchor" number="3.1.2.1">
 <h4><span class="header-section-number">3.1.2.1</span> Les coefficients<a href="interprétation.html#les-coefficients-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Dans notre modèle, <span class="math inline">\(\beta_0\)</span> est utilisé pour symboliser le poids moyen observé chez les femmes, ici il est de 67.9kg. De l’autre côté, la somme <span class="math inline">\(\beta_0 + \beta_1\)</span> donne une représentation du poids moyen chez les hommes, ici il est de 83.1kg. En d’autres termes, <span class="math inline">\(\beta_1\)</span> caractérise l’écart de poids moyen estimé entre les deux groupes (hommes et femmes), ici il est de 15.2kg.</p>
-<p><img src="Image/coeff2.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="../../Trainings/Linear regression/Course/Image/coeff2.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="tests-statistiques" class="section level4 hasAnchor" number="3.1.2.2">
 <h4><span class="header-section-number">3.1.2.2</span> Tests statistiques<a href="interprétation.html#tests-statistiques" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -220,12 +306,12 @@ L’équation du modèle est la suivante : <span class="math inline">\(Poids = \
 Dans des cas où la variable analysée présente plus de deux modalités, un test global est utilisé pour tester la non-nullité de tous les coefficients correspondants à cette variable, où le nombre de coefficients (d’indicatrices) est égal à n-1 (n étant le nombre de modalités).<br />
 <br />
 Dans notre cas, la p-valeur, indiquée en rouge, est inférieure au seuil de significativité de 0.05. Cela nous permet d’affirmer que le sexe est significativement associé au poids.</p>
-<p><img src="Image/pvalue2.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="../../Trainings/Linear regression/Course/Image/pvalue2.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="r2-1" class="section level4 hasAnchor" number="3.1.2.3">
 <h4><span class="header-section-number">3.1.2.3</span> <span class="math inline">\(R^{2}\)</span><a href="interprétation.html#r2-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Enfin, en examinant le <span class="math inline">\(R²\)</span>, nous pouvons déterminer la proportion de la variance du poids qui est expliquée par la taille. Dans notre cas, le sexe explique approximativement 43% de la variance du poids.</p>
-<p><img src="Image/R22.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="../../Trainings/Linear regression/Course/Image/R22.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -246,7 +332,7 @@ Ainsi, lorsqu’on procède à un ajustement simple, nous présupposons que la r
 </p>
 <p><img src="_main_files/figure-html/unnamed-chunk-33-1.png" width="90%" style="display: block; margin: auto;" /></p>
 <p>Les résultats obtenus à partir du modèle exécuté dans R indiquent que la relation entre la taille et le poids est représentée par le coefficient <span class="math inline">\(\beta_2 = 0.5\)</span>. Cela signifie qu’une augmentation de 10 cm dans la taille est associée, en moyenne, à une augmentation de 5 kg du poids, et ce pour les individus des deux sexes. De plus, notre modèle suppose que l’écart de poids entre les hommes et les femmes est constant, indépendamment de la taille, et que cet écart est de <span class="math inline">\(\beta_1 =\)</span> 8.9 kg. Notre modèle explique environ 55% de la variance du poids.<br />
-<img src="Image/Reg_multiple.png" width="55%" style="display: block; margin: auto;" /></p>
+<img src="../../Trainings/Linear regression/Course/Image/Reg_multiple.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="dans-le-cas-continue" class="section level4 hasAnchor" number="3.2.1.2">
 <h4><span class="header-section-number">3.2.1.2</span> Dans le cas continue<a href="interprétation.html#dans-le-cas-continue" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -258,7 +344,7 @@ Le modèle s’écrit de la manière suivante : <span class="math inline">\(Poid
 Lorsque l’on illustre graphiquement la relation entre le poids (y) et la taille (x), tout en ajustant sur l’âge, cela donne lieu à une série de droites de régression. Chacune de ces droites correspond à une unité d’âge spécifique. En ajustant sur l’âge, nous supposons que l’effet de l’âge sur la relation entre la taille et le poids est constant, ce qui signifie que toutes ces droites de régression seront parallèles entre elles. Ainsi, chaque droite représente comment le poids varie avec la taille pour une tranche d’âge donnée.</p>
 <p><img src="_main_files/figure-html/unnamed-chunk-35-1.png" width="90%" style="display: block; margin: auto;" /></p>
 <p>Lors de l’analyse de la sortie R de notre modèle, nous remarquons que la p-valeur associée à l’effet de la variable “âge” n’est pas inférieure au seuil de 0.05. Par conséquent, il semble que l’âge ne soit pas un facteur significatif pour la modélisation du poids.</p>
-<p><img src="Image/Ajustement_c.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="../../Trainings/Linear regression/Course/Image/Ajustement_c.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="interaction" class="section level3 hasAnchor" number="3.2.2">

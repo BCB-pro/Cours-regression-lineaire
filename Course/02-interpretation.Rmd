@@ -43,7 +43,7 @@ data <- data.frame(Poids, Taille, Sexe, Age) %>%
 data %>% 
   ggplot(aes(x = Taille, Poids))+
   geom_point()+
-  theme_bw()
+  theme_classic()
 ```
 
 
@@ -108,7 +108,7 @@ data %>%
   geom_jitter(alpha = 0.3, shape = 1)+
   scale_fill_jama()+
   scale_color_jama()+
-  theme_bw()+
+  theme_classic()+
   theme(legend.position = "none")+
   labs(x = "")
 ```
@@ -173,7 +173,7 @@ data %>%
   geom_point(alpha = 0.5)+
   geom_abline(intercept = -15.54, slope = 0.51, color = "darkblue", alpha = 0.5, size = 1.5)+
   geom_abline(intercept = -15.54 + 8.85, slope = 0.51, color = "darkred", alpha = 0.5, size = 1.5)+
-  theme_bw()+
+  theme_classic()+
   scale_color_manual(values = c("darkblue", "darkred"))
 ```
 
@@ -225,7 +225,7 @@ data %>%
   ggplot(aes(x = Taille, y = Poids, color = Sexe, group = Sexe))+
   geom_point(alpha = 0.3)+
   geom_smooth(method = "lm", se = FALSE, alpha = 0.7, size = 1.5)+
-  theme_bw()+
+  theme_classic()+
   scale_color_manual(values = c("darkblue", "darkred"))
   
 ```

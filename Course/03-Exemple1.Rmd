@@ -33,16 +33,16 @@ UPDRS <- intercept +
   coeff_duration_A  *  Disease_duration * (Mutation %in% c("m/m", "m/f", "f/f")) +
   coeff_duration_B  *  Disease_duration * (Mutation %in% c("m/s", "f/s", "s/s")) +
   coeff_Age_at_onset_at_onset * Age +
-  rnorm(n, mean = 0, sd = 5)
+  rnorm(600, mean = 0, sd = 5)
 
 ## Data
 data <- data.frame(Mutation, Age_at_onset, Sex, Disease_duration, Age, UPDRS)
-write.table(data, "/home/baptiste.criniere/Documents/Trainings/Linear regression/Simulation/Data/Exercice1.txt")
+# write.table(data, "/home/baptiste.criniere/Documents/Trainings/Linear regression/Simulation/Data/Exercice1.txt")
 ```
 
 
 ## Importation et data management
-```{r echo=TRUE}
+```{r echo=FALSE}
 data <- read.table("/home/baptiste.criniere/Documents/Trainings/Linear regression/Simulation/Data/Exercice1.txt")
 head(data)
 str(data)
@@ -60,16 +60,15 @@ data %>%
                     "Age at onset at onset" = Age_at_onset,
                      "Disease duration" = Disease_duration,
                     Age,
-                    UPDRS,
                     splitby =~ Sex,
-                    test = TRUE)
+                    test = TRUE,
+                    output = "html")
 ```
 
 ## Analyse bi-variée relation entre nos covariables
 ### Age at onset & Mutation
 ```{r echo=TRUE}
 aov <- data %>% anova_test(Age_at_onset ~ Mutation)
-pwc <- df %>% tukey_hsd(Age_at_onset ~ Mutation)
 data %>% 
   ggplot(aes(x = Mutation, y = Age_at_onset, color = Mutation))+
   stat_boxplot(geom ='errorbar', width = 0.4, lwd = 0.85)+
@@ -214,7 +213,7 @@ data <- data %>%
   dplyr::mutate(Mutation_bis = ifelse(Mutation %in% c("m/s", "f/s", "s/s"), "senescence", "non-senescence")) 
 model2 <- lm(UPDRS ~ Disease_duration*Mutation_bis + Age + Sex, data = data)
 Anova(model2)  
-vif(model2)
+car::vif(model2)
 ```
 
 
@@ -235,8 +234,18 @@ interactions::interact_plot(model2,
        y = "UPDRS on")
 ```
 
+## Vérifications des hypothèses
 
+### Résidus
 
+```{r}
+ggResidpanel::resid_panel(model)
+```
+
+### Colinéarité
+```{r}
+car::vif(model2)
+```
 
 
 

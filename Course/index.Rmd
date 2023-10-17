@@ -11,6 +11,7 @@ description: |
   Linear regression
 link-citations: yes
 github-repo: rstudio/bookdown-demo
+code_folding: hide
 ---
 
 

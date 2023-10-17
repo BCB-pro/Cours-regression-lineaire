@@ -158,7 +158,7 @@ p
 ```
 
 ### Résultats
-Ici, la colonne de droite représente la p-valeur associée au test de significativité de l'effet de la plaque. Si cette p-valeur est inférieure au seuil de 0,0028, on peut conclure qu'il existe un effet de la plaque pour la protéine en question sur le groupe des contrôles (condition LPS).
+Ici, la colonne de droite représente la p-valeur associée au test de significativité de l'effet de la plaque. Si cette p-valeur est inférieure au seuil de 0,05, on peut conclure qu'il existe un effet de la plaque pour la protéine en question sur le groupe des contrôles (condition LPS).
 ```{r}
 data1 <- data_bis %>% 
   dplyr::filter(group %in% c("Ctrl", "Ctrl_asympto") & cond %in% "LPS")
@@ -177,7 +177,7 @@ for (i in 1:nrow(plate)){
 plate %>% 
   mutate(across(2, round, 5)) %>% 
   DT::datatable(plate) %>% 
-  DT::formatStyle("Pvalue", color = styleInterval(c(0.0028), c("red", "black")))
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.05), c("red", "black")))
 ```
 
 ## NS
@@ -210,7 +210,7 @@ p
 ```
 
 ### Résultat
-Ici, la colonne de droite représente la p-valeur associée au test de significativité de l'effet de la plaque. Si cette p-valeur est inférieure au seuil de 0,0028, on peut conclure qu'il existe un effet de la plaque pour la protéine en question sur le groupe des contrôles (condition NS).
+Ici, la colonne de droite représente la p-valeur associée au test de significativité de l'effet de la plaque. Si cette p-valeur est inférieure au seuil de 0,05, on peut conclure qu'il existe un effet de la plaque pour la protéine en question sur le groupe des contrôles (condition NS).
 
 ```{r}
 data1 <- data_bis %>% 
@@ -231,7 +231,7 @@ for (i in 1:nrow(plate)){
 plate %>% 
   mutate(across(2, round, 5)) %>% 
   DT::datatable() %>% 
-  DT::formatStyle("Pvalue", color = styleInterval(c(0.0028), c("red", "black")))
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.05), c("red", "black")))
 
 ```
 
@@ -309,7 +309,8 @@ for (i in 1:nrow(id_effect)){
 
 id_effect %>% 
   mutate(across(2, round, 2)) %>% 
-  DT::datatable()
+  DT::datatable() %>% 
+  DT::formatPercentage("R2")
 ```
 
 # Analyse ctrl vs group {.tabset .tabset-dropdown}
@@ -490,18 +491,17 @@ ggplotly(fig)
 On a déterminé dans la section précédente des protéines pour lesquelles l'effet plaque était négligeable.
 
 ## LPS
-On conserve les protéines suivantes pour les LPS dans cette analyse : CD14, GRO_alpha__CXCL1_, I_TAC__CXCL11_, IL_12p70, IL_1RA, IL_6, IL_8__CXCL8_, IP_10__CXCL10_, MCP_1__CCL2_, MIP_2_alpha__CXCL2_, PAI_1__Serpin_, PTX3, RANTES__CCL5_, S100A8_A9, TNF_alpha,
-TREM_2
+On conserve les protéines suivantes pour les LPS dans cette analyse : CD14, I_TAC__CXCL11_, IL_12p70, IL_8__CXCL8_, PAI_1__Serpin_, PTX3, RANTES__CCL5_, S100A8_A9, TNF_alpha, TREM_2
 
 ```{r}
-keep <- c("CD14", "GRO_alpha__CXCL1_", "I_TAC__CXCL11_", "IL_12p70", "IL_1RA", "IL_6", "IL_8__CXCL8_", "IP_10__CXCL10_", "MCP_1__CCL2_", "PAI_1__Serpin_", "PTX3", "RANTES__CCL5_", "S100A8_A9", "TNF_alpha", "TREM_2")
+keep <- c("CD14", "I_TAC__CXCL11_", "IL_12p70", "IL_8__CXCL8_", "PAI_1__Serpin_", "PTX3", "RANTES__CCL5_", "S100A8_A9", "TNF_alpha", "TREM_2")
 
 data3 <- data_bis %>% 
   dplyr::filter(cond %in% "LPS") %>% 
   dplyr::select(keep, ID, group)
 
 data3 %>% 
-  tidyr::pivot_longer(1:15) %>% 
+  tidyr::pivot_longer(1:length(keep)) %>% 
   ggplot(aes(x = group, y = log(value)))+
   geom_boxplot(outlier.shape = NA)+
   geom_jitter(alpha = 0.5, size = 1)+
@@ -527,17 +527,17 @@ result %>%
 ```
 
 ## NS
-On conserve les protéines suivantes pour les NS dans cette analyse : CD14, GRO_alpha__CXCL1_, I_TAC__CXCL11_, IL_12p70, , IL_8__CXCL8_, IP_10__CXCL10_, MCP_1__CCL2_, Mer__MERTK_, MIP_2_alpha__CXCL2_, PAI_1__Serpin_, PTX3, RANTES__CCL5_, TREM_2
+On conserve les protéines suivantes pour les NS dans cette analyse : CD14, I_TAC__CXCL11_, IL_12p70, IL_8__CXCL8_, Mer__MERTK_, PAI_1__Serpin_, TREM_2
 
 ```{r}
-keep <- c("CD14", "GRO_alpha__CXCL1_", "I_TAC__CXCL11_", "IL_12p70", "IL_8__CXCL8_", "IP_10__CXCL10_", "MCP_1__CCL2_", "MIP_2_alpha__CXCL2_", "PAI_1__Serpin_", "PTX3", "RANTES__CCL5_", "TREM_2")
+keep <- c("CD14", "I_TAC__CXCL11_", "IL_12p70", "IL_8__CXCL8_", "Mer__MERTK_", "PAI_1__Serpin_", "TREM_2")
 
 data3 <- data_bis %>% 
   dplyr::filter(cond %in% "NS") %>% 
   dplyr::select(keep, ID, group)
 
 data3 %>% 
-  tidyr::pivot_longer(1:12) %>% 
+  tidyr::pivot_longer(1:length(keep)) %>% 
   ggplot(aes(x = group, y = value))+
   geom_boxplot(outlier.shape = NA)+
   geom_jitter(alpha = 0.5, size = 1)+
@@ -561,3 +561,166 @@ result %>%
   DT::datatable() %>% 
   DT::formatStyle("Pvalue", color = styleInterval(c(0.05), c("red", "black")))
 ```
+
+
+# Comparaison entre les groupes en tenant compte de l'effet plaque {.tabset}
+
+## LPS
+```{r}
+# data management
+data1 <- data_bis %>% 
+  dplyr::mutate(group = group %>% forcats::fct_recode("Ctrl" = "Ctrl_asympto")) %>% 
+  dplyr::filter(cond %in% "LPS")
+
+resume <- data1 %>% 
+  dplyr::group_by(group, plate) %>% 
+  dplyr::summarise(across(2:22, list(mean = ~mean(.), sd = ~sd(.)))) %>% 
+  dplyr::filter(group %in% "Ctrl")
+
+variables_division <- names(data_bis)[2:22]
+
+data2 <- data1 %>% 
+  dplyr::rename_with(~paste0(., ".x"), .cols = all_of(variables_division)) %>% 
+  dplyr::left_join(resume, by = "plate")
+  # dplyr::mutate(across(starts_with(variables_division), ~ . * get(paste0(., ".y"))))
+
+for (prefix in variables_division) {
+  x_vars <- data2 %>% select(contains(paste0(prefix, ".x")))
+  m <- data2 %>% select(contains(paste0(prefix, "_mean")))
+  sd <- data2 %>% select(contains(paste0(prefix, "_sd")))
+
+  data2[paste0(prefix, ".x")] <- (x_vars - m)/sd
+}
+
+data2 <- data2 %>% 
+  dplyr::select(-ends_with("_mean"), -ends_with("_sd"), -cond) %>% 
+  dplyr::rename_at(vars(ends_with(".x")), ~gsub(paste0(".x", "$"), "", .)) %>% 
+  dplyr::filter(!group %in% "Ctrl")
+```
+
+```{r}
+
+data2 %>% 
+  tidyr::pivot_longer(2:(ncol(data2)-3)) %>% 
+  ggplot(aes(x = group, y = value, color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5, size = 0.5)+
+  facet_wrap(~name, scales = "free")+
+  scale_color_aaas()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+```
+
+```{r}
+keep <- names(data2)[2:22]
+result <- data.frame(Var = keep, Pvalue = NA)
+for(i in 1:nrow(result)){
+  a <- result$Var[i]
+  formule <- paste0(a, "~ group + (1|ID)")
+  model <- lme4::lmer(formule, data2)
+  a <- car::Anova(model)
+  result$Pvalue[i] <- a$`Pr(>Chisq)`
+}
+
+result %>% 
+  mutate(across(2, round, 5)) %>% 
+  DT::datatable() %>% 
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.05), c("red", "black")))
+```
+
+
+## NS
+
+```{r}
+# data management
+data1 <- data_bis %>% 
+  dplyr::mutate(group = group %>% forcats::fct_recode("Ctrl" = "Ctrl_asympto")) %>% 
+  dplyr::filter(cond %in% "NS")
+
+resume <- data1 %>% 
+  dplyr::group_by(group, plate) %>% 
+  dplyr::summarise(across(2:22, list(mean = ~mean(.), sd = ~sd(.)))) %>% 
+  dplyr::filter(group %in% "Ctrl")
+
+variables_division <- names(data_bis)[2:22]
+
+data2 <- data1 %>% 
+  dplyr::rename_with(~paste0(., ".x"), .cols = all_of(variables_division)) %>% 
+  dplyr::left_join(resume, by = "plate")
+  # dplyr::mutate(across(starts_with(variables_division), ~ . * get(paste0(., ".y"))))
+
+for (prefix in variables_division) {
+  x_vars <- data2 %>% select(contains(paste0(prefix, ".x")))
+  m <- data2 %>% select(contains(paste0(prefix, "_mean")))
+  sd <- data2 %>% select(contains(paste0(prefix, "_sd")))
+
+  data2[paste0(prefix, ".x")] <- (x_vars - m)/sd
+}
+
+data2 <- data2 %>% 
+  dplyr::select(-ends_with("_mean"), -ends_with("_sd"), -cond) %>% 
+  dplyr::rename_at(vars(ends_with(".x")), ~gsub(paste0(".x", "$"), "", .)) %>% 
+  dplyr::filter(!group %in% "Ctrl")
+```
+
+```{r}
+
+data2 %>% 
+  tidyr::pivot_longer(2:(ncol(data2)-3)) %>% 
+  ggplot(aes(x = group, y = value, color = group))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(alpha = 0.5, size = 0.5)+
+  facet_wrap(~name, scales = "free")+
+  scale_color_aaas()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+```
+
+```{r}
+keep <- names(data2)[2:22]
+result <- data.frame(Var = keep, Pvalue = NA)
+for(i in 1:nrow(result)){
+  a <- result$Var[i]
+  formule <- paste0(a, "~ group + (1|ID)")
+  tryCatch({
+  model <- lme4::lmer(formule, data2)
+  a <- car::Anova(model)
+  result$Pvalue[i] <- a$`Pr(>Chisq)`
+  }, error = function(e) {
+    # En cas d'erreur, attribuez NA à Pvalue[i]
+    result$Pvalue[i] <- NA
+  })
+}
+
+result %>% 
+  mutate(across(2, round, 5)) %>% 
+  DT::datatable() %>% 
+  DT::formatStyle("Pvalue", color = styleInterval(c(0.05), c("red", "black")))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
