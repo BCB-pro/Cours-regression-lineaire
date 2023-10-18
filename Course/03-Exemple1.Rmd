@@ -1,9 +1,5 @@
 # Exemple 1
 
-Lien entre l'updrs on et la durée de la maladie, la mutation, sexe et l'âge at onset.
-
-UPDRS ~ Disease duration * Mutation + Sexe + Age at onset
-
 ```{r}
 # Data simulation
 # libraries
@@ -40,35 +36,87 @@ data <- data.frame(Mutation, Age_at_onset, Sex, Disease_duration, Age, UPDRS)
 # write.table(data, "/home/baptiste.criniere/Documents/Trainings/Linear regression/Simulation/Data/Exercice1.txt")
 ```
 
+## Explications
+
+### Context
+La cohorte dont nous disposons est constituée de 600 patients atteints de la maladie de Parkinson, tous porteurs d'une mutation spécifique parmi un total de six mutations différentes. Dans le cadre de notre étude, nous suivons ces patients et mesurons leur score UPDRS, un indicateur cognitif largement utilisé pour évaluer la sévérité de la maladie de Parkinson. Nous avons également recueilli d'autres informations, notamment la durée de la maladie, l'âge au moment du diagnostic, et l'âge au moment de la participation à l'étude. 
+
+### Problématique
+
+
+
 
 ## Importation et data management
-```{r echo=FALSE}
+```{r echo=TRUE}
 data <- read.table("/home/baptiste.criniere/Documents/Trainings/Linear regression/Simulation/Data/Exercice1.txt")
 head(data)
 str(data)
 data <- data %>% 
   dplyr::mutate(Mutation = Mutation %>% factor) %>% 
-  dplyr::mutate(Sex = Sex %>% factor)
+  dplyr::mutate(Sex = Sex %>% factor) %>% 
+  dplyr::mutate(Mutation_bis = ifelse(Mutation %in% c("m/s", "f/s", "s/s"), "senescence", "non-senescence"))
+```
+
+## Exploration des données univariée
+### Table
+```{r}
+data %>% 
+  furniture::table1(UPDRS,
+                    "Disease duration" = Disease_duration,
+                    "Age at onset" = Age_at_onset,
+                    Age,
+                    Sex,
+                    Mutation,
+                    "Mutation 2" = Mutation_bis,
+                    output = "html")
 ```
 
 
-## Exploration des données
+### Figures {.tabset .tabset-dropdown}
+#### UPDRS
+```{r}
+data %>% 
+  ggplot(aes(x = UPDRS))+
+  geom_histogram()+
+  theme_classic()
+```
+
+#### Age au diagnostic
+```{r}
+data %>% 
+  ggplot(aes(x = Age_at_onset))+
+  geom_histogram()+
+  theme_classic()
+```
+
+#### Age
+```{r}
+data %>% 
+  ggplot(aes(x = Age))+
+  geom_histogram()+
+  theme_classic()
+```
+
+
+## Exploration bi-variée
+
+### Effet du Sexe
+#### Table 1
 ```{r echo=TRUE}
 data %>% 
-  dplyr::select(-UPDRS) %>% 
   furniture::table1(Mutation, 
-                    "Age at onset at onset" = Age_at_onset,
+                    "Age at onset" = Age_at_onset,
                      "Disease duration" = Disease_duration,
                     Age,
+                    UPDRS,
                     splitby =~ Sex,
                     test = TRUE,
                     output = "html")
 ```
 
-## Analyse bi-variée relation entre nos covariables
 ### Age at onset & Mutation
 ```{r echo=TRUE}
-aov <- data %>% anova_test(Age_at_onset ~ Mutation)
+aov <- data %>% rstatix::anova_test(Age_at_onset ~ Mutation)
 data %>% 
   ggplot(aes(x = Mutation, y = Age_at_onset, color = Mutation))+
   stat_boxplot(geom ='errorbar', width = 0.4, lwd = 0.85)+
@@ -78,7 +126,7 @@ data %>%
   theme_classic()+
   scale_color_aaas()+
   scale_fill_aaas()+
-  labs(subtitle = get_test_label(aov, detailed = TRUE),
+  labs(subtitle = rstatix::get_test_label(aov, detailed = TRUE),
        x = "",
        y = "Age at onset at onset (in years)")+
   theme(legend.position = "none",
