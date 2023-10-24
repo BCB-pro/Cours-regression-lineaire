@@ -235,9 +235,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.5.2" data-path="exemple-1-1.html"><a href="exemple-1-1.html#age-updrs"><i class="fa fa-check"></i><b>4.5.2</b> Age &amp; UPDRS</a></li>
 <li class="chapter" data-level="4.5.3" data-path="exemple-1-1.html"><a href="exemple-1-1.html#disease-duration-updrs"><i class="fa fa-check"></i><b>4.5.3</b> Disease duration &amp; UPDRS</a></li>
 </ul></li>
-<li class="chapter" data-level="4.6" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale"><i class="fa fa-check"></i><b>4.6</b> Figure finale</a></li>
+<li class="chapter" data-level="4.6" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-sur-les-données-brutes"><i class="fa fa-check"></i><b>4.6</b> Figure sur les données brutes</a></li>
 <li class="chapter" data-level="4.7" data-path="exemple-1-1.html"><a href="exemple-1-1.html#modélisation"><i class="fa fa-check"></i><b>4.7</b> Modélisation</a></li>
-<li class="chapter" data-level="4.8" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale-1"><i class="fa fa-check"></i><b>4.8</b> Figure finale</a></li>
+<li class="chapter" data-level="4.8" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale"><i class="fa fa-check"></i><b>4.8</b> Figure finale</a></li>
 <li class="chapter" data-level="4.9" data-path="exemple-1-1.html"><a href="exemple-1-1.html#vérifications-des-hypothèses"><i class="fa fa-check"></i><b>4.9</b> Vérifications des hypothèses</a>
 <ul>
 <li class="chapter" data-level="4.9.1" data-path="exemple-1-1.html"><a href="exemple-1-1.html#résidus-1"><i class="fa fa-check"></i><b>4.9.1</b> Résidus</a></li>
@@ -289,7 +289,7 @@ L’équation du modèle est la suivante : <span class="math inline">\(Poids = \
 Pour interpréter les coefficients du modèle, nous commençons par <span class="math inline">\(\beta_0\)</span>, qui nous indique que lorsque la taille est nulle, le poids serait de -63 kg, une information qui n’est pas très pertinente dans ce contexte.<br />
 En revanche, le coefficient <span class="math inline">\(\beta_1\)</span> apporte plus d’informations : il spécifie qu’une croissance de la taille de <span class="math inline">\(n\)</span> centimètres provoque en moyenne une hausse du poids de <span class="math inline">\(n \times 0.81\)</span> kg. Pour illustrer, une élévation de 10 cm entraîne une augmentation moyenne du poids de 8.1 kg.<br />
 </p>
-<p><img src="../../Trainings/Linear regression/Course/Image/coeff.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="Image/coeff.png" width="55%" style="display: block; margin: auto;" /></p>
 <p>Le graphique ci-dessous présente l’augmentation moyenne du poids associée à une hausse de 10 cm de la taille avec notre modèle linéaire.</p>
 <p><img src="_main_files/figure-html/unnamed-chunk-24-1.png" width="90%" style="display: block; margin: auto;" /></p>
 </div>
@@ -300,12 +300,12 @@ En revanche, le coefficient <span class="math inline">\(\beta_1\)</span> apporte
 Lorsque nous réalisons un test, nous pouvons obtenir une p-valeur associée à ce test et la comparer au seuil de 0.05. Si la p-valeur est inférieure à ce seuil, nous rejetons l’hypothèse nulle.<br />
 <br />
 Dans notre cas, comme la p-valeur est très faible, nous pouvons rejeter l’hypothèse nulle et conclure à une relation statistiquement significative entre nos deux variables.</p>
-<p><img src="../../Trainings/Linear regression/Course/Image/pvalue.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="Image/pvalue.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="r2" class="section level4 hasAnchor" number="3.1.1.4">
 <h4><span class="header-section-number">3.1.1.4</span> <span class="math inline">\(R^{2}\)</span><a href="interprétation.html#r2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Enfin, nous pouvons examiner le <span class="math inline">\(R^{2}\)</span> pour déterminer la proportion de la variance du poids qui est expliquée par la taille. Nous trouvons qu’environ 46% de la variance du poids est expliquée par l’effet de la taille. Globalement, notre modèle linéaire a donc un bon pouvoir explicatif.</p>
-<p><img src="../../Trainings/Linear regression/Course/Image/R2.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="Image/R2.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="prédicteur-catégoriel" class="section level3 hasAnchor" number="3.1.2">
@@ -319,7 +319,7 @@ L’équation du modèle est la suivante : <span class="math inline">\(Poids = \
 <div id="les-coefficients-1" class="section level4 hasAnchor" number="3.1.2.1">
 <h4><span class="header-section-number">3.1.2.1</span> Les coefficients<a href="interprétation.html#les-coefficients-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Dans notre modèle, <span class="math inline">\(\beta_0\)</span> est utilisé pour symboliser le poids moyen observé chez les femmes, ici il est de 67.9kg. De l’autre côté, la somme <span class="math inline">\(\beta_0 + \beta_1\)</span> donne une représentation du poids moyen chez les hommes, ici il est de 83.1kg. En d’autres termes, <span class="math inline">\(\beta_1\)</span> caractérise l’écart de poids moyen estimé entre les deux groupes (hommes et femmes), ici il est de 15.2kg.</p>
-<p><img src="../../Trainings/Linear regression/Course/Image/coeff2.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="Image/coeff2.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="tests-statistiques" class="section level4 hasAnchor" number="3.1.2.2">
 <h4><span class="header-section-number">3.1.2.2</span> Tests statistiques<a href="interprétation.html#tests-statistiques" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -328,12 +328,12 @@ L’équation du modèle est la suivante : <span class="math inline">\(Poids = \
 Dans des cas où la variable analysée présente plus de deux modalités, un test global est utilisé pour tester la non-nullité de tous les coefficients correspondants à cette variable, où le nombre de coefficients (d’indicatrices) est égal à n-1 (n étant le nombre de modalités).<br />
 <br />
 Dans notre cas, la p-valeur, indiquée en rouge, est inférieure au seuil de significativité de 0.05. Cela nous permet d’affirmer que le sexe est significativement associé au poids.</p>
-<p><img src="../../Trainings/Linear regression/Course/Image/pvalue2.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="Image/pvalue2.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="r2-1" class="section level4 hasAnchor" number="3.1.2.3">
 <h4><span class="header-section-number">3.1.2.3</span> <span class="math inline">\(R^{2}\)</span><a href="interprétation.html#r2-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Enfin, en examinant le <span class="math inline">\(R²\)</span>, nous pouvons déterminer la proportion de la variance du poids qui est expliquée par la taille. Dans notre cas, le sexe explique approximativement 43% de la variance du poids.</p>
-<p><img src="../../Trainings/Linear regression/Course/Image/R22.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="Image/R22.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -354,7 +354,7 @@ Ainsi, lorsqu’on procède à un ajustement simple, nous présupposons que la r
 </p>
 <p><img src="_main_files/figure-html/unnamed-chunk-33-1.png" width="90%" style="display: block; margin: auto;" /></p>
 <p>Les résultats obtenus à partir du modèle exécuté dans R indiquent que la relation entre la taille et le poids est représentée par le coefficient <span class="math inline">\(\beta_2 = 0.5\)</span>. Cela signifie qu’une augmentation de 10 cm dans la taille est associée, en moyenne, à une augmentation de 5 kg du poids, et ce pour les individus des deux sexes. De plus, notre modèle suppose que l’écart de poids entre les hommes et les femmes est constant, indépendamment de la taille, et que cet écart est de <span class="math inline">\(\beta_1 =\)</span> 8.9 kg. Notre modèle explique environ 55% de la variance du poids.<br />
-<img src="../../Trainings/Linear regression/Course/Image/Reg_multiple.png" width="55%" style="display: block; margin: auto;" /></p>
+<img src="Image/Reg_multiple.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="dans-le-cas-continue" class="section level4 hasAnchor" number="3.2.1.2">
 <h4><span class="header-section-number">3.2.1.2</span> Dans le cas continue<a href="interprétation.html#dans-le-cas-continue" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -366,7 +366,7 @@ Le modèle s’écrit de la manière suivante : <span class="math inline">\(Poid
 Lorsque l’on illustre graphiquement la relation entre le poids (y) et la taille (x), tout en ajustant sur l’âge, cela donne lieu à une série de droites de régression. Chacune de ces droites correspond à une unité d’âge spécifique. En ajustant sur l’âge, nous supposons que l’effet de l’âge sur la relation entre la taille et le poids est constant, ce qui signifie que toutes ces droites de régression seront parallèles entre elles. Ainsi, chaque droite représente comment le poids varie avec la taille pour une tranche d’âge donnée.</p>
 <p><img src="_main_files/figure-html/unnamed-chunk-35-1.png" width="90%" style="display: block; margin: auto;" /></p>
 <p>Lors de l’analyse de la sortie R de notre modèle, nous remarquons que la p-valeur associée à l’effet de la variable “âge” n’est pas inférieure au seuil de 0.05. Par conséquent, il semble que l’âge ne soit pas un facteur significatif pour la modélisation du poids.</p>
-<p><img src="../../Trainings/Linear regression/Course/Image/Ajustement_c.png" width="55%" style="display: block; margin: auto;" /></p>
+<p><img src="Image/Ajustement_c.png" width="55%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="interaction" class="section level3 hasAnchor" number="3.2.2">

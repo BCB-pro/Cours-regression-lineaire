@@ -235,9 +235,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.5.2" data-path="exemple-1-1.html"><a href="exemple-1-1.html#age-updrs"><i class="fa fa-check"></i><b>4.5.2</b> Age &amp; UPDRS</a></li>
 <li class="chapter" data-level="4.5.3" data-path="exemple-1-1.html"><a href="exemple-1-1.html#disease-duration-updrs"><i class="fa fa-check"></i><b>4.5.3</b> Disease duration &amp; UPDRS</a></li>
 </ul></li>
-<li class="chapter" data-level="4.6" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale"><i class="fa fa-check"></i><b>4.6</b> Figure finale</a></li>
+<li class="chapter" data-level="4.6" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-sur-les-données-brutes"><i class="fa fa-check"></i><b>4.6</b> Figure sur les données brutes</a></li>
 <li class="chapter" data-level="4.7" data-path="exemple-1-1.html"><a href="exemple-1-1.html#modélisation"><i class="fa fa-check"></i><b>4.7</b> Modélisation</a></li>
-<li class="chapter" data-level="4.8" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale-1"><i class="fa fa-check"></i><b>4.8</b> Figure finale</a></li>
+<li class="chapter" data-level="4.8" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale"><i class="fa fa-check"></i><b>4.8</b> Figure finale</a></li>
 <li class="chapter" data-level="4.9" data-path="exemple-1-1.html"><a href="exemple-1-1.html#vérifications-des-hypothèses"><i class="fa fa-check"></i><b>4.9</b> Vérifications des hypothèses</a>
 <ul>
 <li class="chapter" data-level="4.9.1" data-path="exemple-1-1.html"><a href="exemple-1-1.html#résidus-1"><i class="fa fa-check"></i><b>4.9.1</b> Résidus</a></li>
@@ -1260,8 +1260,8 @@ La p-value associée au test ANOVA est inférieure au seuil de 5%, ce qui indiqu
 ## F-statistic:  2105 on 1 and 598 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<div id="figure-finale" class="section level2 hasAnchor" number="4.6">
-<h2><span class="header-section-number">4.6</span> Figure finale<a href="exemple-1-1.html#figure-finale" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="figure-sur-les-données-brutes" class="section level2 hasAnchor" number="4.6">
+<h2><span class="header-section-number">4.6</span> Figure sur les données brutes<a href="exemple-1-1.html#figure-sur-les-données-brutes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="exemple-1-1.html#cb23-1" tabindex="-1"></a>data <span class="sc">%&gt;%</span> </span>
 <span id="cb23-2"><a href="exemple-1-1.html#cb23-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Age_discret =</span> <span class="fu">cut</span>(Age, </span>
@@ -1315,8 +1315,8 @@ La p-value associée au test ANOVA est inférieure au seuil de 5%, ce qui indiqu
 ## Disease_duration:Mutation_bis 
 ##                      5.136705</code></pre>
 </div>
-<div id="figure-finale-1" class="section level2 hasAnchor" number="4.8">
-<h2><span class="header-section-number">4.8</span> Figure finale<a href="exemple-1-1.html#figure-finale-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="figure-finale" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Figure finale<a href="exemple-1-1.html#figure-finale" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="exemple-1-1.html#cb28-1" tabindex="-1"></a>interactions<span class="sc">::</span><span class="fu">interact_plot</span>(model2,</span>
 <span id="cb28-2"><a href="exemple-1-1.html#cb28-2" tabindex="-1"></a>                            <span class="at">pred =</span> <span class="st">&quot;Disease_duration&quot;</span>,</span>

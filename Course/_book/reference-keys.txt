@@ -60,9 +60,9 @@ régression-linéaire-simple
 catégorisation-des-variables
 age-updrs
 disease-duration-updrs
-figure-finale
+figure-sur-les-données-brutes
 modélisation
-figure-finale-1
+figure-finale
 vérifications-des-hypothèses
 résidus-1
 colinéarité
