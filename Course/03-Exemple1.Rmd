@@ -248,6 +248,8 @@ data %>% rstatix::tukey_hsd(UPDRS ~ Mutation) %>%
 La variable à expliquer est l'UPDRS, que l'on va chercher à expliquer par l'âge, la mutation (variable mutation_bis), la disease duration, et le sexe.
 
 ### Age & UPDRS
+L'équation qui modélise la relation entre l'UPDRS et l'âge est la suivante : $UPDRS = \beta_0 + \beta_1 Age + \epsilon$. Le coefficient de corrélation associé à cette relation est de 0.8, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient $\beta_1$ est égal à 0.7, ce qui signifie qu'en moyenne, pour chaque année supplémentaire d'âge, l'UPDRS augmente de 0.7 points.
+
 ```{r echo=TRUE}
 data %>% 
   ggplot(aes(x = Age, y = UPDRS))+
@@ -268,6 +270,8 @@ summary(model)
 
 
 ### Disease duration & UPDRS
+L'équation qui modélise la relation entre l'UPDRS et l'âge est la suivante : $UPDRS = \beta_0 + \beta_1 DD + \epsilon$. Le coefficient de corrélation associé à cette relation est de 0.88, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient $\beta_1$ est égal à 0.9, ce qui signifie qu'en moyenne, pour chaque année supplémentaire de disease duration, l'UPDRS augmente de 0.9 points.
+
 ```{r echo=TRUE}
 data %>% 
   ggplot(aes(x = Disease_duration, y = UPDRS))+
@@ -286,7 +290,7 @@ model <- lm(UPDRS ~ Disease_duration, data = data)
 summary(model)
 ```
 
-## Figure finale
+## Figure sur les données brutes
 ```{r echo=TRUE}
 data %>% 
   dplyr::mutate(Age_discret = cut(Age, 

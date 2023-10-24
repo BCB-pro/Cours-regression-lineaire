@@ -23,7 +23,7 @@
 <meta name="author" content="Baptiste CRINIERE-BOIZET" />
 
 
-<meta name="date" content="2023-10-23" />
+<meta name="date" content="2023-10-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1179,6 +1179,7 @@ La p-value associée au test ANOVA est inférieure au seuil de 5%, ce qui indiqu
 </div>
 <div id="age-updrs" class="section level3 hasAnchor" number="4.5.2">
 <h3><span class="header-section-number">4.5.2</span> Age &amp; UPDRS<a href="exemple-1-1.html#age-updrs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>L’équation qui modélise la relation entre l’UPDRS et l’âge est la suivante : <span class="math inline">\(UPDRS = \beta_0 + \beta_1 Age + \epsilon\)</span>. Le coefficient de corrélation associé à cette relation est de 0.8, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient <span class="math inline">\(\beta_1\)</span> est égal à 0.7, ce qui signifie qu’en moyenne, pour chaque année supplémentaire d’âge, l’UPDRS augmente de 0.7 points.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="exemple-1-1.html#cb17-1" tabindex="-1"></a>data <span class="sc">%&gt;%</span> </span>
 <span id="cb17-2"><a href="exemple-1-1.html#cb17-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Age, <span class="at">y =</span> UPDRS))<span class="sc">+</span></span>
@@ -1219,6 +1220,7 @@ La p-value associée au test ANOVA est inférieure au seuil de 5%, ce qui indiqu
 </div>
 <div id="disease-duration-updrs" class="section level3 hasAnchor" number="4.5.3">
 <h3><span class="header-section-number">4.5.3</span> Disease duration &amp; UPDRS<a href="exemple-1-1.html#disease-duration-updrs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>L’équation qui modélise la relation entre l’UPDRS et l’âge est la suivante : <span class="math inline">\(UPDRS = \beta_0 + \beta_1 DD + \epsilon\)</span>. Le coefficient de corrélation associé à cette relation est de 0.88, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient <span class="math inline">\(\beta_1\)</span> est égal à 0.9, ce qui signifie qu’en moyenne, pour chaque année supplémentaire de disease duration, l’UPDRS augmente de 0.9 points.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="exemple-1-1.html#cb20-1" tabindex="-1"></a>data <span class="sc">%&gt;%</span> </span>
 <span id="cb20-2"><a href="exemple-1-1.html#cb20-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Disease_duration, <span class="at">y =</span> UPDRS))<span class="sc">+</span></span>
