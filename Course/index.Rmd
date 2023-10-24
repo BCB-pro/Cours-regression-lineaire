@@ -20,6 +20,7 @@ knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(fig.align = "center")
 knitr::opts_chunk$set(out.width="90%")
+knitr::opts_knit$set(root.dir = "/home/baptiste.criniere/Documents/Training_linear_regression/Course/")
 ```
 
 ```{r}

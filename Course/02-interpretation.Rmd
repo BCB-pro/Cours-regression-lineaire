@@ -58,7 +58,7 @@ summary(model)
 ```
 
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/coeff.png")
+knitr::include_graphics("Image/coeff.png")
 ```
 
 Le graphique ci-dessous présente l'augmentation moyenne du poids associée à une hausse de 10 cm de la taille avec notre modèle linéaire.
@@ -82,14 +82,14 @@ Lorsque nous réalisons un test, nous pouvons obtenir une p-valeur associée à 
 Dans notre cas, comme la p-valeur est très faible, nous pouvons rejeter l'hypothèse nulle et conclure à une relation statistiquement significative entre nos deux variables.
 
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/pvalue.png")
+knitr::include_graphics("Image/pvalue.png")
 ```
 
 #### $R^{2}$
 Enfin, nous pouvons examiner le $R^{2}$ pour déterminer la proportion de la variance du poids qui est expliquée par la taille. Nous trouvons qu'environ 46% de la variance du poids est expliquée par l'effet de la taille. Globalement, notre modèle linéaire a donc un bon pouvoir explicatif.
 
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/R2.png")
+knitr::include_graphics("Image/R2.png")
 ```
 
 
@@ -123,7 +123,7 @@ summary(model)
 ```
 
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/coeff2.png")
+knitr::include_graphics("Image/coeff2.png")
 ```
 
 
@@ -135,14 +135,14 @@ Dans des cas où la variable analysée présente plus de deux modalités, un tes
 Dans notre cas, la p-valeur, indiquée en rouge, est inférieure au seuil de significativité de 0.05. Cela nous permet d'affirmer que le sexe est significativement associé au poids.
 
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/pvalue2.png")
+knitr::include_graphics("Image/pvalue2.png")
 ```
 
 #### $R^{2}$
 Enfin, en examinant le $R²$, nous pouvons déterminer la proportion de la variance du poids qui est expliquée par la taille. Dans notre cas, le sexe explique approximativement 43% de la variance du poids.
 
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/R22.png")
+knitr::include_graphics("Image/R22.png")
 ```
 
 ## Régression multiple
@@ -180,7 +180,7 @@ data %>%
 Les résultats obtenus à partir du modèle exécuté dans R indiquent que la relation entre la taille et le poids est représentée par le coefficient $\beta_2 = 0.5$. Cela signifie qu'une augmentation de 10 cm dans la taille est associée, en moyenne, à une augmentation de 5 kg du poids, et ce pour les individus des deux sexes. De plus, notre modèle suppose que l'écart de poids entre les hommes et les femmes est constant, indépendamment de la taille, et que cet écart est de $\beta_1 =$ 8.9 kg. Notre modèle explique environ 55\% de la variance du poids.
 \
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/Reg_multiple.png")
+knitr::include_graphics("Image/Reg_multiple.png")
 ```
 
 #### Dans le cas continue
@@ -208,7 +208,7 @@ data %>%
 Lors de l'analyse de la sortie R de notre modèle, nous remarquons que la p-valeur associée à l'effet de la variable "âge" n'est pas inférieure au seuil de 0.05. Par conséquent, il semble que l'âge ne soit pas un facteur significatif pour la modélisation du poids.
 
 ```{r, echo=FALSE, out.width = '55%'}
-knitr::include_graphics("/home/baptiste.criniere/Documents/Training_linear_regression/Course/Image/Ajustement_c.png")
+knitr::include_graphics("Image/Ajustement_c.png")
 ```
 
 ### Interaction

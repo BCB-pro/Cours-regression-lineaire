@@ -291,6 +291,7 @@ summary(model)
 ```
 
 ## Figure sur les données brutes
+Voici une figure représentant l'évolution de l'UPDRS en fonction de la durée de la maladie, en tenant compte du type de mutation. J'ai classé l'âge des patients en fonction de leurs quantiles dans la distribution des âges.
 ```{r echo=TRUE}
 data %>% 
   dplyr::mutate(Age_discret = cut(Age, 
@@ -315,11 +316,17 @@ data %>%
 
 
 ## Modélisation
+Le modèle qui correspond au critère de jugement principal est le suivant :
+\
+$UPDRS =  \beta_0 + \beta_1 Mutation \times DD + \beta_2 Mutation + \beta_3DD + \beta_4 Age + \epsilon$
+\
+On peut lire chaque coefficient $\beta$ dans la sortie R suivante.
+
 ```{r echo=TRUE}
 data <- data %>% 
   dplyr::mutate(Mutation_bis = ifelse(Mutation %in% c("m/s", "f/s", "s/s"), "senescence", "non-senescence")) 
 model2 <- lm(UPDRS ~ Disease_duration*Mutation_bis + Age + Sex, data = data)
-Anova(model2)  
+Anova(model2)
 car::vif(model2)
 ```
 
