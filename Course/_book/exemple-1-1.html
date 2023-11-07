@@ -23,7 +23,7 @@
 <meta name="author" content="Baptiste CRINIERE-BOIZET" />
 
 
-<meta name="date" content="2023-10-24" />
+<meta name="date" content="2023-11-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="interprétation.html"/>
-<link rel="next" href="exemple-2-1.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -237,14 +237,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-sur-les-données-brutes"><i class="fa fa-check"></i><b>4.6</b> Figure sur les données brutes</a></li>
 <li class="chapter" data-level="4.7" data-path="exemple-1-1.html"><a href="exemple-1-1.html#modélisation"><i class="fa fa-check"></i><b>4.7</b> Modélisation</a></li>
-<li class="chapter" data-level="4.8" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale"><i class="fa fa-check"></i><b>4.8</b> Figure finale</a></li>
-<li class="chapter" data-level="4.9" data-path="exemple-1-1.html"><a href="exemple-1-1.html#vérifications-des-hypothèses"><i class="fa fa-check"></i><b>4.9</b> Vérifications des hypothèses</a>
+<li class="chapter" data-level="4.8" data-path="exemple-1-1.html"><a href="exemple-1-1.html#analyse-des-contrastes"><i class="fa fa-check"></i><b>4.8</b> Analyse des contrastes</a></li>
+<li class="chapter" data-level="4.9" data-path="exemple-1-1.html"><a href="exemple-1-1.html#figure-finale"><i class="fa fa-check"></i><b>4.9</b> Figure finale</a></li>
+<li class="chapter" data-level="4.10" data-path="exemple-1-1.html"><a href="exemple-1-1.html#vérifications-des-hypothèses"><i class="fa fa-check"></i><b>4.10</b> Vérifications des hypothèses</a>
 <ul>
-<li class="chapter" data-level="4.9.1" data-path="exemple-1-1.html"><a href="exemple-1-1.html#résidus-1"><i class="fa fa-check"></i><b>4.9.1</b> Résidus</a></li>
-<li class="chapter" data-level="4.9.2" data-path="exemple-1-1.html"><a href="exemple-1-1.html#colinéarité"><i class="fa fa-check"></i><b>4.9.2</b> Colinéarité</a></li>
+<li class="chapter" data-level="4.10.1" data-path="exemple-1-1.html"><a href="exemple-1-1.html#résidus-1"><i class="fa fa-check"></i><b>4.10.1</b> Résidus</a></li>
+<li class="chapter" data-level="4.10.2" data-path="exemple-1-1.html"><a href="exemple-1-1.html#colinéarité"><i class="fa fa-check"></i><b>4.10.2</b> Colinéarité</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="exemple-2-1.html"><a href="exemple-2-1.html"><i class="fa fa-check"></i><b>5</b> Exemple 2</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -1179,7 +1179,8 @@ La p-value associée au test ANOVA est inférieure au seuil de 5%, ce qui indiqu
 </div>
 <div id="age-updrs" class="section level3 hasAnchor" number="4.5.2">
 <h3><span class="header-section-number">4.5.2</span> Age &amp; UPDRS<a href="exemple-1-1.html#age-updrs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>L’équation qui modélise la relation entre l’UPDRS et l’âge est la suivante : <span class="math inline">\(UPDRS = \beta_0 + \beta_1 Age + \epsilon\)</span>. Le coefficient de corrélation associé à cette relation est de 0.8, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient <span class="math inline">\(\beta_1\)</span> est égal à 0.7, ce qui signifie qu’en moyenne, pour chaque année supplémentaire d’âge, l’UPDRS augmente de 0.7 points.</p>
+<p>L’équation qui modélise la relation entre l’UPDRS et l’âge est la suivante : <span class="math inline">\(UPDRS = \beta_0 + \beta_1 Age + \epsilon\)</span>.<br />
+Le coefficient de corrélation associé à cette relation est de 0.8, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient <span class="math inline">\(\beta_1\)</span> est égal à 0.7, ce qui signifie qu’en moyenne, pour chaque année supplémentaire d’âge, l’UPDRS augmente de 0.7 points.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="exemple-1-1.html#cb17-1" tabindex="-1"></a>data <span class="sc">%&gt;%</span> </span>
 <span id="cb17-2"><a href="exemple-1-1.html#cb17-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Age, <span class="at">y =</span> UPDRS))<span class="sc">+</span></span>
@@ -1220,7 +1221,8 @@ La p-value associée au test ANOVA est inférieure au seuil de 5%, ce qui indiqu
 </div>
 <div id="disease-duration-updrs" class="section level3 hasAnchor" number="4.5.3">
 <h3><span class="header-section-number">4.5.3</span> Disease duration &amp; UPDRS<a href="exemple-1-1.html#disease-duration-updrs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>L’équation qui modélise la relation entre l’UPDRS et l’âge est la suivante : <span class="math inline">\(UPDRS = \beta_0 + \beta_1 DD + \epsilon\)</span>. Le coefficient de corrélation associé à cette relation est de 0.88, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient <span class="math inline">\(\beta_1\)</span> est égal à 0.9, ce qui signifie qu’en moyenne, pour chaque année supplémentaire de disease duration, l’UPDRS augmente de 0.9 points.</p>
+<p>L’équation qui modélise la relation entre l’UPDRS et l’âge est la suivante : <span class="math inline">\(UPDRS = \beta_0 + \beta_1 DD + \epsilon\)</span>.<br />
+Le coefficient de corrélation associé à cette relation est de 0.88, ce qui indique une relation importante, et la p-value associée au test de significativité de ce coefficient est inférieure au seuil de 5%, démontrant ainsi sa signification statistique. Le coefficient <span class="math inline">\(\beta_1\)</span> est égal à 0.9, ce qui signifie qu’en moyenne, pour chaque année supplémentaire de disease duration, l’UPDRS augmente de 0.9 points.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="exemple-1-1.html#cb20-1" tabindex="-1"></a>data <span class="sc">%&gt;%</span> </span>
 <span id="cb20-2"><a href="exemple-1-1.html#cb20-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Disease_duration, <span class="at">y =</span> UPDRS))<span class="sc">+</span></span>
@@ -1289,13 +1291,52 @@ La p-value associée au test ANOVA est inférieure au seuil de 5%, ce qui indiqu
 <div id="modélisation" class="section level2 hasAnchor" number="4.7">
 <h2><span class="header-section-number">4.7</span> Modélisation<a href="exemple-1-1.html#modélisation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Le modèle qui correspond au critère de jugement principal est le suivant :<br />
+<br />
 <span class="math inline">\(UPDRS = \beta_0 + \beta_1 Mutation \times DD + \beta_2 Mutation + \beta_3DD + \beta_4 Age + \epsilon\)</span><br />
-On peut lire chaque coefficient <span class="math inline">\(\beta\)</span> dans la sortie R suivante.</p>
+<br />
+On peut lire chaque coefficient <span class="math inline">\(\beta\)</span> dans la sortie R suivante. Le modèle se réécrit donc de la manière suivante :<br />
+<br />
+<span class="math inline">\(UPDRS = 8.4 + 0.25* Mutation \times DD + 0.03 * Mutation + 0.49 * DD + 0.27* Age + \epsilon\)</span><br />
+<br />
+</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="exemple-1-1.html#cb24-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
 <span id="cb24-2"><a href="exemple-1-1.html#cb24-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Mutation_bis =</span> <span class="fu">ifelse</span>(Mutation <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;m/s&quot;</span>, <span class="st">&quot;f/s&quot;</span>, <span class="st">&quot;s/s&quot;</span>), <span class="st">&quot;senescence&quot;</span>, <span class="st">&quot;non-senescence&quot;</span>)) </span>
 <span id="cb24-3"><a href="exemple-1-1.html#cb24-3" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(UPDRS <span class="sc">~</span> Disease_duration<span class="sc">*</span>Mutation_bis <span class="sc">+</span> Age <span class="sc">+</span> Sex, <span class="at">data =</span> data)</span>
-<span id="cb24-4"><a href="exemple-1-1.html#cb24-4" tabindex="-1"></a><span class="fu">Anova</span>(model2)</span></code></pre></div>
+<span id="cb24-4"><a href="exemple-1-1.html#cb24-4" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code></pre></div>
+</details>
+<pre><code>## 
+## Call:
+## lm(formula = UPDRS ~ Disease_duration * Mutation_bis + Age + 
+##     Sex, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13.3883  -3.3352  -0.4041   3.8493  10.2274 
+## 
+## Coefficients:
+##                                         Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                              8.40304    1.41180   5.952 4.53e-09
+## Disease_duration                         0.49010    0.04651  10.538  &lt; 2e-16
+## Mutation_bissenescence                   0.03519    0.80139   0.044    0.965
+## Age                                      0.27039    0.03772   7.168 2.27e-12
+## SexMale                                 -0.46954    0.38593  -1.217    0.224
+## Disease_duration:Mutation_bissenescence  0.25749    0.03405   7.563 1.51e-13
+##                                            
+## (Intercept)                             ***
+## Disease_duration                        ***
+## Mutation_bissenescence                     
+## Age                                     ***
+## SexMale                                    
+## Disease_duration:Mutation_bissenescence ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4.676 on 594 degrees of freedom
+## Multiple R-squared:  0.834,  Adjusted R-squared:  0.8326 
+## F-statistic: 596.8 on 5 and 594 DF,  p-value: &lt; 2.2e-16</code></pre>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="exemple-1-1.html#cb26-1" tabindex="-1"></a><span class="fu">Anova</span>(model2)</span></code></pre></div>
 </details>
 <pre><code>## Anova Table (Type II tests)
 ## 
@@ -1309,48 +1350,57 @@ On peut lire chaque coefficient <span class="math inline">\(\beta\)</span> dans 
 ## Residuals                     12986.8 594                       
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="exemple-1-1.html#cb26-1" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(model2)</span></code></pre></div>
-</details>
-<pre><code>##              Disease_duration                  Mutation_bis 
-##                      7.576537                      4.406205 
-##                           Age                           Sex 
-##                      6.561542                      1.020252 
-## Disease_duration:Mutation_bis 
-##                      5.136705</code></pre>
 </div>
-<div id="figure-finale" class="section level2 hasAnchor" number="4.8">
-<h2><span class="header-section-number">4.8</span> Figure finale<a href="exemple-1-1.html#figure-finale" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="exemple-1-1.html#cb28-1" tabindex="-1"></a>interactions<span class="sc">::</span><span class="fu">interact_plot</span>(model2,</span>
-<span id="cb28-2"><a href="exemple-1-1.html#cb28-2" tabindex="-1"></a>                            <span class="at">pred =</span> <span class="st">&quot;Disease_duration&quot;</span>,</span>
-<span id="cb28-3"><a href="exemple-1-1.html#cb28-3" tabindex="-1"></a>                            <span class="at">modx =</span> <span class="st">&quot;Mutation_bis&quot;</span>,</span>
-<span id="cb28-4"><a href="exemple-1-1.html#cb28-4" tabindex="-1"></a>                            <span class="at">mod2 =</span> Age)<span class="sc">+</span></span>
-<span id="cb28-5"><a href="exemple-1-1.html#cb28-5" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb28-6"><a href="exemple-1-1.html#cb28-6" tabindex="-1"></a>  <span class="fu">scale_color_aaas</span>()<span class="sc">+</span></span>
-<span id="cb28-7"><a href="exemple-1-1.html#cb28-7" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
-<span id="cb28-8"><a href="exemple-1-1.html#cb28-8" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb28-9"><a href="exemple-1-1.html#cb28-9" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
-<span id="cb28-10"><a href="exemple-1-1.html#cb28-10" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb28-11"><a href="exemple-1-1.html#cb28-11" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">10</span>))<span class="sc">+</span></span>
-<span id="cb28-12"><a href="exemple-1-1.html#cb28-12" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Disease Duration&quot;</span>,</span>
-<span id="cb28-13"><a href="exemple-1-1.html#cb28-13" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;UPDRS on&quot;</span>)</span></code></pre></div>
-</details>
-<p><img src="_main_files/figure-html/unnamed-chunk-51-1.png" width="90%" style="display: block; margin: auto;" /></p>
+<div id="analyse-des-contrastes" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Analyse des contrastes<a href="exemple-1-1.html#analyse-des-contrastes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Afin de comparer l’effet de la mutation sur l’UPDRS, nous devons tenir compte de la durée de la maladie (disease duration). C’est pourquoi nous devons fixer cette variable si nous voulons observer les différences entre les deux types de mutations. Nous prenons le premier quantile, la médiane et le dernier quantile pour la variable de durée de la maladie, puis nous comparons les différences de valeurs de l’UPDRS entre les mutations senescence et les mutations non-senescence. Nous observons que plus la durée de la maladie augmente, plus l’écart d’UPDRS augmente.</p>
+<pre><code>## Disease_duration = 10:
+##  Mutation_bis_pairwise         estimate    SE  df t.ratio p.value
+##  (non-senescence) - senescence    -2.61 0.548 594  -4.762  &lt;.0001
+## 
+## Disease_duration = 21:
+##  Mutation_bis_pairwise         estimate    SE  df t.ratio p.value
+##  (non-senescence) - senescence    -5.44 0.439 594 -12.410  &lt;.0001
+## 
+## Disease_duration = 29:
+##  Mutation_bis_pairwise         estimate    SE  df t.ratio p.value
+##  (non-senescence) - senescence    -7.50 0.538 594 -13.935  &lt;.0001
+## 
+## Results are averaged over the levels of: Sex</code></pre>
 </div>
-<div id="vérifications-des-hypothèses" class="section level2 hasAnchor" number="4.9">
-<h2><span class="header-section-number">4.9</span> Vérifications des hypothèses<a href="exemple-1-1.html#vérifications-des-hypothèses" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="résidus-1" class="section level3 hasAnchor" number="4.9.1">
-<h3><span class="header-section-number">4.9.1</span> Résidus<a href="exemple-1-1.html#résidus-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="figure-finale" class="section level2 hasAnchor" number="4.9">
+<h2><span class="header-section-number">4.9</span> Figure finale<a href="exemple-1-1.html#figure-finale" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="exemple-1-1.html#cb29-1" tabindex="-1"></a>ggResidpanel<span class="sc">::</span><span class="fu">resid_panel</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="exemple-1-1.html#cb29-1" tabindex="-1"></a>interactions<span class="sc">::</span><span class="fu">interact_plot</span>(model2,</span>
+<span id="cb29-2"><a href="exemple-1-1.html#cb29-2" tabindex="-1"></a>                            <span class="at">pred =</span> <span class="st">&quot;Disease_duration&quot;</span>,</span>
+<span id="cb29-3"><a href="exemple-1-1.html#cb29-3" tabindex="-1"></a>                            <span class="at">modx =</span> <span class="st">&quot;Mutation_bis&quot;</span>,</span>
+<span id="cb29-4"><a href="exemple-1-1.html#cb29-4" tabindex="-1"></a>                            <span class="at">mod2 =</span> Age)<span class="sc">+</span></span>
+<span id="cb29-5"><a href="exemple-1-1.html#cb29-5" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
+<span id="cb29-6"><a href="exemple-1-1.html#cb29-6" tabindex="-1"></a>  <span class="fu">scale_color_aaas</span>()<span class="sc">+</span></span>
+<span id="cb29-7"><a href="exemple-1-1.html#cb29-7" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb29-8"><a href="exemple-1-1.html#cb29-8" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb29-9"><a href="exemple-1-1.html#cb29-9" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb29-10"><a href="exemple-1-1.html#cb29-10" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb29-11"><a href="exemple-1-1.html#cb29-11" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">10</span>))<span class="sc">+</span></span>
+<span id="cb29-12"><a href="exemple-1-1.html#cb29-12" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Disease Duration&quot;</span>,</span>
+<span id="cb29-13"><a href="exemple-1-1.html#cb29-13" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;UPDRS on&quot;</span>)</span></code></pre></div>
 </details>
 <p><img src="_main_files/figure-html/unnamed-chunk-52-1.png" width="90%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="colinéarité" class="section level3 hasAnchor" number="4.9.2">
-<h3><span class="header-section-number">4.9.2</span> Colinéarité<a href="exemple-1-1.html#colinéarité" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="vérifications-des-hypothèses" class="section level2 hasAnchor" number="4.10">
+<h2><span class="header-section-number">4.10</span> Vérifications des hypothèses<a href="exemple-1-1.html#vérifications-des-hypothèses" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="résidus-1" class="section level3 hasAnchor" number="4.10.1">
+<h3><span class="header-section-number">4.10.1</span> Résidus<a href="exemple-1-1.html#résidus-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="exemple-1-1.html#cb30-1" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(model2)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="exemple-1-1.html#cb30-1" tabindex="-1"></a>ggResidpanel<span class="sc">::</span><span class="fu">resid_panel</span>(model)</span></code></pre></div>
+</details>
+<p><img src="_main_files/figure-html/unnamed-chunk-53-1.png" width="90%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="colinéarité" class="section level3 hasAnchor" number="4.10.2">
+<h3><span class="header-section-number">4.10.2</span> Colinéarité<a href="exemple-1-1.html#colinéarité" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Les VIF associés aux variables Disease_duration, Mutation_bis, Age, et Disease_duration:Mutation_bis sont légèrement élevés, indiquant une certaine corrélation avec d’autres variables explicatives du modèle. Ces valeurs sont en dehors du seuil de 10, au-delà duquel la multicollinéarité est généralement considérée comme problématique, il est recommandé de prendre des mesures pour atténuer cette multicollinéarité. Cela peut inclure la suppression de certaines variables, la combinaison de variables apparentées, ou même la collecte de données supplémentaires, afin de garantir des résultats fiables dans notre modèle.</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="exemple-1-1.html#cb31-1" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(model2)</span></code></pre></div>
 </details>
 <pre><code>##              Disease_duration                  Mutation_bis 
 ##                      7.576537                      4.406205 
@@ -1367,8 +1417,8 @@ On peut lire chaque coefficient <span class="math inline">\(\beta\)</span> dans 
           </div>
         </div>
       </div>
-<a href="interprétation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="exemple-2-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="interprétation.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

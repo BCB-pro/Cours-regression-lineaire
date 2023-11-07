@@ -62,8 +62,8 @@ age-updrs
 disease-duration-updrs
 figure-sur-les-données-brutes
 modélisation
+analyse-des-contrastes
 figure-finale
 vérifications-des-hypothèses
 résidus-1
 colinéarité
-exemple-2-1

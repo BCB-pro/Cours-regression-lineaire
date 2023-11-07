@@ -4,6 +4,8 @@
 # libraries
 library(ggsci)
 library(rstatix)
+library(emmeans)
+library(MASS)
 
 # Simulation des données
 ## Seed
@@ -324,14 +326,30 @@ Le modèle qui correspond au critère de jugement principal est le suivant :
 $UPDRS =  \beta_0 + \beta_1 Mutation \times DD + \beta_2 Mutation + \beta_3DD + \beta_4 Age + \epsilon$
 \
 \
-On peut lire chaque coefficient $\beta$ dans la sortie R suivante.
+On peut lire chaque coefficient $\beta$ dans la sortie R suivante. Le modèle se réécrit donc de la manière suivante :
+\
+\
+$UPDRS =  8.4 + 0.25* Mutation \times DD + 0.03 * Mutation + 0.49 * DD + 0.27* Age + \epsilon$
+\
+\
 
 ```{r echo=TRUE}
 data <- data %>% 
   dplyr::mutate(Mutation_bis = ifelse(Mutation %in% c("m/s", "f/s", "s/s"), "senescence", "non-senescence")) 
 model2 <- lm(UPDRS ~ Disease_duration*Mutation_bis + Age + Sex, data = data)
-summary(model)
+summary(model2)
 Anova(model2)
+```
+
+## Analyse des contrastes
+Afin de comparer l'effet de la mutation sur l'UPDRS, nous devons tenir compte de la durée de la maladie (disease duration). C'est pourquoi nous devons fixer cette variable si nous voulons observer les différences entre les deux types de mutations. Nous prenons le premier quantile, la médiane et le dernier quantile pour la variable de durée de la maladie, puis nous comparons les différences de valeurs de l'UPDRS entre les mutations senescence et les mutations non-senescence. Nous observons que plus la durée de la maladie augmente, plus l'écart d'UPDRS augmente.
+
+```{r}
+cut_disease_duration <- quantile(data$Disease_duration)[2:4]
+cut_age <- mean(data$Age)
+
+comparaisons <- emmeans(model2, ~ Mutation_bis | Disease_duration, at = list(Disease_duration = cut_disease_duration))
+emmeans::contrast(comparaisons, interaction = c("pairwise"))
 ```
 
 
@@ -360,6 +378,8 @@ ggResidpanel::resid_panel(model)
 ```
 
 ### Colinéarité
+Les VIF associés aux variables Disease_duration, Mutation_bis, Age, et Disease_duration:Mutation_bis sont légèrement élevés, indiquant une certaine corrélation avec d'autres variables explicatives du modèle. Ces valeurs sont en dehors du seuil de 10, au-delà duquel la multicollinéarité est généralement considérée comme problématique, il est recommandé de prendre des mesures pour atténuer cette multicollinéarité. Cela peut inclure la suppression de certaines variables, la combinaison de variables apparentées, ou même la collecte de données supplémentaires, afin de garantir des résultats fiables dans notre modèle.
+
 ```{r echo=TRUE}
 car::vif(model2)
 ```

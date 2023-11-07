@@ -28,6 +28,7 @@ library(tidyverse)
 library(ggpubr)
 library(MASS)
 library(ggsci)
+library(emmeans)
 ```
 
 # Théorie
