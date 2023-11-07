@@ -29,6 +29,7 @@ library(ggpubr)
 library(MASS)
 library(ggsci)
 library(emmeans)
+library(plotly)
 ```
 
 # Théorie

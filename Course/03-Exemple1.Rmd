@@ -344,7 +344,7 @@ Anova(model2)
 ## Analyse des contrastes
 Afin de comparer l'effet de la mutation sur l'UPDRS, nous devons tenir compte de la durée de la maladie (disease duration). C'est pourquoi nous devons fixer cette variable si nous voulons observer les différences entre les deux types de mutations. Nous prenons le premier quantile, la médiane et le dernier quantile pour la variable de durée de la maladie, puis nous comparons les différences de valeurs de l'UPDRS entre les mutations senescence et les mutations non-senescence. Nous observons que plus la durée de la maladie augmente, plus l'écart d'UPDRS augmente.
 
-```{r}
+```{r echo=TRUE}
 cut_disease_duration <- quantile(data$Disease_duration)[2:4]
 cut_age <- mean(data$Age)
 
