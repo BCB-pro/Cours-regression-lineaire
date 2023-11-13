@@ -386,7 +386,14 @@ car::vif(model2)
 
 
 
+## Prédiction
+```{r echo=TRUE}
+data_bis <- data %>% 
+  dplyr::select(-UPDRS)
 
+
+
+```
 
 
 
