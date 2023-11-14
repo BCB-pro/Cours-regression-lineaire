@@ -1,0 +1,67 @@
+---
+title: "Régression linéaire"
+author: "Baptiste CRINIERE-BOIZET"
+institute: Data Analysis Core
+output: binb::metropolis
+    # beamer_presentation:
+    # theme: "metropolis"
+header-includes:
+  - \definecolor{mycolor}{HTML}{e23d18}
+  - \definecolor{mycolor2}{HTML}{002e82}
+  - \setbeamercolor{title}{fg=mycolor2}
+  - \setbeamercolor{frametitle}{fg=white}
+  - \setbeamercolor{progress bar}{fg=mycolor}
+  - \setbeamercolor{block title}{fg=mycolor}
+  - \setbeamercolor{normal text}{fg=mycolor2}
+  - \setbeamercolor{palette primary}{fg=white, bg=mycolor2}
+  - \setbeamercolor{palette secondary}{fg=mycolor, bg=mycolor}
+  - \setbeamercolor{itemize item}{fg=mycolor}
+  - \setbeamercolor{itemize subitem}{fg=mycolor}
+  - \setbeamercolor{itemize subsubitem}{fg=mycolor}
+  - \setbeamercolor{enumerate item}{fg=mycolor}
+  - \setbeamercolor{enumerate subitem}{fg=mycolor}
+  - \setbeamercolor{enumerate subsubitem}{fg=mycolor}
+  - \setbeamercolor{footline}{fg=mycolor}
+  - \titlegraphic{\vspace{7cm}\flushright\includegraphics[width=4cm]{ICM_rvb.png}}
+---
+
+\tableofcontents[sectionstyle=show, subsectionstyle=hide]
+
+# Théorie
+
+## Variable dépendant et variables indépendantes
+
+- Distinction clé : Variable Dépendante (Y) vs Variables Indépendantes (X1, X2, etc.)
+\vspace{0.5cm}
+- Variable Dépendante = Variable Réponse ou à Expliquer
+\vspace{0.5cm}
+- Variable Indépendante = Prédicteur ou Explicative
+\vspace{0.5cm}
+- Choix basé sur logique ou théorie, exemple : taille de l'enfant dépendant de la taille de la mère
+
+
+## Equation linéaire
+
+## Modélisation linéaire
+
+## Résidus
+
+## La meilleure droite
+
+# Vérification des hypothèses
+
+## Indépendance
+
+## Linéarité
+
+## Homoscédasticité
+
+# Interprétation
+
+## Régression simple
+
+## Régression multiple
+
+# Exercice
+
+## Contexte
