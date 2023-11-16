@@ -18,9 +18,10 @@ data <- data.frame(Age = ages, Family = as.factor(rep(1:3, each = 20)), Height =
 ## Introduction
 En statistiques, lorsqu'on utilise la régression linéaire pour modéliser la relation entre des variables, il est essentiel que certaines hypothèses soient respectées pour garantir la validité des résultats et des interprétations. Ces hypothèses sont au nombre de quatre : \
 
+- Indépendance : Les résidus, qui sont les écarts entre les valeurs observées et les valeurs prédites, doivent être indépendants les uns des autres. On parle aussi d'indépendace des sujets, des individus ou des observations. 
+
 - Linéarité : La relation entre les variables doit être linéaire.
 
-- Indépendance : Les résidus, qui sont les écarts entre les valeurs observées et les valeurs prédites, doivent être indépendants les uns des autres. On parle aussi d'indépendace des sujets, des individus ou des observations. 
 
 - Homoscédasticité : Les résidus doivent présenter une variance constante à travers toutes les valeurs prédites.
 

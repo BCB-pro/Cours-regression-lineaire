@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.11.13)  14 NOV 2023 11:52
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.11.13)  16 NOV 2023 10:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -184,20 +184,20 @@ File: pgfsyssoftpath.code.tex 2023-01-15 v3.1.10 (3.1.10)
 ) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
 File: pgfsysprotocol.code.tex 2023-01-15 v3.1.10 (3.1.10)
 )) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
-Package: xcolor 2023/11/11 v3.00 LaTeX color extensions (UK)
+Package: xcolor 2023/11/15 v3.01 LaTeX color extensions (UK)
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
-Package xcolor Info: Driver file: xetex.def on input line 264.
+Package xcolor Info: Driver file: xetex.def on input line 274.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx)
-Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1340.
-Package xcolor Info: Model `RGB' extended on input line 1356.
-Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1358.
-Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1359.
-Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1360.
-Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1361.
-Package xcolor Info: Model `Gray' substituted by `gray' on input line 1362.
-Package xcolor Info: Model `wave' substituted by `hsb' on input line 1363.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1350.
+Package xcolor Info: Model `RGB' extended on input line 1366.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1368.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1372.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1373.
 ) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
 Package: pgfcore 2023-01-15 v3.1.10 (3.1.10)
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/generic/pgf/math/pgfint.code.tex) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex
@@ -730,33 +730,78 @@ Package beamerthememetropolis Warning: Could not find Fira Mono fonts on input l
 
 ))
 Package hyperref Info: Option `breaklinks' set `true' on input line 55.
-(./Presentation.aux)
+(/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/animate/animate.sty
+Package: animate 2023/06/18 PDF & SVG animations from files and inline graphics
+(/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
+) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/oberdiek/ifdraft.sty
+Package: ifdraft 2016/05/16 v1.4 Detect class options draft and final (HO)
+) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/media9/pdfbase.sty
+Package: pdfbase 2022/08/04 v0.55 driver independent access to low-level PDF features
+\g_pbs_page_int=\count372
+\g_pbs_obj_int=\count373
+\g_pbs_oc_int=\count374
+) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/zref/zref-abspage.sty
+Package: zref-abspage 2023-09-14 v2.35 Module abspage for zref (HO)
+(/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/zref/zref-base.sty
+Package: zref-base 2023-09-14 v2.35 Module base for zref (HO)
+(/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+Package zref Info: New property list: main on input line 767.
+Package zref Info: New property: default on input line 768.
+Package zref Info: New property: page on input line 769.
+)
+\c@abspage=\count375
+Package zref Info: New property: abspage on input line 67.
+) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/ocgx2/ocgbase.sty
+Package: ocgbase 2022/08/04 v0.22 support package for ocgx2.sty
+\g_ocgbase_nd_int=\count376
+)
+\@anim@box=\box84
+\@anim@measbox=\box85
+\@anim@tmpdima=\dimen314
+\@anim@tmpdimb=\dimen315
+\@anim@num=\count377
+\@anim@curframe=\count378
+\@anim@curframe@zb=\count379
+\@anim@resizeflags=\count380
+\@anim@skipfram=\count381
+\@anim@mulframecnt=\count382
+\@anim@@tmlnfile=\read3
+\@anim@tmpcnt=\count383
+\c@@anim@ltxcnt=\count384
+\@anim@curlayer=\count385
+\@anim@lineno=\count386
+\@anim@curfield=\count387
+\@anim@@resizeflags=\count388
+) (./Presentation.aux)
 \openout1 = `Presentation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 134.
-LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 134.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 135.
+LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 135.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 135.
+LaTeX Font Info:    ... okay on input line 135.
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -791,57 +836,57 @@ LaTeX Font Info:    ... okay on input line 134.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 134.
+Package hyperref Info: Link coloring OFF on input line 135.
 (./Presentation.out) (./Presentation.out)
 \@outlinefile=\write5
 \openout5 = `Presentation.out'.
 
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/lmr/m/n --> OT1/cmss/m/n on input line 134.
+(Font)                  OT1/lmr/m/n --> OT1/cmss/m/n on input line 135.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/lmr/bx/n --> OT1/cmss/b/n on input line 134.
+(Font)                  OT1/lmr/bx/n --> OT1/cmss/b/n on input line 135.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/cmss/m/n --> OT1/lmss/m/n on input line 134.
+(Font)                  OT1/cmss/m/n --> OT1/lmss/m/n on input line 135.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/cmss/b/n --> OT1/lmss/b/n on input line 134.
+(Font)                  OT1/cmss/b/n --> OT1/lmss/b/n on input line 135.
 \symnumbers=\mathgroup6
 \sympureletters=\mathgroup7
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmr/m/n on input line 134.
-LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 134.
+(Font)                  OT1/lmss/m/n --> TU/lmr/m/n on input line 135.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/lmr/bx/n --> TU/lmss/b/n on input line 134.
+(Font)                  OT1/lmr/bx/n --> TU/lmss/b/n on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  OT1/lmr/bx/n --> TU/lmss/b/n on input line 134.
-LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 134.
+(Font)                  OT1/lmr/bx/n --> TU/lmss/b/n on input line 135.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 134.
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/lmss/m/n on input line 134.
-LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 134.
+(Font)                  OT1/lmss/bx/n --> TU/lmss/m/n on input line 135.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/lmr/m/it --> TU/lmss/m/it on input line 134.
+(Font)                  OT1/lmr/m/it --> TU/lmss/m/it on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/lmr/bx/it --> TU/lmss/m/it on input line 134.
-LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 134.
+(Font)                  OT1/lmr/bx/it --> TU/lmss/m/it on input line 135.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 134.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 134.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 135.
 LaTeX Font Info:    Overwriting symbol font `numbers' in version `bold'
-(Font)                  TU/lmss/m/n --> TU/lmss/b/n on input line 134.
+(Font)                  TU/lmss/m/n --> TU/lmss/b/n on input line 135.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  TU/lmss/m/it --> TU/lmss/b/it on input line 134.
+(Font)                  TU/lmss/m/it --> TU/lmss/b/it on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
-(Font)                  OT1/lmss/b/n --> TU/lmr/b/n on input line 134.
+(Font)                  OT1/lmss/b/n --> TU/lmr/b/n on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  TU/lmss/b/n --> TU/lmss/b/n on input line 134.
+(Font)                  TU/lmss/b/n --> TU/lmss/b/n on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  TU/lmss/m/n --> TU/lmss/b/n on input line 134.
+(Font)                  TU/lmss/m/n --> TU/lmss/b/n on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  TU/lmss/m/it --> TU/lmss/b/it on input line 134.
+(Font)                  TU/lmss/m/it --> TU/lmss/b/it on input line 135.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  TU/lmtt/m/n --> TU/lmtt/b/n on input line 134.
+(Font)                  TU/lmtt/m/n --> TU/lmtt/b/n on input line 135.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/translator/translator-basic-dictionary-English.dict
 Dictionary: translator-basic-dictionary, Language: English 
 ) (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/translator/translator-bibliography-dictionary-English.dict
@@ -858,11 +903,11 @@ Dictionary: translator-theorem-dictionary, Language: English
 File: ICM_rvb.png Graphic file (type bmp)
 <ICM_rvb.png>
 
-Overfull \vbox (252.57138pt too high) detected at line 139
+Overfull \vbox (252.57138pt too high) detected at line 140
  []
 
 
-Overfull \vbox (15.63992pt too high) detected at line 139
+Overfull \vbox (15.63992pt too high) detected at line 140
  []
 
 [1
@@ -870,71 +915,748 @@ Overfull \vbox (15.63992pt too high) detected at line 139
 ] (./Presentation.toc) [2
 
 ]
-LaTeX Font Info:    Trying to load font information for OT1+lmss on input line 148.
+LaTeX Font Info:    Trying to load font information for OT1+lmss on input line 149.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/lm/ot1lmss.fd
 File: ot1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 148.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 149.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 148.
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 149.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 148.
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 149.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 148.
+(Font)              <10.95> on input line 149.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 148.
+(Font)              <8> on input line 149.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 148.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 148.
+(Font)              <6> on input line 149.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 149.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 148.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 149.
 (/home/baptiste.criniere/.TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <10.95> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 148.
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 149.
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <8> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 148.
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 149.
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <6> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 148.
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 149.
 [3
 
 ] [4
 
-] [5
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-2-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-2-1.pdf>
 
-] [6
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 185--185
+ [] 
+ []
 
-] [7
+[5
 
-] [8
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-3-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-3-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 201--201
+ [] 
+ []
+
+[6
+
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-4-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-4-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 219--219
+ [] 
+ []
+
+[7
+
+]
+File: GIF1/regression_animation-0.png Graphic file (type bmp)
+<GIF1/regression_animation-0.png>
+<a0,fr0>
+File: GIF1/regression_animation-1.png Graphic file (type bmp)
+<GIF1/regression_animation-1.png>
+<a0,fr1>
+File: GIF1/regression_animation-2.png Graphic file (type bmp)
+<GIF1/regression_animation-2.png>
+<a0,fr2>
+File: GIF1/regression_animation-3.png Graphic file (type bmp)
+<GIF1/regression_animation-3.png>
+<a0,fr3>
+File: GIF1/regression_animation-4.png Graphic file (type bmp)
+<GIF1/regression_animation-4.png>
+<a0,fr4>
+File: GIF1/regression_animation-5.png Graphic file (type bmp)
+<GIF1/regression_animation-5.png>
+<a0,fr5>
+File: GIF1/regression_animation-6.png Graphic file (type bmp)
+<GIF1/regression_animation-6.png>
+<a0,fr6>
+File: GIF1/regression_animation-7.png Graphic file (type bmp)
+<GIF1/regression_animation-7.png>
+<a0,fr7>
+File: GIF1/regression_animation-8.png Graphic file (type bmp)
+<GIF1/regression_animation-8.png>
+<a0,fr8>
+File: GIF1/regression_animation-9.png Graphic file (type bmp)
+<GIF1/regression_animation-9.png>
+<a0,fr9>
+File: GIF1/regression_animation-10.png Graphic file (type bmp)
+<GIF1/regression_animation-10.png>
+<a0,fr10>
+File: GIF1/regression_animation-11.png Graphic file (type bmp)
+<GIF1/regression_animation-11.png>
+<a0,fr11>
+File: GIF1/regression_animation-12.png Graphic file (type bmp)
+<GIF1/regression_animation-12.png>
+<a0,fr12>
+File: GIF1/regression_animation-13.png Graphic file (type bmp)
+<GIF1/regression_animation-13.png>
+<a0,fr13>
+File: GIF1/regression_animation-14.png Graphic file (type bmp)
+<GIF1/regression_animation-14.png>
+<a0,fr14>
+File: GIF1/regression_animation-15.png Graphic file (type bmp)
+<GIF1/regression_animation-15.png>
+<a0,fr15>
+File: GIF1/regression_animation-16.png Graphic file (type bmp)
+<GIF1/regression_animation-16.png>
+<a0,fr16>
+File: GIF1/regression_animation-17.png Graphic file (type bmp)
+<GIF1/regression_animation-17.png>
+<a0,fr17>
+File: GIF1/regression_animation-18.png Graphic file (type bmp)
+<GIF1/regression_animation-18.png>
+<a0,fr18>
+File: GIF1/regression_animation-19.png Graphic file (type bmp)
+<GIF1/regression_animation-19.png>
+<a0,fr19>
+File: GIF1/regression_animation-20.png Graphic file (type bmp)
+<GIF1/regression_animation-20.png>
+<a0,fr20>
+File: GIF1/regression_animation-21.png Graphic file (type bmp)
+<GIF1/regression_animation-21.png>
+<a0,fr21>
+File: GIF1/regression_animation-22.png Graphic file (type bmp)
+<GIF1/regression_animation-22.png>
+<a0,fr22>
+File: GIF1/regression_animation-23.png Graphic file (type bmp)
+<GIF1/regression_animation-23.png>
+<a0,fr23>
+File: GIF1/regression_animation-24.png Graphic file (type bmp)
+<GIF1/regression_animation-24.png>
+<a0,fr24>
+File: GIF1/regression_animation-25.png Graphic file (type bmp)
+<GIF1/regression_animation-25.png>
+<a0,fr25>
+File: GIF1/regression_animation-26.png Graphic file (type bmp)
+<GIF1/regression_animation-26.png>
+<a0,fr26>
+File: GIF1/regression_animation-27.png Graphic file (type bmp)
+<GIF1/regression_animation-27.png>
+<a0,fr27>
+File: GIF1/regression_animation-28.png Graphic file (type bmp)
+<GIF1/regression_animation-28.png>
+<a0,fr28>
+File: GIF1/regression_animation-29.png Graphic file (type bmp)
+<GIF1/regression_animation-29.png>
+<a0,fr29>
+File: GIF1/regression_animation-30.png Graphic file (type bmp)
+<GIF1/regression_animation-30.png>
+<a0,fr30>
+File: GIF1/regression_animation-31.png Graphic file (type bmp)
+<GIF1/regression_animation-31.png>
+<a0,fr31>
+File: GIF1/regression_animation-32.png Graphic file (type bmp)
+<GIF1/regression_animation-32.png>
+<a0,fr32>
+File: GIF1/regression_animation-33.png Graphic file (type bmp)
+<GIF1/regression_animation-33.png>
+<a0,fr33>
+File: GIF1/regression_animation-34.png Graphic file (type bmp)
+<GIF1/regression_animation-34.png>
+<a0,fr34>
+File: GIF1/regression_animation-35.png Graphic file (type bmp)
+<GIF1/regression_animation-35.png>
+<a0,fr35>
+File: GIF1/regression_animation-36.png Graphic file (type bmp)
+<GIF1/regression_animation-36.png>
+<a0,fr36>
+File: GIF1/regression_animation-37.png Graphic file (type bmp)
+<GIF1/regression_animation-37.png>
+<a0,fr37>
+File: GIF1/regression_animation-38.png Graphic file (type bmp)
+<GIF1/regression_animation-38.png>
+<a0,fr38>
+File: GIF1/regression_animation-39.png Graphic file (type bmp)
+<GIF1/regression_animation-39.png>
+<a0,fr39>
+File: GIF1/regression_animation-40.png Graphic file (type bmp)
+<GIF1/regression_animation-40.png>
+<a0,fr40>
+File: GIF1/regression_animation-41.png Graphic file (type bmp)
+<GIF1/regression_animation-41.png>
+<a0,fr41>
+File: GIF1/regression_animation-42.png Graphic file (type bmp)
+<GIF1/regression_animation-42.png>
+<a0,fr42>
+File: GIF1/regression_animation-43.png Graphic file (type bmp)
+<GIF1/regression_animation-43.png>
+<a0,fr43>
+File: GIF1/regression_animation-44.png Graphic file (type bmp)
+<GIF1/regression_animation-44.png>
+<a0,fr44>
+File: GIF1/regression_animation-45.png Graphic file (type bmp)
+<GIF1/regression_animation-45.png>
+<a0,fr45>
+File: GIF1/regression_animation-46.png Graphic file (type bmp)
+<GIF1/regression_animation-46.png>
+<a0,fr46>
+File: GIF1/regression_animation-47.png Graphic file (type bmp)
+<GIF1/regression_animation-47.png>
+<a0,fr47>
+File: GIF1/regression_animation-48.png Graphic file (type bmp)
+<GIF1/regression_animation-48.png>
+<a0,fr48>
+File: GIF1/regression_animation-49.png Graphic file (type bmp)
+<GIF1/regression_animation-49.png>
+<a0,fr49>
+File: GIF1/regression_animation-50.png Graphic file (type bmp)
+<GIF1/regression_animation-50.png>
+<a0,fr50>
+File: GIF1/regression_animation-51.png Graphic file (type bmp)
+<GIF1/regression_animation-51.png>
+<a0,fr51>
+File: GIF1/regression_animation-52.png Graphic file (type bmp)
+<GIF1/regression_animation-52.png>
+<a0,fr52>
+File: GIF1/regression_animation-53.png Graphic file (type bmp)
+<GIF1/regression_animation-53.png>
+<a0,fr53>
+File: GIF1/regression_animation-54.png Graphic file (type bmp)
+<GIF1/regression_animation-54.png>
+<a0,fr54>
+File: GIF1/regression_animation-55.png Graphic file (type bmp)
+<GIF1/regression_animation-55.png>
+<a0,fr55>
+File: GIF1/regression_animation-56.png Graphic file (type bmp)
+<GIF1/regression_animation-56.png>
+<a0,fr56>
+File: GIF1/regression_animation-57.png Graphic file (type bmp)
+<GIF1/regression_animation-57.png>
+<a0,fr57>
+File: GIF1/regression_animation-58.png Graphic file (type bmp)
+<GIF1/regression_animation-58.png>
+<a0,fr58>
+File: GIF1/regression_animation-59.png Graphic file (type bmp)
+<GIF1/regression_animation-59.png>
+<a0,fr59>
+File: GIF1/regression_animation-60.png Graphic file (type bmp)
+<GIF1/regression_animation-60.png>
+<a0,fr60>
+File: GIF1/regression_animation-61.png Graphic file (type bmp)
+<GIF1/regression_animation-61.png>
+<a0,fr61>
+File: GIF1/regression_animation-62.png Graphic file (type bmp)
+<GIF1/regression_animation-62.png>
+<a0,fr62>
+File: GIF1/regression_animation-63.png Graphic file (type bmp)
+<GIF1/regression_animation-63.png>
+<a0,fr63>
+File: GIF1/regression_animation-64.png Graphic file (type bmp)
+<GIF1/regression_animation-64.png>
+<a0,fr64>
+File: GIF1/regression_animation-65.png Graphic file (type bmp)
+<GIF1/regression_animation-65.png>
+<a0,fr65>
+File: GIF1/regression_animation-66.png Graphic file (type bmp)
+<GIF1/regression_animation-66.png>
+<a0,fr66>
+File: GIF1/regression_animation-67.png Graphic file (type bmp)
+<GIF1/regression_animation-67.png>
+<a0,fr67>
+File: GIF1/regression_animation-68.png Graphic file (type bmp)
+<GIF1/regression_animation-68.png>
+<a0,fr68>
+File: GIF1/regression_animation-69.png Graphic file (type bmp)
+<GIF1/regression_animation-69.png>
+<a0,fr69>
+File: GIF1/regression_animation-70.png Graphic file (type bmp)
+<GIF1/regression_animation-70.png>
+<a0,fr70>
+File: GIF1/regression_animation-71.png Graphic file (type bmp)
+<GIF1/regression_animation-71.png>
+<a0,fr71>
+File: GIF1/regression_animation-72.png Graphic file (type bmp)
+<GIF1/regression_animation-72.png>
+<a0,fr72>
+File: GIF1/regression_animation-73.png Graphic file (type bmp)
+<GIF1/regression_animation-73.png>
+<a0,fr73>
+File: GIF1/regression_animation-74.png Graphic file (type bmp)
+<GIF1/regression_animation-74.png>
+<a0,fr74>
+File: GIF1/regression_animation-75.png Graphic file (type bmp)
+<GIF1/regression_animation-75.png>
+<a0,fr75>
+File: GIF1/regression_animation-76.png Graphic file (type bmp)
+<GIF1/regression_animation-76.png>
+<a0,fr76>
+File: GIF1/regression_animation-77.png Graphic file (type bmp)
+<GIF1/regression_animation-77.png>
+<a0,fr77>
+File: GIF1/regression_animation-78.png Graphic file (type bmp)
+<GIF1/regression_animation-78.png>
+<a0,fr78>
+File: GIF1/regression_animation-79.png Graphic file (type bmp)
+<GIF1/regression_animation-79.png>
+<a0,fr79>
+File: GIF1/regression_animation-80.png Graphic file (type bmp)
+<GIF1/regression_animation-80.png>
+<a0,fr80>
+File: GIF1/regression_animation-81.png Graphic file (type bmp)
+<GIF1/regression_animation-81.png>
+<a0,fr81>
+File: GIF1/regression_animation-82.png Graphic file (type bmp)
+<GIF1/regression_animation-82.png>
+<a0,fr82>
+File: GIF1/regression_animation-83.png Graphic file (type bmp)
+<GIF1/regression_animation-83.png>
+<a0,fr83>
+File: GIF1/regression_animation-84.png Graphic file (type bmp)
+<GIF1/regression_animation-84.png>
+<a0,fr84>
+File: GIF1/regression_animation-85.png Graphic file (type bmp)
+<GIF1/regression_animation-85.png>
+<a0,fr85>
+File: GIF1/regression_animation-86.png Graphic file (type bmp)
+<GIF1/regression_animation-86.png>
+<a0,fr86>
+File: GIF1/regression_animation-87.png Graphic file (type bmp)
+<GIF1/regression_animation-87.png>
+<a0,fr87>
+File: GIF1/regression_animation-88.png Graphic file (type bmp)
+<GIF1/regression_animation-88.png>
+<a0,fr88>
+File: GIF1/regression_animation-89.png Graphic file (type bmp)
+<GIF1/regression_animation-89.png>
+<a0,fr89>
+File: GIF1/regression_animation-90.png Graphic file (type bmp)
+<GIF1/regression_animation-90.png>
+<a0,fr90>
+File: GIF1/regression_animation-91.png Graphic file (type bmp)
+<GIF1/regression_animation-91.png>
+<a0,fr91>
+File: GIF1/regression_animation-92.png Graphic file (type bmp)
+<GIF1/regression_animation-92.png>
+<a0,fr92>
+File: GIF1/regression_animation-93.png Graphic file (type bmp)
+<GIF1/regression_animation-93.png>
+<a0,fr93>
+File: GIF1/regression_animation-94.png Graphic file (type bmp)
+<GIF1/regression_animation-94.png>
+<a0,fr94>
+File: GIF1/regression_animation-95.png Graphic file (type bmp)
+<GIF1/regression_animation-95.png>
+<a0,fr95>
+File: GIF1/regression_animation-96.png Graphic file (type bmp)
+<GIF1/regression_animation-96.png>
+<a0,fr96>
+File: GIF1/regression_animation-97.png Graphic file (type bmp)
+<GIF1/regression_animation-97.png>
+<a0,fr97>
+File: GIF1/regression_animation-98.png Graphic file (type bmp)
+<GIF1/regression_animation-98.png>
+<a0,fr98>
+File: GIF1/regression_animation-99.png Graphic file (type bmp)
+<GIF1/regression_animation-99.png>
+<a0,fr99>
+File: GIF1/regression_animation-100.png Graphic file (type bmp)
+<GIF1/regression_animation-100.png>
+<a0,fr100>
+File: GIF1/regression_animation-101.png Graphic file (type bmp)
+<GIF1/regression_animation-101.png>
+<a0,fr101>
+File: GIF1/regression_animation-102.png Graphic file (type bmp)
+<GIF1/regression_animation-102.png>
+<a0,fr102>
+File: GIF1/regression_animation-103.png Graphic file (type bmp)
+<GIF1/regression_animation-103.png>
+<a0,fr103>
+File: GIF1/regression_animation-104.png Graphic file (type bmp)
+<GIF1/regression_animation-104.png>
+<a0,fr104>
+File: GIF1/regression_animation-105.png Graphic file (type bmp)
+<GIF1/regression_animation-105.png>
+<a0,fr105>
+File: GIF1/regression_animation-106.png Graphic file (type bmp)
+<GIF1/regression_animation-106.png>
+<a0,fr106>
+File: GIF1/regression_animation-107.png Graphic file (type bmp)
+<GIF1/regression_animation-107.png>
+<a0,fr107>
+File: GIF1/regression_animation-108.png Graphic file (type bmp)
+<GIF1/regression_animation-108.png>
+<a0,fr108>
+File: GIF1/regression_animation-109.png Graphic file (type bmp)
+<GIF1/regression_animation-109.png>
+<a0,fr109>
+File: GIF1/regression_animation-110.png Graphic file (type bmp)
+<GIF1/regression_animation-110.png>
+<a0,fr110>
+File: GIF1/regression_animation-111.png Graphic file (type bmp)
+<GIF1/regression_animation-111.png>
+<a0,fr111>
+File: GIF1/regression_animation-112.png Graphic file (type bmp)
+<GIF1/regression_animation-112.png>
+<a0,fr112>
+File: GIF1/regression_animation-113.png Graphic file (type bmp)
+<GIF1/regression_animation-113.png>
+<a0,fr113>
+File: GIF1/regression_animation-114.png Graphic file (type bmp)
+<GIF1/regression_animation-114.png>
+<a0,fr114>
+File: GIF1/regression_animation-115.png Graphic file (type bmp)
+<GIF1/regression_animation-115.png>
+<a0,fr115>
+File: GIF1/regression_animation-116.png Graphic file (type bmp)
+<GIF1/regression_animation-116.png>
+<a0,fr116>
+File: GIF1/regression_animation-117.png Graphic file (type bmp)
+<GIF1/regression_animation-117.png>
+<a0,fr117>
+File: GIF1/regression_animation-118.png Graphic file (type bmp)
+<GIF1/regression_animation-118.png>
+<a0,fr118>
+File: GIF1/regression_animation-119.png Graphic file (type bmp)
+<GIF1/regression_animation-119.png>
+<a0,fr119>
+File: GIF1/regression_animation-120.png Graphic file (type bmp)
+<GIF1/regression_animation-120.png>
+<a0,fr120>
+File: GIF1/regression_animation-121.png Graphic file (type bmp)
+<GIF1/regression_animation-121.png>
+<a0,fr121>
+File: GIF1/regression_animation-122.png Graphic file (type bmp)
+<GIF1/regression_animation-122.png>
+<a0,fr122>
+File: GIF1/regression_animation-123.png Graphic file (type bmp)
+<GIF1/regression_animation-123.png>
+<a0,fr123>
+File: GIF1/regression_animation-124.png Graphic file (type bmp)
+<GIF1/regression_animation-124.png>
+<a0,fr124>
+File: GIF1/regression_animation-125.png Graphic file (type bmp)
+<GIF1/regression_animation-125.png>
+<a0,fr125>
+File: GIF1/regression_animation-126.png Graphic file (type bmp)
+<GIF1/regression_animation-126.png>
+<a0,fr126>
+File: GIF1/regression_animation-127.png Graphic file (type bmp)
+<GIF1/regression_animation-127.png>
+<a0,fr127>
+File: GIF1/regression_animation-128.png Graphic file (type bmp)
+<GIF1/regression_animation-128.png>
+<a0,fr128>
+File: GIF1/regression_animation-129.png Graphic file (type bmp)
+<GIF1/regression_animation-129.png>
+<a0,fr129>
+File: GIF1/regression_animation-130.png Graphic file (type bmp)
+<GIF1/regression_animation-130.png>
+<a0,fr130>
+File: GIF1/regression_animation-131.png Graphic file (type bmp)
+<GIF1/regression_animation-131.png>
+<a0,fr131>
+File: GIF1/regression_animation-132.png Graphic file (type bmp)
+<GIF1/regression_animation-132.png>
+<a0,fr132>
+File: GIF1/regression_animation-133.png Graphic file (type bmp)
+<GIF1/regression_animation-133.png>
+<a0,fr133>
+File: GIF1/regression_animation-134.png Graphic file (type bmp)
+<GIF1/regression_animation-134.png>
+<a0,fr134>
+File: GIF1/regression_animation-135.png Graphic file (type bmp)
+<GIF1/regression_animation-135.png>
+<a0,fr135>
+File: GIF1/regression_animation-136.png Graphic file (type bmp)
+<GIF1/regression_animation-136.png>
+<a0,fr136>
+File: GIF1/regression_animation-137.png Graphic file (type bmp)
+<GIF1/regression_animation-137.png>
+<a0,fr137>
+File: GIF1/regression_animation-138.png Graphic file (type bmp)
+<GIF1/regression_animation-138.png>
+<a0,fr138>
+File: GIF1/regression_animation-139.png Graphic file (type bmp)
+<GIF1/regression_animation-139.png>
+<a0,fr139>
+File: GIF1/regression_animation-140.png Graphic file (type bmp)
+<GIF1/regression_animation-140.png>
+<a0,fr140>
+File: GIF1/regression_animation-141.png Graphic file (type bmp)
+<GIF1/regression_animation-141.png>
+<a0,fr141>
+File: GIF1/regression_animation-142.png Graphic file (type bmp)
+<GIF1/regression_animation-142.png>
+<a0,fr142>
+File: GIF1/regression_animation-143.png Graphic file (type bmp)
+<GIF1/regression_animation-143.png>
+<a0,fr143>
+File: GIF1/regression_animation-144.png Graphic file (type bmp)
+<GIF1/regression_animation-144.png>
+<a0,fr144>
+File: GIF1/regression_animation-145.png Graphic file (type bmp)
+<GIF1/regression_animation-145.png>
+<a0,fr145>
+File: GIF1/regression_animation-146.png Graphic file (type bmp)
+<GIF1/regression_animation-146.png>
+<a0,fr146>
+File: GIF1/regression_animation-147.png Graphic file (type bmp)
+<GIF1/regression_animation-147.png>
+<a0,fr147>
+File: GIF1/regression_animation-148.png Graphic file (type bmp)
+<GIF1/regression_animation-148.png>
+<a0,fr148>
+File: GIF1/regression_animation-149.png Graphic file (type bmp)
+<GIF1/regression_animation-149.png>
+<a0,fr149>
+File: GIF1/regression_animation-150.png Graphic file (type bmp)
+<GIF1/regression_animation-150.png>
+<a0,fr150>
+File: GIF1/regression_animation-151.png Graphic file (type bmp)
+<GIF1/regression_animation-151.png>
+<a0,fr151>
+File: GIF1/regression_animation-152.png Graphic file (type bmp)
+<GIF1/regression_animation-152.png>
+<a0,fr152>
+File: GIF1/regression_animation-153.png Graphic file (type bmp)
+<GIF1/regression_animation-153.png>
+<a0,fr153>
+File: GIF1/regression_animation-154.png Graphic file (type bmp)
+<GIF1/regression_animation-154.png>
+<a0,fr154>
+File: GIF1/regression_animation-155.png Graphic file (type bmp)
+<GIF1/regression_animation-155.png>
+<a0,fr155>
+File: GIF1/regression_animation-156.png Graphic file (type bmp)
+<GIF1/regression_animation-156.png>
+<a0,fr156>
+File: GIF1/regression_animation-157.png Graphic file (type bmp)
+<GIF1/regression_animation-157.png>
+<a0,fr157>
+File: GIF1/regression_animation-158.png Graphic file (type bmp)
+<GIF1/regression_animation-158.png>
+<a0,fr158>
+File: GIF1/regression_animation-159.png Graphic file (type bmp)
+<GIF1/regression_animation-159.png>
+<a0,fr159>
+File: GIF1/regression_animation-160.png Graphic file (type bmp)
+<GIF1/regression_animation-160.png>
+<a0,fr160>
+File: GIF1/regression_animation-161.png Graphic file (type bmp)
+<GIF1/regression_animation-161.png>
+<a0,fr161>
+File: GIF1/regression_animation-162.png Graphic file (type bmp)
+<GIF1/regression_animation-162.png>
+<a0,fr162>
+File: GIF1/regression_animation-163.png Graphic file (type bmp)
+<GIF1/regression_animation-163.png>
+<a0,fr163>
+File: GIF1/regression_animation-164.png Graphic file (type bmp)
+<GIF1/regression_animation-164.png>
+<a0,fr164>
+File: GIF1/regression_animation-165.png Graphic file (type bmp)
+<GIF1/regression_animation-165.png>
+<a0,fr165>
+File: GIF1/regression_animation-166.png Graphic file (type bmp)
+<GIF1/regression_animation-166.png>
+<a0,fr166>
+File: GIF1/regression_animation-167.png Graphic file (type bmp)
+<GIF1/regression_animation-167.png>
+<a0,fr167>
+File: GIF1/regression_animation-168.png Graphic file (type bmp)
+<GIF1/regression_animation-168.png>
+<a0,fr168>
+File: GIF1/regression_animation-169.png Graphic file (type bmp)
+<GIF1/regression_animation-169.png>
+<a0,fr169>
+File: GIF1/regression_animation-170.png Graphic file (type bmp)
+<GIF1/regression_animation-170.png>
+<a0,fr170>
+File: GIF1/regression_animation-171.png Graphic file (type bmp)
+<GIF1/regression_animation-171.png>
+<a0,fr171>
+File: GIF1/regression_animation-172.png Graphic file (type bmp)
+<GIF1/regression_animation-172.png>
+<a0,fr172>
+File: GIF1/regression_animation-173.png Graphic file (type bmp)
+<GIF1/regression_animation-173.png>
+<a0,fr173>
+File: GIF1/regression_animation-174.png Graphic file (type bmp)
+<GIF1/regression_animation-174.png>
+<a0,fr174>
+File: GIF1/regression_animation-175.png Graphic file (type bmp)
+<GIF1/regression_animation-175.png>
+<a0,fr175>
+File: GIF1/regression_animation-176.png Graphic file (type bmp)
+<GIF1/regression_animation-176.png>
+<a0,fr176>
+File: GIF1/regression_animation-177.png Graphic file (type bmp)
+<GIF1/regression_animation-177.png>
+<a0,fr177>
+File: GIF1/regression_animation-178.png Graphic file (type bmp)
+<GIF1/regression_animation-178.png>
+<a0,fr178>
+File: GIF1/regression_animation-179.png Graphic file (type bmp)
+<GIF1/regression_animation-179.png>
+<a0,fr179>
+File: GIF1/regression_animation-180.png Graphic file (type bmp)
+<GIF1/regression_animation-180.png>
+<a0,fr180>
+File: GIF1/regression_animation-181.png Graphic file (type bmp)
+<GIF1/regression_animation-181.png>
+<a0,fr181>
+File: GIF1/regression_animation-182.png Graphic file (type bmp)
+<GIF1/regression_animation-182.png>
+<a0,fr182>
+File: GIF1/regression_animation-183.png Graphic file (type bmp)
+<GIF1/regression_animation-183.png>
+<a0,fr183>
+File: GIF1/regression_animation-184.png Graphic file (type bmp)
+<GIF1/regression_animation-184.png>
+<a0,fr184>
+File: GIF1/regression_animation-185.png Graphic file (type bmp)
+<GIF1/regression_animation-185.png>
+<a0,fr185>
+File: GIF1/regression_animation-186.png Graphic file (type bmp)
+<GIF1/regression_animation-186.png>
+<a0,fr186>
+File: GIF1/regression_animation-187.png Graphic file (type bmp)
+<GIF1/regression_animation-187.png>
+<a0,fr187>
+File: GIF1/regression_animation-188.png Graphic file (type bmp)
+<GIF1/regression_animation-188.png>
+<a0,fr188>
+File: GIF1/regression_animation-189.png Graphic file (type bmp)
+<GIF1/regression_animation-189.png>
+<a0,fr189>
+File: GIF1/regression_animation-190.png Graphic file (type bmp)
+<GIF1/regression_animation-190.png>
+<a0,fr190> [8
 
 ] [9
 
 ] [10
 
-] [11
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-6-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-6-1.pdf>
 
-] [12
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 280--280
+ [] 
+ []
 
-] [13
+[11
+
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-7-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-7-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 298--298
+ [] 
+ []
+
+[12
+
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-8-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-8-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 316--316
+ [] 
+ []
+
+[13
 
 ] [14
 
 ] [15
 
-] [16
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-10-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-10-1.pdf>
 
-] [17
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 357--357
+ [] 
+ []
+
+[16
+
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-11-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-11-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 379--379
+ [] 
+ []
+
+[17
+
+] [18
+
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-12-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-12-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 417--417
+ [] 
+ []
+
+[19
+
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-13-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-13-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 439--439
+ [] 
+ []
+
+[20
+
+]
+File: Presentation_files/figure-beamer/unnamed-chunk-14-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-14-1.pdf>
+
+Overfull \hbox (14.75067pt too wide) in paragraph at lines 461--461
+ [] 
+ []
+
+
+Overfull \vbox (18.19478pt too high) detected at line 461
+ []
+
+[21
+
+] [22
+
+] [23
 
 ]
 \tf@nav=\write6
@@ -955,12 +1677,12 @@ Package rerunfilecheck Info: File `Presentation.out' has not changed.
 (rerunfilecheck)             Checksum: 947A5FA4C8F0BB6A92A360A345BDBC4A;470.
  ) 
 Here is how much of TeX's memory you used:
- 27743 strings out of 476923
- 602097 string characters out of 5805255
- 1923186 words of memory out of 5000000
- 49042 multiletter control sequences out of 15000+600000
+ 33214 strings out of 476923
+ 777009 string characters out of 5805255
+ 1980186 words of memory out of 5000000
+ 54280 multiletter control sequences out of 15000+600000
  570137 words of font info for 67 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 102i,13n,123p,1883b,755s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 102i,13n,123p,1883b,1824s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Presentation.pdf (17 pages).
+Output written on Presentation.pdf (23 pages).

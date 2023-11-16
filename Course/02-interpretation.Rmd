@@ -6,7 +6,7 @@ On appelle régression linéaire simple une régression qui fait appel à une se
 
 ### Prédicteur continue
 #### Le modèle
-TTout d'abord, nous devons déterminer quelle sera la variable dépendante (celle à expliquer) et quelle sera la variable indépendante (celle qui explique).\
+Tout d'abord, nous devons déterminer quelle sera la variable dépendante (celle à expliquer) et quelle sera la variable indépendante (celle qui explique).\
 \
 Dans le cas de la relation entre la taille et le poids, nous choisirons le poids comme variable dépendante à expliquer en fonction de la taille, qui sera la variable indépendante. Nous faisons ce choix parce que la taille est généralement un facteur stable, tandis que le poids peut varier davantage en fonction de divers facteurs environnementaux.\
 \
@@ -183,7 +183,7 @@ Les résultats obtenus à partir du modèle exécuté dans R indiquent que la re
 knitr::include_graphics("Image/Reg_multiple.png")
 ```
 
-#### Dans le cas continue
+#### Dans le cas continu
 
 Lorsque l'on considère deux variables continues pour expliquer une variable réponse, l'ajustement permet d'évaluer l'impact d'une variable tout en tenant compte de l'influence de l'autre. Cela signifie que si l'on augmente d'une unité l'une des variables explicatives, tout en maintenant l'autre constante, le changement associé dans la variable réponse est essentiellement attribué à cette unité supplémentaire de la première variable, avec la seconde variable étant fixée. \
 \
@@ -217,7 +217,7 @@ Une interaction en régression se produit lorsque l'effet d'une variable sur la 
 Reprenons notre exemple sur l'effet de la taille et du sexe sur le poids. Nous avons déjà évoqué qu'à taille égale, les hommes peuvent en moyenne peser plus que les femmes. Cependant, il se pourrait aussi que la relation entre taille et poids ne soit pas la même selon le sexe. Autrement dit, l'augmentation de poids relative à chaque centimètre supplémentaire pourrait être plus prononcée chez les hommes que chez les femmes. Plusieurs facteurs pourraient expliquer cette différence relative : des différences métaboliques ou des habitudes liées au style de vie spécifiques à chaque sexe. \
 \
 Avec notre exemple le modèle s'écrit de la manière suivante :
-$Poids = \beta_0 + \beta_1 \times \text{1}_{\{Homme\}} + \beta_2 \times Taille + \beta_3 \times \text{1}_{\{Homme\}} \times Taille$
+$Poids = \beta_0 + \beta_1 \times \text{1}_{\{Homme\}} + \beta_2 \times Taille + \beta_3 \times \text{1}_{\{Homme\}} \times Taille + \epsilon$
 \
 On observe sur la figure que les hommes ont une pente plus forte que celle des femmes ce qui se traduit pour une augmentation de taille égale entre un homme et une femme, les hommes auront une augmentation de poids supérieure.
 ```{r echo = FALSE}
