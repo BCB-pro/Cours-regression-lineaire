@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.11.13)  16 NOV 2023 10:50
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.11.13)  16 NOV 2023 14:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1641,8 +1641,8 @@ Overfull \hbox (14.75067pt too wide) in paragraph at lines 439--439
 [20
 
 ]
-File: Presentation_files/figure-beamer/unnamed-chunk-14-1.pdf Graphic file (type pdf)
-<use Presentation_files/figure-beamer/unnamed-chunk-14-1.pdf>
+File: Presentation_files/figure-beamer/unnamed-chunk-15-1.pdf Graphic file (type pdf)
+<use Presentation_files/figure-beamer/unnamed-chunk-15-1.pdf>
 
 Overfull \hbox (14.75067pt too wide) in paragraph at lines 461--461
  [] 
@@ -1653,10 +1653,6 @@ Overfull \vbox (18.19478pt too high) detected at line 461
  []
 
 [21
-
-] [22
-
-] [23
 
 ]
 \tf@nav=\write6
@@ -1674,15 +1670,15 @@ LaTeX2e <2023-11-01>
 L3 programming layer <2023-11-09>
  ***********
 Package rerunfilecheck Info: File `Presentation.out' has not changed.
-(rerunfilecheck)             Checksum: 947A5FA4C8F0BB6A92A360A345BDBC4A;470.
+(rerunfilecheck)             Checksum: 6A49452EAD1B5C49A1FDA2575E60E751;387.
  ) 
 Here is how much of TeX's memory you used:
- 33214 strings out of 476923
- 777009 string characters out of 5805255
+ 33207 strings out of 476923
+ 776953 string characters out of 5805255
  1980186 words of memory out of 5000000
- 54280 multiletter control sequences out of 15000+600000
+ 54273 multiletter control sequences out of 15000+600000
  570137 words of font info for 67 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  102i,13n,123p,1883b,1824s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Presentation.pdf (23 pages).
+Output written on Presentation.pdf (21 pages).

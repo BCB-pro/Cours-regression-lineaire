@@ -490,14 +490,13 @@ data1 %>%
 ::::
 
 :::: column
-```{r echo = FALSE}
-```{r echo = FALSE}
+```{r}
 data %>% 
   ggplot(aes(x = Taille, y = Poids, color = Sexe, group = Sexe))+
   geom_point(alpha = 0.3)+
-  geom_smooth(method = "lm", se = FALSE, alpha = 0.7, size = 1.5)+
+  geom_smooth(method = "lm", se = FALSE, alpha = 0.7, size = 4)+
   theme_classic()+
-  scale_color_manual(values = c("darkblue", "darkred"))+
+  scale_color_manual(values = c("#002e82", "#e23d18"))+
   theme(axis.line = element_line(size = 3),
         axis.title = element_text(size = 25),
         axis.text = element_text(size = 25),
